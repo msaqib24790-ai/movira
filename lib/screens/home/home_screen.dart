@@ -2,6 +2,12 @@ import 'package:flutter/material.dart';
 import '../routes/search_routes_screen.dart';
 import '../stops/nearby_stops_screen.dart';
 import '../schedules/schedules_screen.dart';
+import '../trips/trip_planner_screen.dart';
+import '../trips/favorites_recent_trips_screen.dart';
+import '../alerts/service_alerts_notifications_screen.dart';
+import '../support center/support_center_screen.dart';
+import '../tracking/live_bus_tracking_screen.dart';
+import '../profile/profile_travel_preferences_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -55,6 +61,60 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  void _openTripPlanner() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const TripPlannerScreen(),
+      ),
+    );
+  }
+
+  void _openFavoritesRecentTrips() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const FavoritesRecentTripsScreen(),
+      ),
+    );
+  }
+
+  void _openServiceAlerts() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const ServiceAlertsNotificationsScreen(),
+      ),
+    );
+  }
+
+  void _openSupportCenter() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const SupportCenterScreen(),
+      ),
+    );
+  }
+
+  void _openLiveTracking() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const LiveBusTrackingScreen(),
+      ),
+    );
+  }
+
+  void _openProfile() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const ProfileTravelPreferencesScreen(),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -99,6 +159,10 @@ class _HomeScreenState extends State<HomeScreen> {
 
                         _buildQuickActions(),
 
+                        const SizedBox(height: 18),
+
+                        _buildTripPlannerCard(),
+
                         const SizedBox(height: 30),
 
                         _sectionHeader(
@@ -116,6 +180,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           title: 'Favorite Routes',
                           subtitle: 'Your most-used routes',
                           action: 'View All',
+                          onActionTap: _openFavoritesRecentTrips,
                         ),
 
                         const SizedBox(height: 16),
@@ -128,6 +193,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           title: 'Service Alerts',
                           subtitle: 'Important updates around you',
                           action: 'See All',
+                          onActionTap: _openServiceAlerts,
                         ),
 
                         const SizedBox(height: 16),
@@ -144,6 +210,10 @@ class _HomeScreenState extends State<HomeScreen> {
                         const SizedBox(height: 16),
 
                         _buildRecentTrip(),
+
+                        const SizedBox(height: 24),
+
+                        _buildSupportCenterCard(),
                       ],
                     ),
                   ),
@@ -211,11 +281,11 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         _roundIconButton(
           icon: Icons.notifications_none_rounded,
-          onTap: () {},
+          onTap: _openServiceAlerts,
         ),
         const SizedBox(width: 10),
         GestureDetector(
-          onTap: () {},
+          onTap: _openProfile,
           child: Container(
             width: 46,
             height: 46,
@@ -427,6 +497,7 @@ class _HomeScreenState extends State<HomeScreen> {
           title: 'Live Tracking',
           subtitle: 'Track buses live',
           accent: teal,
+          onTap: _openLiveTracking,
         ),
         _quickActionCard(
           icon: Icons.location_on_outlined,
@@ -501,6 +572,88 @@ class _HomeScreenState extends State<HomeScreen> {
                 color: textMuted,
                 fontSize: 11.5,
               ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTripPlannerCard() {
+    return GestureDetector(
+      onTap: _openTripPlanner,
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(18),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(22),
+          gradient: const LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              Color(0xFF0C3247),
+              Color(0xFF123F55),
+            ],
+          ),
+          border: Border.all(
+            color: cyan.withOpacity(0.16),
+          ),
+          boxShadow: const [
+            BoxShadow(
+              color: Color(0x18071B2C),
+              blurRadius: 16,
+              offset: Offset(0, 7),
+            ),
+          ],
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 54,
+              height: 54,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(17),
+                gradient: const LinearGradient(
+                  colors: [teal, cyan],
+                ),
+              ),
+              child: const Icon(
+                Icons.alt_route_rounded,
+                color: navy,
+                size: 27,
+              ),
+            ),
+            const SizedBox(width: 14),
+            const Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Trip Planner',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 15.5,
+                      fontWeight: FontWeight.w900,
+                    ),
+                  ),
+                  SizedBox(height: 5),
+                  Text(
+                    'Plan a complete journey with time, fare and route preferences.',
+                    style: TextStyle(
+                      color: softText,
+                      fontSize: 10.8,
+                      height: 1.35,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(width: 10),
+            const Icon(
+              Icons.arrow_forward_rounded,
+              color: cyan,
+              size: 22,
             ),
           ],
         ),
@@ -629,7 +782,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               const Spacer(),
               GestureDetector(
-                onTap: () {},
+                onTap: _openLiveTracking,
                 child: const Row(
                   children: [
                     Text(
@@ -927,7 +1080,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
           IconButton(
-            onPressed: () {},
+            onPressed: _openFavoritesRecentTrips,
             icon: const Icon(
               Icons.refresh_rounded,
               color: teal,
@@ -938,10 +1091,84 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  Widget _buildSupportCenterCard() {
+    return GestureDetector(
+      onTap: _openSupportCenter,
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(17),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(22),
+          gradient: const LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              Color(0xFF0C3247),
+              Color(0xFF123F55),
+            ],
+          ),
+          border: Border.all(
+            color: cyan.withOpacity(0.16),
+          ),
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 50,
+              height: 50,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(16),
+                gradient: const LinearGradient(
+                  colors: [teal, cyan],
+                ),
+              ),
+              child: const Icon(
+                Icons.support_agent_rounded,
+                color: navy,
+                size: 26,
+              ),
+            ),
+            const SizedBox(width: 14),
+            const Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Support Center',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 15,
+                      fontWeight: FontWeight.w900,
+                    ),
+                  ),
+                  SizedBox(height: 5),
+                  Text(
+                    'Helpline, WhatsApp, live chat and support tickets.',
+                    style: TextStyle(
+                      color: softText,
+                      fontSize: 10.8,
+                      height: 1.4,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const Icon(
+              Icons.arrow_forward_rounded,
+              color: cyan,
+              size: 21,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget _sectionHeader({
     required String title,
     required String subtitle,
     String? action,
+    VoidCallback? onActionTap,
   }) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.end,
@@ -971,7 +1198,7 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         if (action != null)
           TextButton(
-            onPressed: () {},
+            onPressed: onActionTap,
             child: Text(
               action,
               style: const TextStyle(
@@ -1072,6 +1299,21 @@ class _HomeScreenState extends State<HomeScreen> {
                     onTap: () {
                       if (index == 1) {
                         _openSearchRoutes();
+                        return;
+                      }
+
+                      if (index == 2) {
+                        _openLiveTracking();
+                        return;
+                      }
+
+                      if (index == 3) {
+                        _openServiceAlerts();
+                        return;
+                      }
+
+                      if (index == 4) {
+                        _openProfile();
                         return;
                       }
 
