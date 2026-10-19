@@ -1,4 +1,6 @@
+
 import 'package:flutter/material.dart';
+
 import 'login_screen.dart';
 import 'signup_screen.dart';
 
@@ -24,26 +26,16 @@ class AuthScreen extends StatelessWidget {
       body: Stack(
         children: [
           const _AuthBackground(),
-
           SafeArea(
             child: SingleChildScrollView(
-              padding: const EdgeInsets.fromLTRB(
-                22,
-                18,
-                22,
-                28,
-              ),
+              padding: const EdgeInsets.fromLTRB(22, 18, 22, 28),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   _buildTopBrand(),
-
                   const SizedBox(height: 28),
-
                   _buildHeroPanel(),
-
                   const SizedBox(height: 28),
-
                   const Text(
                     'Welcome to MOVIRA',
                     style: TextStyle(
@@ -53,9 +45,7 @@ class AuthScreen extends StatelessWidget {
                       letterSpacing: -0.5,
                     ),
                   ),
-
                   const SizedBox(height: 8),
-
                   const Text(
                     'Your smarter way to plan, track, and manage every journey.',
                     style: TextStyle(
@@ -65,13 +55,9 @@ class AuthScreen extends StatelessWidget {
                       fontWeight: FontWeight.w500,
                     ),
                   ),
-
                   const SizedBox(height: 24),
-
                   _buildFeatureStrip(),
-
                   const SizedBox(height: 28),
-
                   _primaryButton(
                     text: 'Login',
                     icon: Icons.login_rounded,
@@ -79,14 +65,12 @@ class AuthScreen extends StatelessWidget {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => const LoginScreen(),
+                          builder: (_) => const LoginScreen(),
                         ),
                       );
                     },
                   ),
-
                   const SizedBox(height: 14),
-
                   _secondaryButton(
                     text: 'Create Account',
                     icon: Icons.person_add_alt_1_rounded,
@@ -94,14 +78,12 @@ class AuthScreen extends StatelessWidget {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => const SignupScreen(),
+                          builder: (_) => const SignupScreen(),
                         ),
                       );
                     },
                   ),
-
                   const SizedBox(height: 22),
-
                   Row(
                     children: [
                       Expanded(
@@ -127,24 +109,20 @@ class AuthScreen extends StatelessWidget {
                       ),
                     ],
                   ),
-
                   const SizedBox(height: 18),
-
+                  // Opens LoginScreen, where Google authentication is handled.
                   _socialButton(
                     text: 'Continue with Google',
                     onTap: () {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text(
-                            'Google sign-in will be connected with Firebase.',
-                          ),
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const LoginScreen(),
                         ),
                       );
                     },
                   ),
-
                   const SizedBox(height: 18),
-
                   Container(
                     width: double.infinity,
                     padding: const EdgeInsets.symmetric(
@@ -173,9 +151,7 @@ class AuthScreen extends StatelessWidget {
                           color: teal,
                           size: 21,
                         ),
-
                         SizedBox(width: 10),
-
                         Expanded(
                           child: Text(
                             'Your account information will be protected using secure authentication and privacy controls.',
@@ -190,9 +166,7 @@ class AuthScreen extends StatelessWidget {
                       ],
                     ),
                   ),
-
                   const SizedBox(height: 16),
-
                   const Center(
                     child: Text(
                       'By continuing, you agree to our Terms & Privacy Policy.',
@@ -238,12 +212,14 @@ class AuthScreen extends StatelessWidget {
             child: Image.asset(
               'assets/branding/movira_icon.png',
               fit: BoxFit.cover,
+              errorBuilder: (_, __, ___) => const Icon(
+                Icons.directions_bus_rounded,
+                color: teal,
+              ),
             ),
           ),
         ),
-
         const SizedBox(width: 12),
-
         const Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -257,9 +233,7 @@ class AuthScreen extends StatelessWidget {
                   letterSpacing: 2,
                 ),
               ),
-
               SizedBox(height: 2),
-
               Text(
                 'Move Smarter. Travel Better.',
                 style: TextStyle(
@@ -271,7 +245,6 @@ class AuthScreen extends StatelessWidget {
             ],
           ),
         ),
-
         Container(
           width: 42,
           height: 42,
@@ -328,7 +301,6 @@ class AuthScreen extends StatelessWidget {
                 ),
               ),
             ),
-
             Positioned(
               bottom: -70,
               left: -50,
@@ -341,7 +313,6 @@ class AuthScreen extends StatelessWidget {
                 ),
               ),
             ),
-
             Positioned(
               top: 22,
               left: 22,
@@ -360,11 +331,7 @@ class AuthScreen extends StatelessWidget {
                 child: const Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(
-                      Icons.circle,
-                      color: teal,
-                      size: 8,
-                    ),
+                    Icon(Icons.circle, color: teal, size: 8),
                     SizedBox(width: 7),
                     Text(
                       'SMART TRANSIT',
@@ -379,7 +346,6 @@ class AuthScreen extends StatelessWidget {
                 ),
               ),
             ),
-
             Align(
               alignment: const Alignment(0, -0.04),
               child: Container(
@@ -390,10 +356,7 @@ class AuthScreen extends StatelessWidget {
                   gradient: const LinearGradient(
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
-                    colors: [
-                      teal,
-                      cyan,
-                    ],
+                    colors: [teal, cyan],
                   ),
                   boxShadow: const [
                     BoxShadow(
@@ -408,11 +371,15 @@ class AuthScreen extends StatelessWidget {
                   child: Image.asset(
                     'assets/branding/movira_icon.png',
                     fit: BoxFit.cover,
+                    errorBuilder: (_, __, ___) => const Icon(
+                      Icons.directions_bus_rounded,
+                      color: navy,
+                      size: 70,
+                    ),
                   ),
                 ),
               ),
             ),
-
             Positioned(
               left: 22,
               right: 22,
@@ -436,7 +403,6 @@ class AuthScreen extends StatelessWidget {
                       color: teal,
                       size: 18,
                     ),
-
                     Expanded(
                       child: Padding(
                         padding: EdgeInsets.symmetric(horizontal: 10),
@@ -446,15 +412,12 @@ class AuthScreen extends StatelessWidget {
                         ),
                       ),
                     ),
-
                     Icon(
                       Icons.location_on_rounded,
                       color: cyan,
                       size: 20,
                     ),
-
                     SizedBox(width: 10),
-
                     Text(
                       'Ready to move',
                       style: TextStyle(
@@ -483,9 +446,7 @@ class AuthScreen extends StatelessWidget {
             color: cyan,
           ),
         ),
-
         const SizedBox(width: 10),
-
         Expanded(
           child: _featureItem(
             icon: Icons.location_searching_rounded,
@@ -493,9 +454,7 @@ class AuthScreen extends StatelessWidget {
             color: teal,
           ),
         ),
-
         const SizedBox(width: 10),
-
         Expanded(
           child: _featureItem(
             icon: Icons.support_agent_rounded,
@@ -513,9 +472,7 @@ class AuthScreen extends StatelessWidget {
     required Color color,
   }) {
     return Container(
-      padding: const EdgeInsets.symmetric(
-        vertical: 14,
-      ),
+      padding: const EdgeInsets.symmetric(vertical: 14),
       decoration: BoxDecoration(
         color: white,
         borderRadius: BorderRadius.circular(18),
@@ -539,15 +496,9 @@ class AuthScreen extends StatelessWidget {
               color: color.withOpacity(0.12),
               borderRadius: BorderRadius.circular(12),
             ),
-            child: Icon(
-              icon,
-              color: color,
-              size: 20,
-            ),
+            child: Icon(icon, color: color, size: 20),
           ),
-
           const SizedBox(height: 7),
-
           Text(
             title,
             style: const TextStyle(
@@ -572,10 +523,7 @@ class AuthScreen extends StatelessWidget {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20),
         gradient: const LinearGradient(
-          colors: [
-            teal,
-            cyan,
-          ],
+          colors: [teal, cyan],
         ),
         boxShadow: const [
           BoxShadow(
@@ -593,14 +541,8 @@ class AuthScreen extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(
-                icon,
-                color: navy,
-                size: 22,
-              ),
-
+              Icon(icon, color: navy, size: 22),
               const SizedBox(width: 10),
-
               Text(
                 text,
                 style: const TextStyle(
@@ -626,11 +568,7 @@ class AuthScreen extends StatelessWidget {
       height: 60,
       child: ElevatedButton.icon(
         onPressed: onTap,
-        icon: Icon(
-          icon,
-          color: Colors.white,
-          size: 22,
-        ),
+        icon: Icon(icon, color: Colors.white, size: 22),
         label: Text(
           text,
           style: const TextStyle(
@@ -669,10 +607,10 @@ class AuthScreen extends StatelessWidget {
             borderRadius: BorderRadius.circular(19),
           ),
         ),
-        child: const Row(
+        child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text(
+            const Text(
               'G',
               style: TextStyle(
                 color: Color(0xFF4285F4),
@@ -680,12 +618,10 @@ class AuthScreen extends StatelessWidget {
                 fontWeight: FontWeight.w900,
               ),
             ),
-
-            SizedBox(width: 12),
-
+            const SizedBox(width: 12),
             Text(
-              'Continue with Google',
-              style: TextStyle(
+              text,
+              style: const TextStyle(
                 color: navy,
                 fontSize: 15,
                 fontWeight: FontWeight.w800,
@@ -718,7 +654,6 @@ class _AuthBackground extends StatelessWidget {
             ),
           ),
         ),
-
         Positioned(
           top: -100,
           right: -70,
@@ -731,7 +666,6 @@ class _AuthBackground extends StatelessWidget {
             ),
           ),
         ),
-
         Positioned(
           bottom: -120,
           left: -80,

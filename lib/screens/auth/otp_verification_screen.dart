@@ -1,5 +1,9 @@
+
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+
 import '../home/home_screen.dart';
+import 'login_screen.dart';
 
 class OtpVerificationScreen extends StatefulWidget {
   final String email;
@@ -17,648 +21,416 @@ class OtpVerificationScreen extends StatefulWidget {
 }
 
 class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
-  final List<TextEditingController> _controllers =
-  List.generate(6, (_) => TextEditingController());
+  static const Color _navy = Color(0xFF102A43);
+  static const Color _teal = Color(0xFF00A6A6);
+  static const Color _cyan = Color(0xFF32C5D2);
+  static const Color _background = Color(0xFFF2F8FC);
 
-  final List<FocusNode> _focusNodes =
-  List.generate(6, (_) => FocusNode());
+  bool _isChecking = false;
+  bool _isResending = false;
 
-  bool _isLoading = false;
-
-  static const Color navy = Color(0xFF071B2C);
-  static const Color navySoft = Color(0xFF123247);
-  static const Color teal = Color(0xFF00C7B7);
-  static const Color cyan = Color(0xFF21D4FD);
-
-  static const Color ice = Color(0xFFF4FBFD);
-  static const Color white = Color(0xFFFFFFFF);
-  static const Color softCyan = Color(0xFFDDFBFA);
-
-  static const Color textDark = Color(0xFF12212D);
-  static const Color textMuted = Color(0xFF6B7C88);
-
-  @override
-  void dispose() {
-    for (final controller in _controllers) {
-      controller.dispose();
-    }
-
-    for (final node in _focusNodes) {
-      node.dispose();
-    }
-
-    super.dispose();
-  }
-
-  String get _otp {
-    return _controllers.map((controller) => controller.text).join();
-  }
-
-  Future<void> _verifyOtp() async {
-    if (_otp.length != 6) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text(
-            'Enter the complete 6-digit verification code.',
-          ),
-        ),
-      );
-      return;
-    }
-
-    setState(() {
-      _isLoading = true;
-    });
-
-    await Future.delayed(
-      const Duration(milliseconds: 700),
-    );
-
+  void _showMessage(String message) {
     if (!mounted) return;
 
-    setState(() {
-      _isLoading = false;
-    });
-
-    Navigator.pushAndRemoveUntil(
-      context,
-      MaterialPageRoute(
-        builder: (context) => const HomeScreen(),
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        behavior: SnackBarBehavior.floating,
       ),
-          (route) => false,
     );
   }
 
-  void _resendCode() {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text(
-          'A new verification code will be sent through Firebase.',
+  Future<void> _checkEmailVerification() async {
+    if (_isChecking) return;
+
+    setState(() => _isChecking = true);
+
+    try {
+      debugPrint('MOVIRA: Checking email verification status.');
+
+      final user = FirebaseAuth.instance.currentUser;
+
+      if (user == null) {
+        debugPrint('MOVIRA: No signed-in Firebase user.');
+        _showMessage('Please log in to continue verification.');
+        return;
+      }
+
+      debugPrint('MOVIRA: Current user email: ${user.email}');
+
+      await user.reload();
+
+      final refreshedUser = FirebaseAuth.instance.currentUser;
+
+      if (refreshedUser == null) {
+        debugPrint('MOVIRA: User session is no longer available.');
+        _showMessage('Your session expired. Please log in again.');
+        return;
+      }
+
+      debugPrint(
+        'MOVIRA: emailVerified = ${refreshedUser.emailVerified}',
+      );
+
+      if (!refreshedUser.emailVerified) {
+        _showMessage(
+          'Email not verified yet. Open the verification link in your email, '
+              'then try again.',
+        );
+        return;
+      }
+
+      debugPrint('MOVIRA: Email verified successfully.');
+
+      if (!mounted) return;
+
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(
+          builder: (_) => const HomeScreen(),
         ),
-      ),
-    );
+            (route) => false,
+      );
+    } on FirebaseAuthException catch (error, stackTrace) {
+      debugPrint(
+        'MOVIRA verification-check Firebase error code: ${error.code}',
+      );
+      debugPrint(
+        'MOVIRA verification-check error message: ${error.message}',
+      );
+      debugPrint('MOVIRA verification-check stack trace: $stackTrace');
+
+      _showMessage(
+        error.message ?? 'Could not check verification. Please try again.',
+      );
+    } catch (error, stackTrace) {
+      debugPrint('MOVIRA verification-check error: $error');
+      debugPrint('MOVIRA verification-check stack trace: $stackTrace');
+
+      _showMessage('Something went wrong. Please try again.');
+    } finally {
+      if (mounted) {
+        setState(() => _isChecking = false);
+      }
+    }
+  }
+
+  Future<void> _resendVerificationEmail() async {
+    if (_isResending) return;
+
+    setState(() => _isResending = true);
+
+    try {
+      debugPrint('MOVIRA: Starting verification email resend.');
+
+      final user = FirebaseAuth.instance.currentUser;
+
+      if (user == null) {
+        debugPrint('MOVIRA: Cannot resend; no signed-in user.');
+        _showMessage('Please log in to request a verification email.');
+        return;
+      }
+
+      debugPrint('MOVIRA: Resend recipient: ${user.email}');
+      debugPrint('MOVIRA: Requesting Firebase verification email.');
+
+      await user.sendEmailVerification();
+
+      debugPrint(
+        'MOVIRA: Firebase verification email request completed '
+            'for ${user.email}. Inbox delivery has not been confirmed.',
+      );
+
+      _showMessage(
+        'Firebase accepted the verification request. Check your inbox '
+            'and spam folder.',
+      );
+    } on FirebaseAuthException catch (error, stackTrace) {
+      debugPrint(
+        'MOVIRA resend Firebase error code: ${error.code}',
+      );
+      debugPrint(
+        'MOVIRA resend Firebase error message: ${error.message}',
+      );
+      debugPrint('MOVIRA resend stack trace: $stackTrace');
+
+      switch (error.code) {
+        case 'too-many-requests':
+          _showMessage(
+            'Too many requests. Please wait before trying again.',
+          );
+          break;
+        case 'network-request-failed':
+          _showMessage(
+            'Check your internet connection and try again.',
+          );
+          break;
+        case 'user-token-expired':
+        case 'requires-recent-login':
+          _showMessage(
+            'Your session needs to be refreshed. Please log in again.',
+          );
+          break;
+        default:
+          _showMessage(
+            error.message ?? 'Could not resend the email. Please try again.',
+          );
+      }
+    } catch (error, stackTrace) {
+      debugPrint('MOVIRA resend unexpected error: $error');
+      debugPrint('MOVIRA resend stack trace: $stackTrace');
+
+      _showMessage('Could not resend the email. Please try again.');
+    } finally {
+      if (mounted) {
+        setState(() => _isResending = false);
+      }
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: ice,
-      body: Stack(
-        children: [
-          const _OtpBackground(),
-
-          SafeArea(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.fromLTRB(
-                22,
-                16,
-                22,
-                30,
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildHeader(context),
-
-                  const SizedBox(height: 24),
-
-                  _buildHeroCard(),
-
-                  const SizedBox(height: 28),
-
-                  const Text(
-                    'Verify your account',
-                    style: TextStyle(
-                      color: textDark,
-                      fontSize: 32,
-                      fontWeight: FontWeight.w900,
-                      letterSpacing: -0.5,
+      backgroundColor: _background,
+      appBar: AppBar(
+        backgroundColor: _background,
+        elevation: 0,
+        leading: IconButton(
+          icon: const Icon(
+            Icons.arrow_back_rounded,
+            color: _navy,
+          ),
+          onPressed: () => Navigator.maybePop(context),
+        ),
+      ),
+      body: SafeArea(
+        child: Center(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.fromLTRB(24, 16, 24, 32),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Center(
+                  child: Container(
+                    width: 94,
+                    height: 94,
+                    padding: const EdgeInsets.all(15),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(28),
+                      boxShadow: [
+                        BoxShadow(
+                          color: _navy.withValues(alpha: 0.08),
+                          blurRadius: 22,
+                          offset: const Offset(0, 8),
+                        ),
+                      ],
+                    ),
+                    child: Image.asset(
+                      'assets/branding/movira_icon.png',
+                      fit: BoxFit.contain,
+                      errorBuilder: (_, __, ___) => const Icon(
+                        Icons.mark_email_read_rounded,
+                        color: _teal,
+                        size: 52,
+                      ),
                     ),
                   ),
-
-                  const SizedBox(height: 9),
-
-                  Text(
-                    'Enter the 6-digit verification code sent to ${widget.email}.',
-                    style: const TextStyle(
-                      color: textMuted,
-                      fontSize: 14.5,
-                      height: 1.5,
-                      fontWeight: FontWeight.w500,
+                ),
+                const SizedBox(height: 28),
+                const Text(
+                  'Verify your email',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 27,
+                    fontWeight: FontWeight.w800,
+                    color: _navy,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                const Text(
+                  'One more step before you start your journey with MOVIRA.',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 15,
+                    height: 1.5,
+                    color: Color(0xFF647A8B),
+                  ),
+                ),
+                const SizedBox(height: 28),
+                Container(
+                  padding: const EdgeInsets.all(22),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(22),
+                    border: Border.all(
+                      color: const Color(0xFFDCE7EF),
                     ),
                   ),
-
-                  const SizedBox(height: 24),
-
-                  _buildOtpCard(),
-
-                  const SizedBox(height: 24),
-
-                  _buildVerifyButton(),
-
-                  const SizedBox(height: 22),
-
-                  _buildInfoCard(),
-
-                  const SizedBox(height: 18),
-
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
+                  child: Column(
                     children: [
+                      const Icon(
+                        Icons.mark_email_unread_outlined,
+                        size: 52,
+                        color: _teal,
+                      ),
+                      const SizedBox(height: 18),
                       const Text(
-                        'Didn\'t receive the code?',
+                        'Check your inbox',
+                        textAlign: TextAlign.center,
                         style: TextStyle(
-                          color: textMuted,
-                          fontSize: 13.5,
-                          fontWeight: FontWeight.w500,
+                          fontSize: 20,
+                          fontWeight: FontWeight.w800,
+                          color: _navy,
                         ),
                       ),
-
-                      TextButton(
-                        onPressed: _resendCode,
-                        child: const Text(
-                          'Resend',
-                          style: TextStyle(
-                            color: teal,
-                            fontSize: 13.5,
-                            fontWeight: FontWeight.w900,
-                          ),
+                      const SizedBox(height: 12),
+                      const Text(
+                        'We sent a verification link to:',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Color(0xFF647A8B),
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        widget.email,
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w700,
+                          color: _teal,
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      const Text(
+                        'Open the email from Firebase and tap its verification link. '
+                            'If you cannot find it, check your spam or junk folder.',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 14,
+                          height: 1.6,
+                          color: Color(0xFF526879),
                         ),
                       ),
                     ],
                   ),
-
-                  Center(
-                    child: TextButton.icon(
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
-                      icon: const Icon(
-                        Icons.arrow_back_rounded,
-                        color: navy,
-                        size: 18,
+                ),
+                const SizedBox(height: 24),
+                SizedBox(
+                  height: 56,
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      gradient: const LinearGradient(
+                        colors: [_teal, _cyan],
                       ),
-                      label: const Text(
-                        'Change account details',
+                      borderRadius: BorderRadius.circular(17),
+                    ),
+                    child: ElevatedButton(
+                      onPressed: _isChecking
+                          ? null
+                          : _checkEmailVerification,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.transparent,
+                        disabledBackgroundColor: Colors.transparent,
+                        shadowColor: Colors.transparent,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(17),
+                        ),
+                      ),
+                      child: _isChecking
+                          ? const SizedBox(
+                        height: 23,
+                        width: 23,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2.5,
+                          color: Colors.white,
+                        ),
+                      )
+                          : const Text(
+                        "I've Verified My Email",
                         style: TextStyle(
-                          color: navy,
+                          color: Colors.white,
+                          fontSize: 16,
                           fontWeight: FontWeight.w800,
                         ),
                       ),
                     ),
                   ),
-                ],
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildHeader(BuildContext context) {
-    return Row(
-      children: [
-        Container(
-          width: 46,
-          height: 46,
-          decoration: BoxDecoration(
-            color: white,
-            borderRadius: BorderRadius.circular(14),
-            border: Border.all(
-              color: const Color(0xFFE1EDF1),
-            ),
-            boxShadow: const [
-              BoxShadow(
-                color: Color(0x15071B2C),
-                blurRadius: 14,
-                offset: Offset(0, 5),
-              ),
-            ],
-          ),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(14),
-            child: Image.asset(
-              'assets/branding/movira_icon.png',
-              fit: BoxFit.cover,
-            ),
-          ),
-        ),
-
-        const SizedBox(width: 12),
-
-        const Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'MOVIRA',
-                style: TextStyle(
-                  color: navy,
-                  fontSize: 19,
-                  fontWeight: FontWeight.w900,
-                  letterSpacing: 2,
                 ),
-              ),
-              SizedBox(height: 2),
-              Text(
-                'Secure account verification',
-                style: TextStyle(
-                  color: textMuted,
-                  fontSize: 10.5,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ],
-          ),
-        ),
-
-        IconButton(
-          onPressed: () {
-            Navigator.pop(context);
-          },
-          style: IconButton.styleFrom(
-            backgroundColor: white,
-            side: const BorderSide(
-              color: Color(0xFFE1EDF1),
-            ),
-          ),
-          icon: const Icon(
-            Icons.close_rounded,
-            color: navy,
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildHeroCard() {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(28),
-        gradient: const LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            navy,
-            navySoft,
-            Color(0xFF15516A),
-          ],
-        ),
-        boxShadow: const [
-          BoxShadow(
-            color: Color(0x26071B2C),
-            blurRadius: 24,
-            offset: Offset(0, 12),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: 74,
-            height: 74,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(22),
-              gradient: const LinearGradient(
-                colors: [
-                  teal,
-                  cyan,
-                ],
-              ),
-            ),
-            child: const Icon(
-              Icons.verified_user_rounded,
-              color: navy,
-              size: 38,
-            ),
-          ),
-
-          const SizedBox(width: 16),
-
-          const Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Secure verification',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 17,
-                    fontWeight: FontWeight.w900,
+                const SizedBox(height: 12),
+                OutlinedButton(
+                  onPressed: _isResending
+                      ? null
+                      : _resendVerificationEmail,
+                  style: OutlinedButton.styleFrom(
+                    minimumSize: const Size.fromHeight(52),
+                    side: const BorderSide(color: _teal),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                  ),
+                  child: _isResending
+                      ? const SizedBox(
+                    height: 22,
+                    width: 22,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: _teal,
+                    ),
+                  )
+                      : const Text(
+                    'Resend Verification Email',
+                    style: TextStyle(
+                      color: _teal,
+                      fontWeight: FontWeight.w700,
+                    ),
                   ),
                 ),
-                SizedBox(height: 6),
-                Text(
-                  'Confirm your account before entering the MOVIRA travel experience.',
-                  style: TextStyle(
-                    color: Color(0xFFC7E3EF),
-                    fontSize: 11.5,
-                    height: 1.4,
-                    fontWeight: FontWeight.w500,
+                const SizedBox(height: 22),
+                TextButton(
+                  onPressed: () async {
+                    try {
+                      await FirebaseAuth.instance.signOut();
+
+                      if (!context.mounted) return;
+
+                      Navigator.pushAndRemoveUntil(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const LoginScreen(),
+                        ),
+                            (route) => false,
+                      );
+                    } catch (error, stackTrace) {
+                      debugPrint('MOVIRA sign-out error: $error');
+                      debugPrint('MOVIRA sign-out stack trace: $stackTrace');
+
+                      if (context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text(
+                              'Could not log out. Please try again.',
+                            ),
+                          ),
+                        );
+                      }
+                    }
+                  },
+                  child: const Text(
+                    'Back to Log In',
+                    style: TextStyle(
+                      color: _navy,
+                      fontWeight: FontWeight.w700,
+                    ),
                   ),
                 ),
               ],
             ),
           ),
-
-          const SizedBox(width: 10),
-
-          Container(
-            width: 40,
-            height: 40,
-            decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.10),
-              borderRadius: BorderRadius.circular(14),
-            ),
-            child: const Icon(
-              Icons.lock_outline_rounded,
-              color: cyan,
-              size: 21,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildOtpCard() {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.fromLTRB(16, 18, 16, 18),
-      decoration: BoxDecoration(
-        color: white,
-        borderRadius: BorderRadius.circular(24),
-        border: Border.all(
-          color: const Color(0xFFE1EDF1),
-        ),
-        boxShadow: const [
-          BoxShadow(
-            color: Color(0x12071B2C),
-            blurRadius: 16,
-            offset: Offset(0, 7),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Row(
-            children: [
-              Icon(
-                Icons.password_rounded,
-                color: teal,
-                size: 20,
-              ),
-              SizedBox(width: 8),
-              Text(
-                'Verification Code',
-                style: TextStyle(
-                  color: textDark,
-                  fontSize: 13,
-                  fontWeight: FontWeight.w900,
-                ),
-              ),
-            ],
-          ),
-
-          const SizedBox(height: 16),
-
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: List.generate(
-              6,
-                  (index) => _buildOtpBox(index),
-            ),
-          ),
-
-          const SizedBox(height: 14),
-
-          const Text(
-            'For now, any complete 6-digit code is accepted for UI testing. Real verification will be connected later.',
-            style: TextStyle(
-              color: textMuted,
-              fontSize: 10.8,
-              height: 1.4,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildOtpBox(int index) {
-    return SizedBox(
-      width: 48,
-      height: 58,
-      child: TextField(
-        controller: _controllers[index],
-        focusNode: _focusNodes[index],
-        keyboardType: TextInputType.number,
-        textAlign: TextAlign.center,
-        maxLength: 1,
-        style: const TextStyle(
-          color: textDark,
-          fontSize: 22,
-          fontWeight: FontWeight.w900,
-        ),
-        decoration: InputDecoration(
-          counterText: '',
-          filled: true,
-          fillColor: const Color(0xFFF7FBFC),
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(16),
-            borderSide: const BorderSide(
-              color: Color(0xFFDDE8EC),
-            ),
-          ),
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(16),
-            borderSide: const BorderSide(
-              color: Color(0xFFDDE8EC),
-            ),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(16),
-            borderSide: const BorderSide(
-              color: cyan,
-              width: 1.7,
-            ),
-          ),
-        ),
-        onChanged: (value) {
-          if (value.isNotEmpty && index < 5) {
-            _focusNodes[index + 1].requestFocus();
-          } else if (value.isEmpty && index > 0) {
-            _focusNodes[index - 1].requestFocus();
-          }
-
-          if (_otp.length == 6) {
-            FocusScope.of(context).unfocus();
-          }
-        },
-      ),
-    );
-  }
-
-  Widget _buildInfoCard() {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.symmetric(
-        horizontal: 15,
-        vertical: 14,
-      ),
-      decoration: BoxDecoration(
-        color: softCyan,
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(
-          color: teal.withOpacity(0.18),
         ),
       ),
-      child: Row(
-        children: [
-          const Icon(
-            Icons.info_outline_rounded,
-            color: teal,
-            size: 21,
-          ),
-
-          const SizedBox(width: 10),
-
-          Expanded(
-            child: Text(
-              widget.phone.isNotEmpty
-                  ? 'Verification may also be linked with ${widget.phone}.'
-                  : 'Keep this code private and do not share it with anyone.',
-              style: const TextStyle(
-                color: navySoft,
-                fontSize: 12,
-                height: 1.4,
-                fontWeight: FontWeight.w700,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildVerifyButton() {
-    return Container(
-      width: double.infinity,
-      height: 60,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(20),
-        gradient: const LinearGradient(
-          colors: [
-            teal,
-            cyan,
-          ],
-        ),
-        boxShadow: const [
-          BoxShadow(
-            color: Color(0x3300C7B7),
-            blurRadius: 20,
-            offset: Offset(0, 9),
-          ),
-        ],
-      ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          borderRadius: BorderRadius.circular(20),
-          onTap: _isLoading ? null : _verifyOtp,
-          child: Center(
-            child: _isLoading
-                ? const SizedBox(
-              width: 24,
-              height: 24,
-              child: CircularProgressIndicator(
-                color: navy,
-                strokeWidth: 2.6,
-              ),
-            )
-                : const Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(
-                  Icons.verified_rounded,
-                  color: navy,
-                  size: 21,
-                ),
-                SizedBox(width: 10),
-                Text(
-                  'Verify Account',
-                  style: TextStyle(
-                    color: navy,
-                    fontSize: 17,
-                    fontWeight: FontWeight.w900,
-                  ),
-                ),
-                SizedBox(width: 8),
-                Icon(
-                  Icons.arrow_forward_rounded,
-                  color: navy,
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _OtpBackground extends StatelessWidget {
-  const _OtpBackground();
-
-  @override
-  Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        Container(
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [
-                Color(0xFFF9FDFF),
-                Color(0xFFF0FAFD),
-                Color(0xFFF7FCFD),
-              ],
-            ),
-          ),
-        ),
-
-        Positioned(
-          top: -100,
-          right: -70,
-          child: Container(
-            width: 250,
-            height: 250,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: const Color(0xFF21D4FD).withOpacity(0.09),
-            ),
-          ),
-        ),
-
-        Positioned(
-          bottom: -120,
-          left: -90,
-          child: Container(
-            width: 300,
-            height: 300,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: const Color(0xFF00C7B7).withOpacity(0.07),
-            ),
-          ),
-        ),
-      ],
     );
   }
 }

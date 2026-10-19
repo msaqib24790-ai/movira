@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "206164079131",
+    "project_id": "movira-b9b45",
+    "storage_bucket": "movira-b9b45.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:206164079131:android:8042964cbd059af71e3ebe",
+        "android_client_info": {
+          "package_name": "com.movira.movira"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "206164079131-dsid3irs9tenoa7l77fp2guh81uga2ls.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.movira.movira",
+            "certificate_hash": "27fea0716dff0258edea89804dbb48b61417cf45"
+          }
+        },
+        {
+          "client_id": "206164079131-o59tc5uui1159a6crti2b3amhehsp9j6.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBdh3cOp-SLpwluu4AX29EAt2Bn6drS26U"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "206164079131-o59tc5uui1159a6crti2b3amhehsp9j6.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
