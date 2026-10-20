@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
+import '../../services/user_profile_service.dart';
 import '../home/home_screen.dart';
 import 'forgot_password_screen.dart';
 
@@ -28,7 +29,7 @@ class _LoginScreenState extends State<LoginScreen> {
   static const Color _cyan = Color(0xFF32C5D2);
   static const Color _background = Color(0xFFF2F8FC);
 
-  // Web OAuth client ID from your Firebase google-services.json.
+  // Web OAuth client ID from your Firebase configuration.
   static const String _webClientId =
       '206164079131-o59tc5uui1159a6crti2b3amhehsp9j6.apps.googleusercontent.com';
 
@@ -73,6 +74,7 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
+  // Email/password login.
   Future<void> _login() async {
     if (!_formKey.currentState!.validate()) return;
 
@@ -101,6 +103,7 @@ class _LoginScreenState extends State<LoginScreen> {
         return;
       }
 
+      // Require email verification before continuing.
       if (!refreshedUser.emailVerified) {
         await FirebaseAuth.instance.signOut();
 
@@ -111,11 +114,20 @@ class _LoginScreenState extends State<LoginScreen> {
         return;
       }
 
+      // Create or update the Firestore user profile.
+      await UserProfileService.createOrUpdateProfile(
+        user: refreshedUser,
+      );
+
+      if (!mounted) return;
       _goToHome();
     } on FirebaseAuthException catch (error) {
       _showMessage(_authErrorMessage(error));
     } catch (error) {
-      _showMessage('Something went wrong. Please try again.');
+      _showMessage(
+        'Login or profile saving failed. Please check your connection '
+            'and try again.',
+      );
     } finally {
       if (mounted) {
         setState(() => _isLoading = false);
@@ -123,6 +135,7 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
+  // Google login.
   Future<void> _signInWithGoogle() async {
     if (_isLoading) return;
 
@@ -132,7 +145,7 @@ class _LoginScreenState extends State<LoginScreen> {
     try {
       final googleSignIn = GoogleSignIn.instance;
 
-      // Initialize Google Sign-In once before authentication.
+      // Initialize Google Sign-In once.
       if (!_googleSignInInitialized) {
         await googleSignIn.initialize(
           serverClientId: _webClientId,
@@ -156,18 +169,32 @@ class _LoginScreenState extends State<LoginScreen> {
         return;
       }
 
-      // Exchange the Google ID token for a Firebase credential.
+      // Exchange the ID token for a Firebase credential.
       final credential = GoogleAuthProvider.credential(
         idToken: idToken,
       );
 
+      final userCredential =
       await FirebaseAuth.instance.signInWithCredential(credential);
 
-      // Navigate to HomeScreen after successful authentication.
+      final user = userCredential.user;
+
+      if (user == null) {
+        _showMessage('Google sign-in failed. Please try again.');
+        return;
+      }
+
+      // Create or update the Firestore user profile.
+      await UserProfileService.createOrUpdateProfile(
+        user: user,
+      );
+
+      if (!mounted) return;
+
+      // Navigate after the profile is saved.
       _goToHome();
     } on GoogleSignInException catch (error) {
       if (error.code == GoogleSignInExceptionCode.canceled) {
-        // The user cancelled the account picker.
         return;
       }
 
@@ -179,8 +206,8 @@ class _LoginScreenState extends State<LoginScreen> {
       _showMessage(_authErrorMessage(error));
     } catch (error) {
       _showMessage(
-        'Could not sign in with Google. Please check your internet '
-            'connection and Firebase setup.',
+        'Could not sign in or save your profile. Please check your '
+            'internet connection and Firebase setup.',
       );
     } finally {
       if (mounted) {
@@ -272,7 +299,7 @@ class _LoginScreenState extends State<LoginScreen> {
               children: [
                 const SizedBox(height: 24),
 
-                // MOVIRA logo
+                // MOVIRA logo.
                 Center(
                   child: Container(
                     width: 86,
@@ -292,7 +319,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     child: Image.asset(
                       'assets/branding/movira_icon.png',
                       fit: BoxFit.contain,
-                      errorBuilder: (_, __, ___) => const Icon(
+                      errorBuilder: (context, error, stackTrace) => const Icon(
                         Icons.directions_bus_rounded,
                         color: _teal,
                         size: 48,
@@ -339,7 +366,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
                 const SizedBox(height: 30),
 
-                // Email field
+                // Email field.
                 TextFormField(
                   controller: _emailController,
                   keyboardType: TextInputType.emailAddress,
@@ -376,7 +403,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
                 const SizedBox(height: 18),
 
-                // Password field
+                // Password field.
                 TextFormField(
                   controller: _passwordController,
                   obscureText: _obscurePassword,
@@ -419,7 +446,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
                 const SizedBox(height: 12),
 
-                // Remember me and Forgot Password
+                // Remember me and Forgot Password.
                 Row(
                   children: [
                     Checkbox(
@@ -467,7 +494,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
                 const SizedBox(height: 18),
 
-                // Log In button
+                // Log In button.
                 SizedBox(
                   height: 56,
                   child: DecoratedBox(
@@ -520,7 +547,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
                 const SizedBox(height: 24),
 
-                // OR divider
+                // OR divider.
                 Row(
                   children: [
                     const Expanded(
@@ -552,10 +579,9 @@ class _LoginScreenState extends State<LoginScreen> {
 
                 const SizedBox(height: 18),
 
-                // Google Sign-In button
+                // Google Sign-In button.
                 OutlinedButton.icon(
-                  onPressed:
-                  _isLoading ? null : _signInWithGoogle,
+                  onPressed: _isLoading ? null : _signInWithGoogle,
                   icon: const Icon(
                     Icons.g_mobiledata_rounded,
                     size: 30,
@@ -582,7 +608,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
                 const SizedBox(height: 28),
 
-                // Back button
+                // Back button.
                 Center(
                   child: TextButton(
                     onPressed: () => Navigator.maybePop(context),

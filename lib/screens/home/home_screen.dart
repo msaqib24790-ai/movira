@@ -483,99 +483,37 @@ class _HomeScreenState extends State<HomeScreen> {
       physics: const NeverScrollableScrollPhysics(),
       crossAxisSpacing: 14,
       mainAxisSpacing: 14,
-      childAspectRatio: 1.45,
+      childAspectRatio: 1.28,
       children: [
-        _quickActionCard(
-          icon: Icons.route_rounded,
+        _AdvancedQuickActionCard(
+          icon: Icons.alt_route_rounded,
           title: 'Search Routes',
-          subtitle: 'Find the best route',
           accent: cyan,
+          secondaryAccent: const Color(0xFF7DE8FF),
           onTap: _openSearchRoutes,
         ),
-        _quickActionCard(
+        _AdvancedQuickActionCard(
           icon: Icons.directions_bus_filled_rounded,
           title: 'Live Tracking',
-          subtitle: 'Track buses live',
           accent: teal,
+          secondaryAccent: const Color(0xFF6FFFE8),
           onTap: _openLiveTracking,
         ),
-        _quickActionCard(
-          icon: Icons.location_on_outlined,
+        _AdvancedQuickActionCard(
+          icon: Icons.location_on_rounded,
           title: 'Nearby Stops',
-          subtitle: 'Stops around you',
           accent: const Color(0xFF8B5CF6),
+          secondaryAccent: const Color(0xFFC4B5FD),
           onTap: _openNearbyStops,
         ),
-        _quickActionCard(
+        _AdvancedQuickActionCard(
           icon: Icons.schedule_rounded,
           title: 'Schedules',
-          subtitle: 'Check bus timings',
           accent: const Color(0xFFF59E0B),
+          secondaryAccent: const Color(0xFFFCD34D),
           onTap: _openSchedules,
         ),
       ],
-    );
-  }
-
-  Widget _quickActionCard({
-    required IconData icon,
-    required String title,
-    required String subtitle,
-    required Color accent,
-    VoidCallback? onTap,
-  }) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: white,
-          borderRadius: BorderRadius.circular(22),
-          border: Border.all(color: lightBorder),
-          boxShadow: const [
-            BoxShadow(
-              color: Color(0x10071B2C),
-              blurRadius: 14,
-              offset: Offset(0, 6),
-            ),
-          ],
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              width: 42,
-              height: 42,
-              decoration: BoxDecoration(
-                color: accent.withOpacity(0.12),
-                borderRadius: BorderRadius.circular(14),
-              ),
-              child: Icon(
-                icon,
-                color: accent,
-                size: 23,
-              ),
-            ),
-            const Spacer(),
-            Text(
-              title,
-              style: const TextStyle(
-                color: textDark,
-                fontSize: 14.5,
-                fontWeight: FontWeight.w900,
-              ),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              subtitle,
-              style: const TextStyle(
-                color: textMuted,
-                fontSize: 11.5,
-              ),
-            ),
-          ],
-        ),
-      ),
     );
   }
 
@@ -1430,3 +1368,208 @@ class _HomeBackground extends StatelessWidget {
     );
   }
 }
+
+class _AdvancedQuickActionCard extends StatefulWidget {
+  final IconData icon;
+  final String title;
+  final Color accent;
+  final Color secondaryAccent;
+  final VoidCallback onTap;
+
+  const _AdvancedQuickActionCard({
+    required this.icon,
+    required this.title,
+    required this.accent,
+    required this.secondaryAccent,
+    required this.onTap,
+  });
+
+  @override
+  State<_AdvancedQuickActionCard> createState() =>
+      _AdvancedQuickActionCardState();
+}
+
+class _AdvancedQuickActionCardState extends State<_AdvancedQuickActionCard> {
+  bool _pressed = false;
+  bool _hovered = false;
+
+  void _setPressed(bool value) {
+    if (_pressed != value) {
+      setState(() => _pressed = value);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final active = _pressed || _hovered;
+
+    return MouseRegion(
+      onEnter: (_) => setState(() => _hovered = true),
+      onExit: (_) => setState(() => _hovered = false),
+      child: AnimatedScale(
+        scale: _pressed ? 0.965 : (_hovered ? 1.025 : 1.0),
+        duration: const Duration(milliseconds: 150),
+        curve: Curves.easeOutCubic,
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 180),
+          curve: Curves.easeOutCubic,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(24),
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: active
+                  ? [
+                widget.accent.withOpacity(0.20),
+                const Color(0xFFFFFFFF),
+                widget.secondaryAccent.withOpacity(0.16),
+              ]
+                  : [
+                const Color(0xFFFFFFFF),
+                const Color(0xFFF7FCFD),
+              ],
+            ),
+            border: Border.all(
+              color: active
+                  ? widget.accent.withOpacity(0.55)
+                  : widget.accent.withOpacity(0.18),
+              width: active ? 1.5 : 1.0,
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: widget.accent.withOpacity(active ? 0.24 : 0.13),
+                blurRadius: active ? 24 : 18,
+                spreadRadius: active ? 1 : 0,
+                offset: Offset(0, active ? 10 : 8),
+              ),
+              const BoxShadow(
+                color: Color(0x0A071B2C),
+                blurRadius: 7,
+                offset: Offset(0, 2),
+              ),
+            ],
+          ),
+          child: Material(
+            color: Colors.transparent,
+            borderRadius: BorderRadius.circular(24),
+            child: InkWell(
+              borderRadius: BorderRadius.circular(24),
+              splashColor: widget.accent.withOpacity(0.10),
+              highlightColor: Colors.transparent,
+              onTap: widget.onTap,
+              onTapDown: (_) => _setPressed(true),
+              onTapCancel: () => _setPressed(false),
+              onTapUp: (_) => _setPressed(false),
+              child: Stack(
+                children: [
+                  Positioned(
+                    top: -24,
+                    right: -20,
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 180),
+                      width: active ? 92 : 82,
+                      height: active ? 92 : 82,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: widget.accent.withOpacity(
+                          active ? 0.12 : 0.07,
+                        ),
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(15),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            AnimatedContainer(
+                              duration: const Duration(milliseconds: 180),
+                              width: 48,
+                              height: 48,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(16),
+                                gradient: LinearGradient(
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.bottomRight,
+                                  colors: [
+                                    widget.accent,
+                                    widget.secondaryAccent,
+                                  ],
+                                ),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: widget.accent.withOpacity(0.30),
+                                    blurRadius: 12,
+                                    offset: const Offset(0, 5),
+                                  ),
+                                ],
+                              ),
+                              child: Icon(
+                                widget.icon,
+                                color: const Color(0xFF071B2C),
+                                size: 27,
+                                weight: 700,
+                              ),
+                            ),
+                            const Spacer(),
+                            AnimatedContainer(
+                              duration: const Duration(milliseconds: 180),
+                              width: 30,
+                              height: 30,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: active
+                                    ? widget.accent.withOpacity(0.16)
+                                    : const Color(0xFFF1F7F9),
+                              ),
+                              child: Icon(
+                                Icons.arrow_forward_rounded,
+                                color: active
+                                    ? widget.accent
+                                    : const Color(0xFF6B7C88),
+                                size: 17,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const Spacer(),
+                        Text(
+                          widget.title,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                            color: Color(0xFF12212D),
+                            fontSize: 14.2,
+                            fontWeight: FontWeight.w900,
+                            letterSpacing: -0.15,
+                          ),
+                        ),
+                        const SizedBox(height: 5),
+                        Container(
+                          width: 34,
+                          height: 3,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(100),
+                            gradient: LinearGradient(
+                              colors: [
+                                widget.accent,
+                                widget.secondaryAccent,
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+

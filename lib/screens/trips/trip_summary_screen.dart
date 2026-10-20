@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../services/saved_trip_service.dart';
+
 class TripSummaryScreen extends StatefulWidget {
   final String from;
   final String to;
@@ -30,6 +32,103 @@ class _TripSummaryScreenState extends State<TripSummaryScreen> {
   static const Color success = Color(0xFF22C55E);
 
   bool _saved = false;
+  bool _isSaving = false;
+  String? _savedTripId;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadSavedTripState();
+  }
+
+  Future<void> _loadSavedTripState() async {
+    try {
+      final trips = await SavedTripService.getSavedTrips();
+
+      for (final trip in trips) {
+        final savedFrom = trip['from']?.toString().trim().toLowerCase();
+        final savedTo = trip['to']?.toString().trim().toLowerCase();
+
+        if (savedFrom == widget.from.trim().toLowerCase() &&
+            savedTo == widget.to.trim().toLowerCase()) {
+          if (!mounted) return;
+
+          setState(() {
+            _saved = true;
+            _savedTripId = trip['tripId']?.toString();
+          });
+          return;
+        }
+      }
+    } catch (_) {
+      // The user may not be signed in yet. Saving will show an
+      // appropriate message if they press Save Trip.
+    }
+  }
+
+  Future<void> _toggleSaveTrip() async {
+    if (_isSaving) return;
+
+    setState(() => _isSaving = true);
+
+    try {
+      if (_saved && _savedTripId != null) {
+        await SavedTripService.removeSavedTrip(
+          tripId: _savedTripId!,
+        );
+
+        if (!mounted) return;
+        setState(() {
+          _saved = false;
+          _savedTripId = null;
+        });
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Trip removed from saved trips.'),
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      } else {
+        final tripId = await SavedTripService.saveTrip(
+          from: widget.from,
+          to: widget.to,
+        );
+
+        if (!mounted) return;
+        setState(() {
+          _saved = true;
+          _savedTripId = tripId;
+        });
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Trip saved successfully.'),
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      }
+    } catch (error) {
+      if (!mounted) return;
+
+      final message = error is StateError
+          ? error.message.toString()
+          : error.toString().contains('permission-denied')
+          ? 'Permission denied. Check your Firestore security rules.'
+          : 'Could not save this trip. Please check your connection and try again.';
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(message),
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+    } finally {
+      if (mounted) {
+        setState(() => _isSaving = false);
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -366,7 +465,7 @@ class _TripSummaryScreenState extends State<TripSummaryScreen> {
       decoration: BoxDecoration(
         color: white,
         borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: color.withOpacity(0.18)),
+        border: Border.all(color: color.withValues(alpha: 0.18)),
       ),
       child: Column(
         children: [
@@ -426,7 +525,7 @@ class _TripSummaryScreenState extends State<TripSummaryScreen> {
         color: navySoft,
         borderRadius: BorderRadius.circular(22),
         border: Border.all(
-          color: teal.withOpacity(0.22),
+          color: teal.withValues(alpha: 0.22),
         ),
       ),
       child: Column(
@@ -483,7 +582,7 @@ class _TripSummaryScreenState extends State<TripSummaryScreen> {
                   vertical: 6,
                 ),
                 decoration: BoxDecoration(
-                  color: success.withOpacity(0.14),
+                  color: success.withValues(alpha: 0.14),
                   borderRadius: BorderRadius.circular(14),
                 ),
                 child: const Text(
@@ -667,17 +766,25 @@ class _TripSummaryScreenState extends State<TripSummaryScreen> {
       children: [
         Expanded(
           child: OutlinedButton.icon(
-            onPressed: () {
-              setState(() {
-                _saved = !_saved;
-              });
-            },
-            icon: Icon(
+            onPressed: _isSaving ? null : _toggleSaveTrip,
+            icon: _isSaving
+                ? const SizedBox(
+              width: 18,
+              height: 18,
+              child: CircularProgressIndicator(strokeWidth: 2),
+            )
+                : Icon(
               _saved
                   ? Icons.bookmark_rounded
                   : Icons.bookmark_border_rounded,
             ),
-            label: Text(_saved ? 'Saved' : 'Save Trip'),
+            label: Text(
+              _isSaving
+                  ? 'Saving...'
+                  : _saved
+                  ? 'Saved'
+                  : 'Save Trip',
+            ),
             style: OutlinedButton.styleFrom(
               foregroundColor: navy,
               side: const BorderSide(color: lightBorder),
@@ -780,7 +887,7 @@ class _TripSummaryBackground extends StatelessWidget {
             height: 280,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: const Color(0xFF21D4FD).withOpacity(0.09),
+              color: const Color(0xFF21D4FD).withValues(alpha: 0.09),
             ),
           ),
         ),
@@ -792,7 +899,7 @@ class _TripSummaryBackground extends StatelessWidget {
             height: 320,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: const Color(0xFF00C7B7).withOpacity(0.07),
+              color: const Color(0xFF00C7B7).withValues(alpha: 0.07),
             ),
           ),
         ),
