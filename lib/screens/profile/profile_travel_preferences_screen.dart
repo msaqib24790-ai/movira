@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+
+import '../../services/user_profile_service.dart';
 import '../settings/settings_privacy_security_screen.dart';
 
 class ProfileTravelPreferencesScreen extends StatefulWidget {
@@ -23,12 +27,14 @@ class _ProfileTravelPreferencesScreenState
   static const Color lightBorder = Color(0xFFE1EDF1);
   static const Color success = Color(0xFF22C55E);
 
-  final TextEditingController _nameController =
-  TextEditingController(text: 'Muhammad Saqib');
-  final TextEditingController _emailController =
-  TextEditingController(text: 'saqib@example.com');
-  final TextEditingController _phoneController =
-  TextEditingController(text: '+92 300 1234567');
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _phoneController = TextEditingController();
+
+  bool _isLoading = true;
+  bool _isSaving = false;
+  bool _isEmailVerified = false;
+  String _displayName = 'Passenger';
 
   bool _accessibleRoutes = false;
   bool _lessWalking = true;
@@ -36,11 +42,167 @@ class _ProfileTravelPreferencesScreenState
   bool _airConditioned = true;
   int _selectedPriority = 0;
 
-  final List<String> _priorities = [
+  final List<String> _priorities = <String>[
     'Fastest',
     'Cheapest',
     'Fewer stops',
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadProfile();
+  }
+
+  Future<void> _loadProfile() async {
+    try {
+      final user = FirebaseAuth.instance.currentUser;
+
+      if (user == null) {
+        if (!mounted) return;
+        setState(() => _isLoading = false);
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (!mounted) return;
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Please sign in to view your profile.'),
+            ),
+          );
+        });
+        return;
+      }
+
+      final profile = await UserProfileService.getProfile(user.uid);
+      final rawPreferences = profile?['travelPreferences'];
+      final Map<String, dynamic> preferences =
+      rawPreferences is Map<String, dynamic>
+          ? rawPreferences
+          : <String, dynamic>{};
+
+      final rawName = profile?['name'];
+      final profileName = rawName is String ? rawName.trim() : '';
+      final rawPhone = profile?['phone'];
+      final profilePhone = rawPhone is String ? rawPhone : '';
+      final authName = user.displayName?.trim() ?? '';
+      final resolvedName = profileName.isNotEmpty ? profileName : authName;
+      final rawPriority = preferences['priority'];
+      final priority = rawPriority is String ? rawPriority : 'Fastest';
+      final priorityIndex = _priorities.indexOf(priority);
+
+      if (!mounted) return;
+      setState(() {
+        _nameController.text = resolvedName;
+        _emailController.text = user.email ?? '';
+        _phoneController.text = profilePhone;
+        _displayName = resolvedName.isNotEmpty ? resolvedName : 'Passenger';
+        _isEmailVerified = user.emailVerified;
+        _accessibleRoutes = preferences['accessibleRoutes'] is bool
+            ? preferences['accessibleRoutes'] as bool
+            : false;
+        _lessWalking = preferences['lessWalking'] is bool
+            ? preferences['lessWalking'] as bool
+            : true;
+        _lowCrowd = preferences['lowCrowd'] is bool
+            ? preferences['lowCrowd'] as bool
+            : false;
+        _airConditioned = preferences['airConditioned'] is bool
+            ? preferences['airConditioned'] as bool
+            : true;
+        _selectedPriority = priorityIndex >= 0 ? priorityIndex : 0;
+        _isLoading = false;
+      });
+    } catch (_) {
+      if (!mounted) return;
+      setState(() => _isLoading = false);
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Could not load your profile. Please try again.'),
+          ),
+        );
+      });
+    }
+  }
+
+  Future<void> _saveProfile() async {
+    if (_isSaving || _isLoading) return;
+
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please sign in before saving your profile.'),
+        ),
+      );
+      return;
+    }
+
+    final name = _nameController.text.trim();
+    final phone = _phoneController.text.trim();
+
+    if (name.length < 2) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please enter a valid name.')),
+      );
+      return;
+    }
+
+    if (phone.isNotEmpty &&
+        phone.replaceAll(RegExp(r'\D'), '').length < 7) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please enter a valid phone number.')),
+      );
+      return;
+    }
+
+    setState(() => _isSaving = true);
+
+    try {
+      await user.updateDisplayName(name);
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid)
+          .set(
+        <String, dynamic>{
+          'uid': user.uid,
+          'name': name,
+          'email': user.email ?? '',
+          'phone': phone,
+          'travelPreferences': <String, dynamic>{
+            'priority': _priorities[_selectedPriority],
+            'accessibleRoutes': _accessibleRoutes,
+            'lessWalking': _lessWalking,
+            'lowCrowd': _lowCrowd,
+            'airConditioned': _airConditioned,
+          },
+          'updatedAt': FieldValue.serverTimestamp(),
+        },
+        SetOptions(merge: true),
+      );
+
+      if (!mounted) return;
+      setState(() {
+        _displayName = name;
+        _isSaving = false;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Profile and travel preferences saved successfully.'),
+        ),
+      );
+    } catch (_) {
+      if (!mounted) return;
+      setState(() => _isSaving = false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'Could not save your profile. Check your connection and permissions.',
+          ),
+        ),
+      );
+    }
+  }
 
   @override
   void dispose() {
@@ -53,7 +215,7 @@ class _ProfileTravelPreferencesScreenState
   void _openSettings() {
     Navigator.push(
       context,
-      MaterialPageRoute(
+      MaterialPageRoute<void>(
         builder: (context) => const SettingsPrivacySecurityScreen(),
       ),
     );
@@ -64,48 +226,53 @@ class _ProfileTravelPreferencesScreenState
     return Scaffold(
       backgroundColor: ice,
       body: Stack(
-        children: [
+        children: <Widget>[
           const _ProfileBackground(),
-          SafeArea(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.fromLTRB(20, 16, 20, 34),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildHeader(),
-                  const SizedBox(height: 24),
-                  _buildProfileHero(),
-                  const SizedBox(height: 16),
-                  _buildSettingsShortcut(),
-                  const SizedBox(height: 24),
-                  _sectionTitle(
-                    'Profile Information',
-                    'Keep your personal details up to date',
-                  ),
-                  const SizedBox(height: 14),
-                  _buildProfileForm(),
-                  const SizedBox(height: 24),
-                  _sectionTitle(
-                    'Travel Preferences',
-                    'Personalize route recommendations',
-                  ),
-                  const SizedBox(height: 14),
-                  _buildPrioritySelector(),
-                  const SizedBox(height: 18),
-                  _buildTravelOptions(),
-                  const SizedBox(height: 24),
-                  _sectionTitle(
-                    'Favorite Travel Settings',
-                    'Preferences MOVIRA will remember',
-                  ),
-                  const SizedBox(height: 14),
-                  _buildPreferenceSummary(),
-                  const SizedBox(height: 24),
-                  _buildSaveButton(),
-                ],
+          if (_isLoading)
+            const Center(
+              child: CircularProgressIndicator(color: teal),
+            )
+          else
+            SafeArea(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.fromLTRB(20, 16, 20, 34),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    _buildHeader(),
+                    const SizedBox(height: 24),
+                    _buildProfileHero(),
+                    const SizedBox(height: 16),
+                    _buildSettingsShortcut(),
+                    const SizedBox(height: 24),
+                    _sectionTitle(
+                      'Profile Information',
+                      'Keep your personal details up to date',
+                    ),
+                    const SizedBox(height: 14),
+                    _buildProfileForm(),
+                    const SizedBox(height: 24),
+                    _sectionTitle(
+                      'Travel Preferences',
+                      'Personalize route recommendations',
+                    ),
+                    const SizedBox(height: 14),
+                    _buildPrioritySelector(),
+                    const SizedBox(height: 18),
+                    _buildTravelOptions(),
+                    const SizedBox(height: 24),
+                    _sectionTitle(
+                      'Favorite Travel Settings',
+                      'Preferences MOVIRA will remember',
+                    ),
+                    const SizedBox(height: 14),
+                    _buildPreferenceSummary(),
+                    const SizedBox(height: 24),
+                    _buildSaveButton(),
+                  ],
+                ),
               ),
             ),
-          ),
         ],
       ),
     );
@@ -113,7 +280,7 @@ class _ProfileTravelPreferencesScreenState
 
   Widget _buildHeader() {
     return Row(
-      children: [
+      children: <Widget>[
         GestureDetector(
           onTap: () => Navigator.pop(context),
           child: Container(
@@ -124,10 +291,7 @@ class _ProfileTravelPreferencesScreenState
               borderRadius: BorderRadius.circular(14),
               border: Border.all(color: lightBorder),
             ),
-            child: const Icon(
-              Icons.arrow_back_rounded,
-              color: navy,
-            ),
+            child: const Icon(Icons.arrow_back_rounded, color: navy),
           ),
         ),
         const SizedBox(width: 12),
@@ -151,7 +315,7 @@ class _ProfileTravelPreferencesScreenState
         const Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
+            children: <Widget>[
               Text(
                 'PROFILE',
                 style: TextStyle(
@@ -180,10 +344,7 @@ class _ProfileTravelPreferencesScreenState
             color: softCyan,
             borderRadius: BorderRadius.circular(14),
           ),
-          child: const Icon(
-            Icons.person_rounded,
-            color: teal,
-          ),
+          child: const Icon(Icons.person_rounded, color: teal),
         ),
       ],
     );
@@ -198,21 +359,19 @@ class _ProfileTravelPreferencesScreenState
         gradient: const LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [navy, navySoft, Color(0xFF15516A)],
+          colors: <Color>[navy, navySoft, Color(0xFF15516A)],
         ),
       ),
       child: Row(
-        children: [
+        children: <Widget>[
           Stack(
-            children: [
+            children: <Widget>[
               Container(
                 width: 72,
                 height: 72,
                 decoration: const BoxDecoration(
                   shape: BoxShape.circle,
-                  gradient: LinearGradient(
-                    colors: [teal, cyan],
-                  ),
+                  gradient: LinearGradient(colors: <Color>[teal, cyan]),
                 ),
                 child: const Icon(
                   Icons.person_rounded,
@@ -241,20 +400,22 @@ class _ProfileTravelPreferencesScreenState
             ],
           ),
           const SizedBox(width: 15),
-          const Expanded(
+          Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
+              children: <Widget>[
                 Text(
-                  'Muhammad Saqib',
-                  style: TextStyle(
+                  _displayName,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
                     color: Colors.white,
                     fontSize: 18,
                     fontWeight: FontWeight.w900,
                   ),
                 ),
-                SizedBox(height: 5),
-                Text(
+                const SizedBox(height: 5),
+                const Text(
                   'MOVIRA Passenger',
                   style: TextStyle(
                     color: Color(0xFFC7E3EF),
@@ -262,18 +423,22 @@ class _ProfileTravelPreferencesScreenState
                     fontWeight: FontWeight.w600,
                   ),
                 ),
-                SizedBox(height: 9),
+                const SizedBox(height: 9),
                 Row(
-                  children: [
+                  children: <Widget>[
                     Icon(
-                      Icons.verified_rounded,
-                      color: success,
+                      _isEmailVerified
+                          ? Icons.verified_rounded
+                          : Icons.info_outline_rounded,
+                      color: _isEmailVerified ? success : Colors.orangeAccent,
                       size: 16,
                     ),
-                    SizedBox(width: 6),
+                    const SizedBox(width: 6),
                     Text(
-                      'Verified account',
-                      style: TextStyle(
+                      _isEmailVerified
+                          ? 'Verified account'
+                          : 'Email not verified',
+                      style: const TextStyle(
                         color: Color(0xFFC7E3EF),
                         fontSize: 10.5,
                       ),
@@ -301,7 +466,7 @@ class _ProfileTravelPreferencesScreenState
           border: Border.all(color: lightBorder),
         ),
         child: const Row(
-          children: [
+          children: <Widget>[
             SizedBox(
               width: 46,
               height: 46,
@@ -310,17 +475,14 @@ class _ProfileTravelPreferencesScreenState
                   color: softCyan,
                   borderRadius: BorderRadius.all(Radius.circular(15)),
                 ),
-                child: Icon(
-                  Icons.settings_rounded,
-                  color: teal,
-                ),
+                child: Icon(Icons.settings_rounded, color: teal),
               ),
             ),
             SizedBox(width: 12),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
+                children: <Widget>[
                   Text(
                     'Settings, Privacy & Security',
                     style: TextStyle(
@@ -332,19 +494,12 @@ class _ProfileTravelPreferencesScreenState
                   SizedBox(height: 4),
                   Text(
                     'Manage app preferences, permissions and account security.',
-                    style: TextStyle(
-                      color: textMuted,
-                      fontSize: 10.5,
-                    ),
+                    style: TextStyle(color: textMuted, fontSize: 10.5),
                   ),
                 ],
               ),
             ),
-            Icon(
-              Icons.arrow_forward_rounded,
-              color: teal,
-              size: 20,
-            ),
+            Icon(Icons.arrow_forward_rounded, color: teal, size: 20),
           ],
         ),
       ),
@@ -361,7 +516,7 @@ class _ProfileTravelPreferencesScreenState
         border: Border.all(color: lightBorder),
       ),
       child: Column(
-        children: [
+        children: <Widget>[
           _inputField(
             controller: _nameController,
             label: 'Full Name',
@@ -372,12 +527,14 @@ class _ProfileTravelPreferencesScreenState
             controller: _emailController,
             label: 'Email',
             icon: Icons.email_outlined,
+            readOnly: true,
           ),
           const SizedBox(height: 12),
           _inputField(
             controller: _phoneController,
             label: 'Phone Number',
             icon: Icons.phone_outlined,
+            keyboardType: TextInputType.phone,
           ),
         ],
       ),
@@ -388,15 +545,21 @@ class _ProfileTravelPreferencesScreenState
     required TextEditingController controller,
     required String label,
     required IconData icon,
+    bool readOnly = false,
+    TextInputType keyboardType = TextInputType.text,
   }) {
     return TextField(
       controller: controller,
+      readOnly: readOnly,
+      keyboardType: keyboardType,
+      style: const TextStyle(
+        color: Colors.black,
+        fontSize: 14,
+        fontWeight: FontWeight.w500,
+      ),
       decoration: InputDecoration(
         labelText: label,
-        labelStyle: const TextStyle(
-          color: textMuted,
-          fontSize: 11.5,
-        ),
+        labelStyle: const TextStyle(color: textMuted, fontSize: 11.5),
         prefixIcon: Icon(icon, color: teal),
         filled: true,
         fillColor: const Color(0xFFF7FBFC),
@@ -414,7 +577,7 @@ class _ProfileTravelPreferencesScreenState
 
   Widget _buildPrioritySelector() {
     return Row(
-      children: List.generate(_priorities.length, (index) {
+      children: List<Widget>.generate(_priorities.length, (index) {
         final selected = _selectedPriority == index;
 
         return Expanded(
@@ -433,9 +596,7 @@ class _ProfileTravelPreferencesScreenState
                 decoration: BoxDecoration(
                   color: selected ? navy : white,
                   borderRadius: BorderRadius.circular(16),
-                  border: Border.all(
-                    color: selected ? navy : lightBorder,
-                  ),
+                  border: Border.all(color: selected ? navy : lightBorder),
                 ),
                 child: Text(
                   _priorities[index],
@@ -464,14 +625,14 @@ class _ProfileTravelPreferencesScreenState
         border: Border.all(color: lightBorder),
       ),
       child: Column(
-        children: [
+        children: <Widget>[
           _optionRow(
             icon: Icons.accessible_rounded,
             title: 'Accessible routes',
             subtitle: 'Prefer wheelchair-friendly services',
             value: _accessibleRoutes,
             color: const Color(0xFF8B5CF6),
-            onChanged: (v) => setState(() => _accessibleRoutes = v),
+            onChanged: (value) => setState(() => _accessibleRoutes = value),
           ),
           const Divider(height: 24, color: Color(0xFFE7EEF1)),
           _optionRow(
@@ -480,7 +641,7 @@ class _ProfileTravelPreferencesScreenState
             subtitle: 'Reduce walking between stops',
             value: _lessWalking,
             color: teal,
-            onChanged: (v) => setState(() => _lessWalking = v),
+            onChanged: (value) => setState(() => _lessWalking = value),
           ),
           const Divider(height: 24, color: Color(0xFFE7EEF1)),
           _optionRow(
@@ -489,7 +650,7 @@ class _ProfileTravelPreferencesScreenState
             subtitle: 'Prefer less crowded buses when possible',
             value: _lowCrowd,
             color: cyan,
-            onChanged: (v) => setState(() => _lowCrowd = v),
+            onChanged: (value) => setState(() => _lowCrowd = value),
           ),
           const Divider(height: 24, color: Color(0xFFE7EEF1)),
           _optionRow(
@@ -498,7 +659,7 @@ class _ProfileTravelPreferencesScreenState
             subtitle: 'Prefer AC-enabled buses',
             value: _airConditioned,
             color: const Color(0xFF0EA5E9),
-            onChanged: (v) => setState(() => _airConditioned = v),
+            onChanged: (value) => setState(() => _airConditioned = value),
           ),
         ],
       ),
@@ -514,12 +675,12 @@ class _ProfileTravelPreferencesScreenState
     required ValueChanged<bool> onChanged,
   }) {
     return Row(
-      children: [
+      children: <Widget>[
         Container(
           width: 44,
           height: 44,
           decoration: BoxDecoration(
-            color: color.withOpacity(0.10),
+            color: color.withValues(alpha: 0.10),
             borderRadius: BorderRadius.circular(14),
           ),
           child: Icon(icon, color: color, size: 21),
@@ -528,7 +689,7 @@ class _ProfileTravelPreferencesScreenState
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
+            children: <Widget>[
               Text(
                 title,
                 style: const TextStyle(
@@ -540,18 +701,15 @@ class _ProfileTravelPreferencesScreenState
               const SizedBox(height: 4),
               Text(
                 subtitle,
-                style: const TextStyle(
-                  color: textMuted,
-                  fontSize: 10.5,
-                ),
+                style: const TextStyle(color: textMuted, fontSize: 10.5),
               ),
             ],
           ),
         ),
         Switch(
           value: value,
+          activeThumbColor: teal,
           onChanged: onChanged,
-          activeColor: teal,
         ),
       ],
     );
@@ -566,25 +724,19 @@ class _ProfileTravelPreferencesScreenState
         borderRadius: BorderRadius.circular(22),
       ),
       child: Column(
-        children: [
+        children: <Widget>[
           _summaryRow(
             Icons.route_rounded,
             'Route priority',
             _priorities[_selectedPriority],
           ),
-          const Divider(
-            height: 24,
-            color: Color(0xFF24485E),
-          ),
+          const Divider(height: 24, color: Color(0xFF24485E)),
           _summaryRow(
             Icons.directions_walk_rounded,
             'Walking preference',
             _lessWalking ? 'Less walking' : 'Standard',
           ),
-          const Divider(
-            height: 24,
-            color: Color(0xFF24485E),
-          ),
+          const Divider(height: 24, color: Color(0xFF24485E)),
           _summaryRow(
             Icons.ac_unit_rounded,
             'Bus comfort',
@@ -595,22 +747,15 @@ class _ProfileTravelPreferencesScreenState
     );
   }
 
-  Widget _summaryRow(
-      IconData icon,
-      String label,
-      String value,
-      ) {
+  Widget _summaryRow(IconData icon, String label, String value) {
     return Row(
-      children: [
+      children: <Widget>[
         Icon(icon, color: cyan, size: 20),
         const SizedBox(width: 11),
         Expanded(
           child: Text(
             label,
-            style: const TextStyle(
-              color: Color(0xFFB8D8E8),
-              fontSize: 11.5,
-            ),
+            style: const TextStyle(color: Color(0xFFB8D8E8), fontSize: 11.5),
           ),
         ),
         Text(
@@ -631,34 +776,31 @@ class _ProfileTravelPreferencesScreenState
       height: 58,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20),
-        gradient: const LinearGradient(
-          colors: [teal, cyan],
-        ),
+        gradient: const LinearGradient(colors: <Color>[teal, cyan]),
       ),
       child: Material(
         color: Colors.transparent,
         child: InkWell(
           borderRadius: BorderRadius.circular(20),
-          onTap: () {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text(
-                  'Profile and travel preferences saved.',
-                ),
-              ),
-            );
-          },
-          child: const Row(
+          onTap: (_isSaving || _isLoading) ? null : _saveProfile,
+          child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                Icons.save_rounded,
-                color: navy,
-              ),
-              SizedBox(width: 9),
+            children: <Widget>[
+              if (_isSaving)
+                const SizedBox(
+                  width: 20,
+                  height: 20,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    color: navy,
+                  ),
+                )
+              else
+                const Icon(Icons.save_rounded, color: navy),
+              const SizedBox(width: 9),
               Text(
-                'Save Profile & Preferences',
-                style: TextStyle(
+                _isSaving ? 'Saving...' : 'Save Profile & Preferences',
+                style: const TextStyle(
                   color: navy,
                   fontSize: 15.5,
                   fontWeight: FontWeight.w900,
@@ -674,7 +816,7 @@ class _ProfileTravelPreferencesScreenState
   Widget _sectionTitle(String title, String subtitle) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
+      children: <Widget>[
         Text(
           title,
           style: const TextStyle(
@@ -686,10 +828,7 @@ class _ProfileTravelPreferencesScreenState
         const SizedBox(height: 4),
         Text(
           subtitle,
-          style: const TextStyle(
-            color: textMuted,
-            fontSize: 11.5,
-          ),
+          style: const TextStyle(color: textMuted, fontSize: 11.5),
         ),
       ],
     );
@@ -702,13 +841,13 @@ class _ProfileBackground extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Stack(
-      children: [
+      children: <Widget>[
         Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
-              colors: [
+              colors: <Color>[
                 Color(0xFFF9FDFF),
                 Color(0xFFF0FAFD),
                 Color(0xFFF7FCFD),
@@ -724,7 +863,7 @@ class _ProfileBackground extends StatelessWidget {
             height: 280,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: const Color(0xFF21D4FD).withOpacity(0.09),
+              color: const Color(0xFF21D4FD).withValues(alpha: 0.09),
             ),
           ),
         ),
@@ -736,7 +875,7 @@ class _ProfileBackground extends StatelessWidget {
             height: 320,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: const Color(0xFF00C7B7).withOpacity(0.07),
+              color: const Color(0xFF00C7B7).withValues(alpha: 0.07),
             ),
           ),
         ),
