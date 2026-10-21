@@ -803,6 +803,104 @@ class _LiveBusTrackingScreenState extends State<LiveBusTrackingScreen> {
     );
   }
 
+  void _showRoutePreview() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) {
+        final stops = [
+          'Central Station',
+          'Main Market',
+          'College Road',
+          'Civil Hospital',
+          'City Center',
+          widget.to,
+        ];
+
+        return Container(
+          margin: const EdgeInsets.all(12),
+          padding: const EdgeInsets.fromLTRB(20, 18, 20, 24),
+          decoration: BoxDecoration(
+            color: white,
+            borderRadius: BorderRadius.circular(28),
+          ),
+          child: SafeArea(
+            top: false,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Full Route Preview',
+                  style: TextStyle(
+                    color: textDark,
+                    fontSize: 19,
+                    fontWeight: FontWeight.w900,
+                  ),
+                ),
+                const SizedBox(height: 5),
+                Text(
+                  'Bus ${widget.busNumber} • ${widget.from} → ${widget.to}',
+                  style: const TextStyle(
+                    color: textMuted,
+                    fontSize: 11,
+                  ),
+                ),
+                const SizedBox(height: 18),
+                ...List.generate(stops.length, (index) {
+                  final last = index == stops.length - 1;
+                  return Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Column(
+                        children: [
+                          Container(
+                            width: 14,
+                            height: 14,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: index == 0
+                                  ? teal
+                                  : last
+                                  ? cyan
+                                  : navySoft,
+                            ),
+                          ),
+                          if (!last)
+                            Container(
+                              width: 2,
+                              height: 30,
+                              color: lightBorder,
+                            ),
+                        ],
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.only(bottom: 14),
+                          child: Text(
+                            stops[index],
+                            style: const TextStyle(
+                              color: textDark,
+                              fontSize: 12.5,
+                              fontWeight: FontWeight.w800,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  );
+                }),
+
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
   Widget _buildFullRouteButton() {
     return Container(
       width: double.infinity,
@@ -822,15 +920,7 @@ class _LiveBusTrackingScreenState extends State<LiveBusTrackingScreen> {
         color: Colors.transparent,
         child: InkWell(
           borderRadius: BorderRadius.circular(20),
-          onTap: () {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text(
-                  'Full live route map will be connected with real map data later.',
-                ),
-              ),
-            );
-          },
+          onTap: _showRoutePreview,
           child: const Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [

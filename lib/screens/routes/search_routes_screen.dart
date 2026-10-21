@@ -740,7 +740,7 @@ class _SearchRoutesScreenState extends State<SearchRoutesScreen> {
         crossAxisCount: 2,
         crossAxisSpacing: 12,
         mainAxisSpacing: 12,
-        childAspectRatio: 1.15,
+        childAspectRatio: 1.18,
       ),
       itemBuilder: (context, index) {
         final item = _suggestions[index];
@@ -796,10 +796,12 @@ class _SearchRoutesScreenState extends State<SearchRoutesScreen> {
                 const SizedBox(height: 4),
                 Text(
                   item['subtitle'],
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
                     color: textMuted,
-                    fontSize: 10.5,
-                    height: 1.3,
+                    fontSize: 10.2,
+                    height: 1.25,
                   ),
                 ),
               ],

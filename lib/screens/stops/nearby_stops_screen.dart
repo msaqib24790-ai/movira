@@ -22,6 +22,8 @@ class _NearbyStopsScreenState extends State<NearbyStopsScreen> {
   static const Color textMuted = Color(0xFF6B7C88);
   static const Color lightBorder = Color(0xFFE1EDF1);
 
+  int _selectedFilter = 0;
+
   final List<Map<String, dynamic>> _stops = [
     {
       'name': 'Central Station',
@@ -30,6 +32,9 @@ class _NearbyStopsScreenState extends State<NearbyStopsScreen> {
       'routes': ['M-12', 'M-03', 'M-08'],
       'eta': '2 min',
       'status': 'Open',
+      'distanceMeters': 250,
+      'etaMinutes': 2,
+      'accessible': true,
     },
     {
       'name': 'Main Market Stop',
@@ -38,6 +43,9 @@ class _NearbyStopsScreenState extends State<NearbyStopsScreen> {
       'routes': ['M-12', 'M-21'],
       'eta': '5 min',
       'status': 'Open',
+      'distanceMeters': 480,
+      'etaMinutes': 5,
+      'accessible': true,
     },
     {
       'name': 'College Road',
@@ -46,6 +54,9 @@ class _NearbyStopsScreenState extends State<NearbyStopsScreen> {
       'routes': ['M-08', 'M-16'],
       'eta': '7 min',
       'status': 'Busy',
+      'distanceMeters': 720,
+      'etaMinutes': 7,
+      'accessible': false,
     },
     {
       'name': 'City Center',
@@ -54,8 +65,31 @@ class _NearbyStopsScreenState extends State<NearbyStopsScreen> {
       'routes': ['M-03', 'M-21', 'M-30'],
       'eta': '10 min',
       'status': 'Open',
+      'distanceMeters': 1100,
+      'etaMinutes': 10,
+      'accessible': true,
     },
   ];
+
+  List<Map<String, dynamic>> get _visibleStops {
+    final items = _stops.map((stop) => Map<String, dynamic>.from(stop)).toList();
+
+    if (_selectedFilter == 0) {
+      items.sort(
+            (a, b) => (a['distanceMeters'] as int)
+            .compareTo(b['distanceMeters'] as int),
+      );
+    } else if (_selectedFilter == 1) {
+      items.sort(
+            (a, b) =>
+            (a['etaMinutes'] as int).compareTo(b['etaMinutes'] as int),
+      );
+    } else {
+      items.removeWhere((stop) => stop['accessible'] != true);
+    }
+
+    return items;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -98,7 +132,7 @@ class _NearbyStopsScreenState extends State<NearbyStopsScreen> {
                   const SizedBox(height: 24),
                   _buildFilterRow(),
                   const SizedBox(height: 18),
-                  ..._stops.map(
+                  ..._visibleStops.map(
                         (stop) => Padding(
                       padding: const EdgeInsets.only(bottom: 14),
                       child: _buildStopCard(stop),
@@ -398,38 +432,50 @@ class _NearbyStopsScreenState extends State<NearbyStopsScreen> {
   }
 
   Widget _buildFilterRow() {
-    final filters = ['Nearest', 'Fastest Bus', 'Accessible'];
-    return SizedBox(
-      height: 40,
-      child: ListView.separated(
-        scrollDirection: Axis.horizontal,
-        itemCount: filters.length,
-        separatorBuilder: (_, __) => const SizedBox(width: 9),
-        itemBuilder: (context, index) {
-          final selected = index == 0;
-          return Container(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 15,
-              vertical: 9,
-            ),
-            decoration: BoxDecoration(
-              color: selected ? navy : white,
-              borderRadius: BorderRadius.circular(14),
-              border: Border.all(
-                color: selected ? navy : lightBorder,
+    const filters = ['Nearest', 'Fastest Bus', 'Accessible'];
+
+    return Row(
+      children: List.generate(filters.length, (index) {
+        final selected = _selectedFilter == index;
+
+        return Expanded(
+          child: Padding(
+            padding: EdgeInsets.only(right: index == filters.length - 1 ? 0 : 8),
+            child: GestureDetector(
+              onTap: () {
+                setState(() {
+                  _selectedFilter = index;
+                });
+              },
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 180),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 8,
+                  vertical: 11,
+                ),
+                decoration: BoxDecoration(
+                  color: selected ? navy : white,
+                  borderRadius: BorderRadius.circular(14),
+                  border: Border.all(
+                    color: selected ? navy : lightBorder,
+                  ),
+                ),
+                child: Text(
+                  filters[index],
+                  textAlign: TextAlign.center,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    color: selected ? cyan : textMuted,
+                    fontSize: 10.5,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
               ),
             ),
-            child: Text(
-              filters[index],
-              style: TextStyle(
-                color: selected ? cyan : textMuted,
-                fontSize: 11.5,
-                fontWeight: FontWeight.w800,
-              ),
-            ),
-          );
-        },
-      ),
+          ),
+        );
+      }),
     );
   }
 

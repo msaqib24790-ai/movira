@@ -87,6 +87,25 @@ class _SchedulesScreenState extends State<SchedulesScreen> {
     },
   ];
 
+  List<Map<String, dynamic>> get _visibleSchedules {
+    if (_selectedFilter == 0) return _schedules;
+
+    return _schedules.where((schedule) {
+      final raw = schedule['depart'] as String;
+      final parts = raw.split(' ');
+      final hm = parts[0].split(':');
+      var hour = int.parse(hm[0]);
+      final period = parts[1];
+
+      if (period == 'PM' && hour != 12) hour += 12;
+      if (period == 'AM' && hour == 12) hour = 0;
+
+      if (_selectedFilter == 1) return hour < 12;
+      if (_selectedFilter == 2) return hour >= 12 && hour < 17;
+      return hour >= 17;
+    }).toList();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -135,7 +154,7 @@ class _SchedulesScreenState extends State<SchedulesScreen> {
                     'Scheduled buses for the selected day',
                   ),
                   const SizedBox(height: 14),
-                  ..._schedules.map(
+                  ..._visibleSchedules.map(
                         (schedule) => Padding(
                       padding: const EdgeInsets.only(bottom: 14),
                       child: _buildScheduleCard(schedule),
@@ -312,91 +331,88 @@ class _SchedulesScreenState extends State<SchedulesScreen> {
   }
 
   Widget _buildDaySelector() {
-    return SizedBox(
-      height: 42,
-      child: ListView.separated(
-        scrollDirection: Axis.horizontal,
-        itemCount: _days.length,
-        separatorBuilder: (_, __) => const SizedBox(width: 9),
-        itemBuilder: (context, index) {
-          final bool selected = _selectedDay == index;
+    return Row(
+      children: List.generate(_days.length, (index) {
+        final bool selected = _selectedDay == index;
 
-          return GestureDetector(
-            onTap: () {
-              setState(() {
-                _selectedDay = index;
-              });
-            },
-            child: AnimatedContainer(
-              duration: const Duration(milliseconds: 180),
-              padding: const EdgeInsets.symmetric(
-                horizontal: 15,
-                vertical: 10,
-              ),
-              decoration: BoxDecoration(
-                color: selected ? navy : white,
-                borderRadius: BorderRadius.circular(14),
-                border: Border.all(
-                  color: selected ? navy : lightBorder,
+        return Expanded(
+          child: Padding(
+            padding: EdgeInsets.only(right: index == _days.length - 1 ? 0 : 7),
+            child: GestureDetector(
+              onTap: () {
+                setState(() {
+                  _selectedDay = index;
+                });
+              },
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 180),
+                padding: const EdgeInsets.symmetric(vertical: 11),
+                decoration: BoxDecoration(
+                  color: selected ? navy : white,
+                  borderRadius: BorderRadius.circular(14),
+                  border: Border.all(
+                    color: selected ? navy : lightBorder,
+                  ),
                 ),
-              ),
-              child: Text(
-                _days[index],
-                style: TextStyle(
-                  color: selected ? cyan : textMuted,
-                  fontSize: 11.5,
-                  fontWeight: FontWeight.w800,
+                child: Text(
+                  _days[index],
+                  textAlign: TextAlign.center,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    color: selected ? cyan : textMuted,
+                    fontSize: 10.2,
+                    fontWeight: FontWeight.w800,
+                  ),
                 ),
               ),
             ),
-          );
-        },
-      ),
+          ),
+        );
+      }),
     );
   }
 
   Widget _buildFilterRow() {
-    return SizedBox(
-      height: 38,
-      child: ListView.separated(
-        scrollDirection: Axis.horizontal,
-        itemCount: _filters.length,
-        separatorBuilder: (_, __) => const SizedBox(width: 8),
-        itemBuilder: (context, index) {
-          final bool selected = _selectedFilter == index;
+    return Row(
+      children: List.generate(_filters.length, (index) {
+        final bool selected = _selectedFilter == index;
 
-          return GestureDetector(
-            onTap: () {
-              setState(() {
-                _selectedFilter = index;
-              });
-            },
-            child: Container(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 14,
-                vertical: 8,
-              ),
-              decoration: BoxDecoration(
-                color: selected ? softCyan : white,
-                borderRadius: BorderRadius.circular(13),
-                border: Border.all(
-                  color: selected
-                      ? teal.withOpacity(0.28)
-                      : lightBorder,
+        return Expanded(
+          child: Padding(
+            padding: EdgeInsets.only(right: index == _filters.length - 1 ? 0 : 7),
+            child: GestureDetector(
+              onTap: () {
+                setState(() {
+                  _selectedFilter = index;
+                });
+              },
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 180),
+                padding: const EdgeInsets.symmetric(vertical: 10),
+                decoration: BoxDecoration(
+                  color: selected ? softCyan : white,
+                  borderRadius: BorderRadius.circular(13),
+                  border: Border.all(
+                    color: selected ? teal.withOpacity(0.28) : lightBorder,
+                  ),
                 ),
-              ),
-              child: Text(
-                _filters[index],
-                style: TextStyle(
-                  color: selected ? teal : textMuted,
-                  fontSize: 10.5,
-                  fontWeight: FontWeight.w800,
+                child: Text(
+                  _filters[index],
+                  textAlign: TextAlign.center,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    color: selected ? teal : textMuted,
+                    fontSize: 9.8,
+                    fontWeight: FontWeight.w800,
+                  ),
                 ),
               ),
             ),
-          );
-        },
-      ),
+          ),
+        );
+      }),
     );
   }
 
