@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 
+import '../../services/gtfs_service.dart';
+import '../../services/schedule_utils.dart';
+
 class SchedulesScreen extends StatefulWidget {
   const SchedulesScreen({super.key});
 
@@ -12,102 +15,174 @@ class _SchedulesScreenState extends State<SchedulesScreen> {
   static const Color navySoft = Color(0xFF123247);
   static const Color teal = Color(0xFF00C7B7);
   static const Color cyan = Color(0xFF21D4FD);
-
   static const Color ice = Color(0xFFF4FBFD);
-  static const Color white = Color(0xFFFFFFFF);
+  static const Color white = Colors.white;
   static const Color softCyan = Color(0xFFDDFBFA);
-
   static const Color textDark = Color(0xFF12212D);
   static const Color textMuted = Color(0xFF6B7C88);
   static const Color lightBorder = Color(0xFFE1EDF1);
-  static const Color success = Color(0xFF22C55E);
-  static const Color warning = Color(0xFFF59E0B);
 
   int _selectedDay = 0;
   int _selectedFilter = 0;
+  bool _loading = true;
+  String? _error;
+  List<Map<String, String>> _schedules = [];
 
-  final List<String> _days = [
-    'Today',
-    'Tomorrow',
-    'Friday',
-    'Saturday',
-  ];
+  final List<String> _filters = ['All', 'Morning', 'Afternoon', 'Evening'];
 
-  final List<String> _filters = [
-    'All',
-    'Morning',
-    'Afternoon',
-    'Evening',
-  ];
+  @override
+  void initState() {
+    super.initState();
+    _loadSchedules();
+  }
 
-  final List<Map<String, dynamic>> _schedules = [
-    {
-      'bus': 'M-12',
-      'from': 'Central Station',
-      'to': 'City Mall',
-      'depart': '08:10 AM',
-      'arrive': '08:34 AM',
-      'duration': '24 min',
-      'status': 'On Time',
-      'statusColor': success,
-      'frequency': 'Every 20 min',
-    },
-    {
-      'bus': 'M-03',
-      'from': 'Railway Station',
-      'to': 'University',
-      'depart': '09:00 AM',
-      'arrive': '09:22 AM',
-      'duration': '22 min',
-      'status': 'On Time',
-      'statusColor': success,
-      'frequency': 'Every 15 min',
-    },
-    {
-      'bus': 'M-08',
-      'from': 'City Center',
-      'to': 'Airport',
-      'depart': '11:15 AM',
-      'arrive': '11:46 AM',
-      'duration': '31 min',
-      'status': 'Delayed',
-      'statusColor': warning,
-      'frequency': 'Every 30 min',
-    },
-    {
-      'bus': 'M-21',
-      'from': 'Main Market',
-      'to': 'Civil Hospital',
-      'depart': '01:30 PM',
-      'arrive': '01:58 PM',
-      'duration': '28 min',
-      'status': 'On Time',
-      'statusColor': success,
-      'frequency': 'Every 25 min',
-    },
-  ];
+  Future<void> _loadSchedules() async {
+    try {
+      final service = GtfsService.instance;
+      await service.loadData();
 
-  List<Map<String, dynamic>> get _visibleSchedules {
-    if (_selectedFilter == 0) return _schedules;
+      final departures = service.scheduledDepartures.map((departure) {
+        final route = departure['route'] as Map<String, String>? ?? {};
+        final stop = departure['stop'] as Map<String, String>? ?? {};
+        final pattern = departure['pattern'] as Map<String, String>? ?? {};
 
-    return _schedules.where((schedule) {
-      final raw = schedule['depart'] as String;
-      final parts = raw.split(' ');
-      final hm = parts[0].split(':');
-      var hour = int.parse(hm[0]);
-      final period = parts[1];
+        return <String, String>{
+          'pattern_id': departure['pattern_id']?.toString() ?? '',
+          'stop_id': departure['stop_id']?.toString() ?? '',
+          'departure_time': departure['departure_time']?.toString() ?? '',
+          'days': departure['days']?.toString() ?? '',
+          'checked_on': departure['checked_on']?.toString() ?? '',
+          'route_short_name': route['route_short_name'] ?? '',
+          'route_long_name': route['route_long_name'] ?? '',
+          'pattern_name': pattern['pattern_name'] ?? '',
+          'stop_name': stop['stop_name'] ?? '',
+        };
+      }).toList();
 
-      if (period == 'PM' && hour != 12) hour += 12;
-      if (period == 'AM' && hour == 12) hour = 0;
+      if (!mounted) return;
 
-      if (_selectedFilter == 1) return hour < 12;
-      if (_selectedFilter == 2) return hour >= 12 && hour < 17;
-      return hour >= 17;
-    }).toList();
+      setState(() {
+        _schedules = departures;
+        _loading = false;
+        _error = null;
+      });
+    } catch (error) {
+      if (!mounted) return;
+
+      setState(() {
+        _loading = false;
+        _error = error.toString();
+      });
+    }
+  }
+
+  DateTime get _selectedDate {
+    final now = DateTime.now();
+    return DateTime(now.year, now.month, now.day + _selectedDay);
+  }
+
+  List<String> get _days {
+    return List.generate(4, (index) {
+      if (index == 0) return 'Today';
+      if (index == 1) return 'Tomorrow';
+
+      const weekdays = [
+        'Monday',
+        'Tuesday',
+        'Wednesday',
+        'Thursday',
+        'Friday',
+        'Saturday',
+        'Sunday',
+      ];
+
+      return weekdays[_selectedDateForIndex(index).weekday - 1];
+    });
+  }
+
+  DateTime _selectedDateForIndex(int index) {
+    final now = DateTime.now();
+    return DateTime(now.year, now.month, now.day + index);
+  }
+
+  List<Map<String, String>> get _visibleSchedules {
+    return ScheduleUtils.filterSchedules(
+      _schedules,
+      _selectedDate,
+      _selectedFilter,
+    );
+  }
+
+  Map<String, String>? get _nextDeparture {
+    final schedules = _visibleSchedules;
+
+    if (schedules.isEmpty) return null;
+
+    if (_selectedDay != 0) {
+      return schedules.first;
+    }
+
+    final now = TimeOfDay.now();
+    final currentMinutes = now.hour * 60 + now.minute;
+
+    for (final schedule in schedules) {
+      final parts = (schedule['departure_time'] ?? '').split(':');
+
+      if (parts.length != 3) continue;
+
+      final hour = int.tryParse(parts[0]);
+      final minute = int.tryParse(parts[1]);
+
+      if (hour == null ||
+          minute == null ||
+          hour < 0 ||
+          hour > 23 ||
+          minute < 0 ||
+          minute > 59) {
+        continue;
+      }
+
+      if (hour * 60 + minute >= currentMinutes) {
+        return schedule;
+      }
+    }
+
+    return null;
+  }
+
+  String _formatTime(String raw) {
+    return ScheduleUtils.formatTime(raw);
+  }
+
+  String _serviceDays(String flags) {
+    if (flags.length != 7) return 'Not specified';
+    if (flags == '1111111') return 'Daily';
+    if (flags == '0000000') return 'No service days';
+
+    const labels = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
+    final active = <String>[];
+
+    for (var i = 0; i < 7; i++) {
+      if (flags[i] == '1') {
+        active.add(labels[i]);
+      }
+    }
+
+    return active.isEmpty ? 'Not specified' : active.join(', ');
+  }
+
+  String _formatCheckedDate(String raw) {
+    if (raw.length != 8) return 'Not available';
+
+    return '${raw.substring(6, 8)}/'
+        '${raw.substring(4, 6)}/'
+        '${raw.substring(0, 4)}';
   }
 
   @override
   Widget build(BuildContext context) {
+    final visible = _visibleSchedules;
+
     return Scaffold(
       backgroundColor: ice,
       body: Stack(
@@ -134,7 +209,7 @@ class _SchedulesScreenState extends State<SchedulesScreen> {
                   ),
                   const SizedBox(height: 7),
                   const Text(
-                    'Check departures, arrivals, frequency and service status.',
+                    'Explore scheduled departures from the transport dataset.',
                     style: TextStyle(
                       color: textMuted,
                       fontSize: 13.5,
@@ -151,13 +226,44 @@ class _SchedulesScreenState extends State<SchedulesScreen> {
                   const SizedBox(height: 26),
                   _sectionTitle(
                     'Upcoming Services',
-                    'Scheduled buses for the selected day',
+                    'Published departures for the selected day',
                   ),
                   const SizedBox(height: 14),
-                  ..._visibleSchedules.map(
-                        (schedule) => Padding(
-                      padding: const EdgeInsets.only(bottom: 14),
-                      child: _buildScheduleCard(schedule),
+                  if (_loading)
+                    const Center(
+                      child: Padding(
+                        padding: EdgeInsets.all(32),
+                        child: CircularProgressIndicator(color: teal),
+                      ),
+                    )
+                  else if (_error != null)
+                    _buildMessage(
+                      icon: Icons.error_outline_rounded,
+                      title: 'Could not load schedules',
+                      message: 'Check the GTFS assets and try again.',
+                      action: true,
+                    )
+                  else if (visible.isEmpty)
+                    _buildMessage(
+                      icon: Icons.directions_bus_outlined,
+                      title: 'No scheduled departures found',
+                      message: 'There are no matching departures for this day and time filter.',
+                    )
+                  else
+                    ...visible.map(
+                      (schedule) => Padding(
+                        padding: const EdgeInsets.only(bottom: 14),
+                        child: _buildScheduleCard(schedule),
+                      ),
+                    ),
+                  const SizedBox(height: 12),
+                  const Text(
+                    'Schedule information is timetable data, not live bus tracking. '
+                    'Arrival times, delays and journey durations are not provided here.',
+                    style: TextStyle(
+                      color: textMuted,
+                      fontSize: 11,
+                      height: 1.5,
                     ),
                   ),
                 ],
@@ -181,18 +287,8 @@ class _SchedulesScreenState extends State<SchedulesScreen> {
               color: white,
               borderRadius: BorderRadius.circular(14),
               border: Border.all(color: lightBorder),
-              boxShadow: const [
-                BoxShadow(
-                  color: Color(0x12071B2C),
-                  blurRadius: 10,
-                  offset: Offset(0, 4),
-                ),
-              ],
             ),
-            child: const Icon(
-              Icons.arrow_back_rounded,
-              color: navy,
-            ),
+            child: const Icon(Icons.arrow_back_rounded, color: navy),
           ),
         ),
         const SizedBox(width: 12),
@@ -228,7 +324,7 @@ class _SchedulesScreenState extends State<SchedulesScreen> {
               ),
               SizedBox(height: 2),
               Text(
-                'Departure and arrival times',
+                'Scheduled departure times',
                 style: TextStyle(
                   color: textMuted,
                   fontSize: 10.5,
@@ -245,10 +341,7 @@ class _SchedulesScreenState extends State<SchedulesScreen> {
             color: softCyan,
             borderRadius: BorderRadius.circular(14),
           ),
-          child: const Icon(
-            Icons.schedule_rounded,
-            color: teal,
-          ),
+          child: const Icon(Icons.schedule_rounded, color: teal),
         ),
       ],
     );
@@ -263,11 +356,7 @@ class _SchedulesScreenState extends State<SchedulesScreen> {
         gradient: const LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [
-            navy,
-            navySoft,
-            Color(0xFF15516A),
-          ],
+          colors: [navy, navySoft, Color(0xFF15516A)],
         ),
         boxShadow: const [
           BoxShadow(
@@ -284,9 +373,7 @@ class _SchedulesScreenState extends State<SchedulesScreen> {
             height: 64,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(20),
-              gradient: const LinearGradient(
-                colors: [teal, cyan],
-              ),
+              gradient: const LinearGradient(colors: [teal, cyan]),
             ),
             child: const Icon(
               Icons.calendar_month_rounded,
@@ -309,7 +396,7 @@ class _SchedulesScreenState extends State<SchedulesScreen> {
                 ),
                 SizedBox(height: 6),
                 Text(
-                  'Browse upcoming buses and service timings.',
+                  'Browse scheduled departures and route information.',
                   style: TextStyle(
                     color: Color(0xFFC7E3EF),
                     fontSize: 11.5,
@@ -320,42 +407,34 @@ class _SchedulesScreenState extends State<SchedulesScreen> {
               ],
             ),
           ),
-          const Icon(
-            Icons.chevron_right_rounded,
-            color: cyan,
-            size: 28,
-          ),
+          const Icon(Icons.chevron_right_rounded, color: cyan, size: 28),
         ],
       ),
     );
   }
 
   Widget _buildDaySelector() {
+    final days = _days;
+
     return Row(
-      children: List.generate(_days.length, (index) {
-        final bool selected = _selectedDay == index;
+      children: List.generate(days.length, (index) {
+        final selected = _selectedDay == index;
 
         return Expanded(
           child: Padding(
-            padding: EdgeInsets.only(right: index == _days.length - 1 ? 0 : 7),
+            padding: EdgeInsets.only(right: index == days.length - 1 ? 0 : 7),
             child: GestureDetector(
-              onTap: () {
-                setState(() {
-                  _selectedDay = index;
-                });
-              },
+              onTap: () => setState(() => _selectedDay = index),
               child: AnimatedContainer(
                 duration: const Duration(milliseconds: 180),
                 padding: const EdgeInsets.symmetric(vertical: 11),
                 decoration: BoxDecoration(
                   color: selected ? navy : white,
                   borderRadius: BorderRadius.circular(14),
-                  border: Border.all(
-                    color: selected ? navy : lightBorder,
-                  ),
+                  border: Border.all(color: selected ? navy : lightBorder),
                 ),
                 child: Text(
-                  _days[index],
+                  days[index],
                   textAlign: TextAlign.center,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
@@ -376,17 +455,15 @@ class _SchedulesScreenState extends State<SchedulesScreen> {
   Widget _buildFilterRow() {
     return Row(
       children: List.generate(_filters.length, (index) {
-        final bool selected = _selectedFilter == index;
+        final selected = _selectedFilter == index;
 
         return Expanded(
           child: Padding(
-            padding: EdgeInsets.only(right: index == _filters.length - 1 ? 0 : 7),
+            padding: EdgeInsets.only(
+              right: index == _filters.length - 1 ? 0 : 7,
+            ),
             child: GestureDetector(
-              onTap: () {
-                setState(() {
-                  _selectedFilter = index;
-                });
-              },
+              onTap: () => setState(() => _selectedFilter = index),
               child: AnimatedContainer(
                 duration: const Duration(milliseconds: 180),
                 padding: const EdgeInsets.symmetric(vertical: 10),
@@ -394,7 +471,9 @@ class _SchedulesScreenState extends State<SchedulesScreen> {
                   color: selected ? softCyan : white,
                   borderRadius: BorderRadius.circular(13),
                   border: Border.all(
-                    color: selected ? teal.withOpacity(0.28) : lightBorder,
+                    color: selected
+                        ? teal.withValues(alpha: 0.28)
+                        : lightBorder,
                   ),
                 ),
                 child: Text(
@@ -417,14 +496,14 @@ class _SchedulesScreenState extends State<SchedulesScreen> {
   }
 
   Widget _buildNextDepartureCard() {
+    final next = _nextDeparture;
+
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(24),
-        gradient: const LinearGradient(
-          colors: [teal, cyan],
-        ),
+        gradient: const LinearGradient(colors: [teal, cyan]),
         boxShadow: const [
           BoxShadow(
             color: Color(0x3000C7B7),
@@ -449,55 +528,42 @@ class _SchedulesScreenState extends State<SchedulesScreen> {
             ),
           ),
           const SizedBox(width: 13),
-          const Expanded(
+          Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  'Next Departure',
+                const Text(
+                  'Next Scheduled Departure',
                   style: TextStyle(
                     color: Color(0xFF123B49),
                     fontSize: 10.5,
                     fontWeight: FontWeight.w800,
                   ),
                 ),
-                SizedBox(height: 4),
+                const SizedBox(height: 5),
                 Text(
-                  'M-12 • Central Station',
-                  style: TextStyle(
+                  next == null
+                      ? 'No remaining departure'
+                      : (next['route_short_name'] ?? 'Bus service'),
+                  style: const TextStyle(
                     color: navy,
                     fontSize: 15,
                     fontWeight: FontWeight.w900,
                   ),
                 ),
-                SizedBox(height: 4),
+                const SizedBox(height: 4),
                 Text(
-                  '08:10 AM → City Mall',
-                  style: TextStyle(
+                  next == null
+                      ? 'Try another day or time filter.'
+                      : '${_formatTime(next['departure_time'] ?? '')} · '
+                            '${next['stop_name'] ?? 'Stop unavailable'}',
+                  style: const TextStyle(
                     color: Color(0xFF123B49),
                     fontSize: 11.5,
                     fontWeight: FontWeight.w700,
                   ),
                 ),
               ],
-            ),
-          ),
-          Container(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 11,
-              vertical: 8,
-            ),
-            decoration: BoxDecoration(
-              color: navy.withOpacity(0.12),
-              borderRadius: BorderRadius.circular(14),
-            ),
-            child: const Text(
-              '10 min',
-              style: TextStyle(
-                color: navy,
-                fontSize: 11,
-                fontWeight: FontWeight.w900,
-              ),
             ),
           ),
         ],
@@ -520,17 +586,17 @@ class _SchedulesScreenState extends State<SchedulesScreen> {
         const SizedBox(height: 4),
         Text(
           subtitle,
-          style: const TextStyle(
-            color: textMuted,
-            fontSize: 11.5,
-          ),
+          style: const TextStyle(color: textMuted, fontSize: 11.5),
         ),
       ],
     );
   }
 
-  Widget _buildScheduleCard(Map<String, dynamic> schedule) {
-    final Color statusColor = schedule['statusColor'] as Color;
+  Widget _buildScheduleCard(Map<String, String> schedule) {
+    final routeName = (schedule['pattern_name'] ?? '').trim();
+    final routeShortName = (schedule['route_short_name'] ?? '').trim();
+    final stopName = (schedule['stop_name'] ?? '').trim();
+    final checkedDate = _formatCheckedDate(schedule['checked_on'] ?? '');
 
     return Container(
       width: double.infinity,
@@ -548,6 +614,7 @@ class _SchedulesScreenState extends State<SchedulesScreen> {
         ],
       ),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
@@ -556,17 +623,19 @@ class _SchedulesScreenState extends State<SchedulesScreen> {
                 height: 52,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(16),
-                  gradient: const LinearGradient(
-                    colors: [teal, cyan],
-                  ),
+                  gradient: const LinearGradient(colors: [teal, cyan]),
                 ),
                 child: Center(
-                  child: Text(
-                    schedule['bus'] as String,
-                    style: const TextStyle(
-                      color: navy,
-                      fontSize: 13,
-                      fontWeight: FontWeight.w900,
+                  child: Padding(
+                    padding: const EdgeInsets.all(3),
+                    child: Text(
+                      routeShortName.isEmpty ? 'BUS' : routeShortName,
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        color: navy,
+                        fontSize: 11,
+                        fontWeight: FontWeight.w900,
+                      ),
                     ),
                   ),
                 ),
@@ -577,7 +646,7 @@ class _SchedulesScreenState extends State<SchedulesScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      '${schedule['from']} → ${schedule['to']}',
+                      routeName.isEmpty ? 'Scheduled bus route' : routeName,
                       style: const TextStyle(
                         color: textDark,
                         fontSize: 13.5,
@@ -586,51 +655,33 @@ class _SchedulesScreenState extends State<SchedulesScreen> {
                     ),
                     const SizedBox(height: 5),
                     Text(
-                      schedule['frequency'] as String,
-                      style: const TextStyle(
-                        color: textMuted,
-                        fontSize: 10.5,
-                      ),
+                      'Departure stop: '
+                      '${stopName.isEmpty ? 'Not available' : stopName}',
+                      style: const TextStyle(color: textMuted, fontSize: 10.5),
                     ),
                   ],
                 ),
               ),
               Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 10,
-                  vertical: 6,
-                ),
+                padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 6),
                 decoration: BoxDecoration(
-                  color: statusColor.withOpacity(0.10),
+                  color: softCyan,
                   borderRadius: BorderRadius.circular(14),
                 ),
-                child: Row(
-                  children: [
-                    Icon(
-                      Icons.circle,
-                      color: statusColor,
-                      size: 7,
-                    ),
-                    const SizedBox(width: 5),
-                    Text(
-                      schedule['status'] as String,
-                      style: TextStyle(
-                        color: statusColor,
-                        fontSize: 9.5,
-                        fontWeight: FontWeight.w900,
-                      ),
-                    ),
-                  ],
+                child: const Text(
+                  'SCHEDULED',
+                  style: TextStyle(
+                    color: teal,
+                    fontSize: 8.5,
+                    fontWeight: FontWeight.w900,
+                  ),
                 ),
               ),
             ],
           ),
           const SizedBox(height: 15),
           Container(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 14,
-              vertical: 13,
-            ),
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 13),
             decoration: BoxDecoration(
               color: const Color(0xFFF6FAFB),
               borderRadius: BorderRadius.circular(16),
@@ -640,30 +691,19 @@ class _SchedulesScreenState extends State<SchedulesScreen> {
                 Expanded(
                   child: _timeBlock(
                     label: 'Departure',
-                    value: schedule['depart'] as String,
+                    value: _formatTime(schedule['departure_time'] ?? ''),
                   ),
                 ),
-                Container(
-                  width: 1,
-                  height: 34,
-                  color: lightBorder,
-                ),
+                Container(width: 1, height: 34, color: lightBorder),
                 Expanded(
                   child: _timeBlock(
-                    label: 'Arrival',
-                    value: schedule['arrive'] as String,
+                    label: 'Service days',
+                    value: _serviceDays(schedule['days'] ?? ''),
                   ),
                 ),
-                Container(
-                  width: 1,
-                  height: 34,
-                  color: lightBorder,
-                ),
+                Container(width: 1, height: 34, color: lightBorder),
                 Expanded(
-                  child: _timeBlock(
-                    label: 'Duration',
-                    value: schedule['duration'] as String,
-                  ),
+                  child: _timeBlock(label: 'Data checked', value: checkedDate),
                 ),
               ],
             ),
@@ -673,18 +713,13 @@ class _SchedulesScreenState extends State<SchedulesScreen> {
     );
   }
 
-  Widget _timeBlock({
-    required String label,
-    required String value,
-  }) {
+  Widget _timeBlock({required String label, required String value}) {
     return Column(
       children: [
         Text(
           label,
-          style: const TextStyle(
-            color: textMuted,
-            fontSize: 9.5,
-          ),
+          textAlign: TextAlign.center,
+          style: const TextStyle(color: textMuted, fontSize: 9),
         ),
         const SizedBox(height: 4),
         Text(
@@ -692,11 +727,62 @@ class _SchedulesScreenState extends State<SchedulesScreen> {
           textAlign: TextAlign.center,
           style: const TextStyle(
             color: textDark,
-            fontSize: 11.5,
+            fontSize: 10.5,
             fontWeight: FontWeight.w900,
           ),
         ),
       ],
+    );
+  }
+
+  Widget _buildMessage({
+    required IconData icon,
+    required String title,
+    required String message,
+    bool action = false,
+  }) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(24),
+      decoration: BoxDecoration(
+        color: white,
+        borderRadius: BorderRadius.circular(22),
+        border: Border.all(color: lightBorder),
+      ),
+      child: Column(
+        children: [
+          Icon(icon, color: teal, size: 36),
+          const SizedBox(height: 12),
+          Text(
+            title,
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+              color: textDark,
+              fontSize: 15,
+              fontWeight: FontWeight.w900,
+            ),
+          ),
+          const SizedBox(height: 7),
+          Text(
+            message,
+            textAlign: TextAlign.center,
+            style: const TextStyle(color: textMuted, fontSize: 12, height: 1.5),
+          ),
+          if (action) ...[
+            const SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: () {
+                setState(() {
+                  _loading = true;
+                  _error = null;
+                });
+                _loadSchedules();
+              },
+              child: const Text('Try again'),
+            ),
+          ],
+        ],
+      ),
     );
   }
 }
@@ -713,11 +799,7 @@ class _SchedulesBackground extends StatelessWidget {
             gradient: LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
-              colors: [
-                Color(0xFFF9FDFF),
-                Color(0xFFF0FAFD),
-                Color(0xFFF7FCFD),
-              ],
+              colors: [Color(0xFFF9FDFF), Color(0xFFF0FAFD), Color(0xFFF7FCFD)],
             ),
           ),
         ),
@@ -729,7 +811,7 @@ class _SchedulesBackground extends StatelessWidget {
             height: 280,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: const Color(0xFF21D4FD).withOpacity(0.09),
+              color: const Color(0xFF21D4FD).withValues(alpha: 0.09),
             ),
           ),
         ),
@@ -741,7 +823,7 @@ class _SchedulesBackground extends StatelessWidget {
             height: 320,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: const Color(0xFF00C7B7).withOpacity(0.07),
+              color: const Color(0xFF00C7B7).withValues(alpha: 0.07),
             ),
           ),
         ),
