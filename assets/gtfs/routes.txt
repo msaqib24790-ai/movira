@@ -1,0 +1,226 @@
+route_id,agency_id,route_short_name,route_long_name,route_desc,route_type,route_url,route_color,route_text_color
+aavg7,pma,RT-11,Main Market Gulberg to Babu Sabu,"Speedo feeder bus, Lahore.",3,https://pakbus.app/routes/lahore-main-market-gulberg-to-babu-sabu,D73636,FFFFFF
+achff,ptc,EV005602,E-Bus Depot to Khanqah Dogran,"Green Electric Bus, Sheikhupura.",3,https://pakbus.app/routes/sheikhupura-e-bus-depot-to-khanqah-dogran,1AB815,000000
+aez23,pma,RT-19,Paragon City to Railway Station,"Speedo feeder bus, Lahore.",3,https://pakbus.app/routes/lahore-paragon-city-to-railway-station,D73636,FFFFFF
+aezna,cda,FR-10,Golra Morh Metro Station to Taxila,"Feeder bus, Rawalpindi.",3,https://pakbus.app/routes/islamabad-fr-10-golra-morh-metro-station-to-taxila,DC143C,FFFFFF
+afvp9,ptc,EV06303,GBS Bahawalnagar to Chishtian,"Green Electric Bus, Bahawalnagar.",3,https://pakbus.app/routes/bahawalnagar-gbs-bahawalnagar-to-chishtian,2BA322,000000
+ammha,cda,FRB-1,Blue Line,"Metro Bus, Rawalpindi.",3,https://pakbus.app/routes/islamabad-frb-1-blue-line,0000FF,FFFFFF
+amswb,ptc,EV04003,Admore Pump Farid Town to Adda Gamber,"Green Electric Bus, Sahiwal.",3,https://pakbus.app/routes/sahiwal-admore-pump-farid-town-to-adda-gamber,2BA322,000000
+atg2x,punjab-transport,RT01C,Dera Adda to E-Khidmat Center via Dehar Chowk,"Electric feeder bus, Multan.",3,https://pakbus.app/routes/multan-dera-adda-to-e-khidmat-center-via-dehar-chowk,52D13A,000000
+atntz,pma,MFR10,Chungi no 9 to Nawabpur,"Feeder bus, Multan.",3,https://pakbus.app/routes/multan-chungi-no-9-to-nawabpur,EB2618,000000
+avvay,pma,MFR09B,Chungi No 9 to Nadirabad Phatak,"Feeder bus, Multan.",3,https://pakbus.app/routes/multan-chungi-no-9-to-nadirabad-phatak,EB2618,000000
+awvfs,smta,R10,Quaid e Azam Mazar to Ibrahim Hyderi,"Peoples Bus Service, Karachi.",3,https://pakbus.app/routes/karachi-r10-quaid-e-azam-mazar-to-ibrahim-hyderi,FF0000,000000
+az9zx,cda,FR-04,PIMS Hospital to Aiwan e Sadar Colony,"Feeder bus, Rawalpindi.",3,https://pakbus.app/routes/islamabad-fr-04-pims-hospital-to-aiwan-e-sadar-colony,D97BF9,000000
+b395m,ptc,EV06702,Peer Mahal to Tibba Sultanpur,"Green Electric Bus, Vehari.",3,https://pakbus.app/routes/vehari-peer-mahal-to-tibba-sultanpur,4EE143,000000
+b98w6,ptc,EV45302,GBS Bhakkar to Behal,"Green Electric Bus, Bhakkar.",3,https://pakbus.app/routes/bhakkar-gbs-bhakkar-to-behal,2F5E4A,FFFFFF
+bbjvx,punjab-transport,EV05102,Fawara Chowk to Koral Chowk,"Electric feeder bus, Rawalpindi.",3,https://pakbus.app/routes/rawalpindi-fawara-chowk-to-koral-chowk,00F42F,000000
+bdy43,ptc,EV060801,Shahida Islam Hospital to Kahror Pakka,"Green Electric Bus, Lodhran.",3,https://pakbus.app/routes/lodhran-shahida-islam-hospital-to-kahror-pakka,3CD930,000000
+bf249,ptc,EV54601,Kathiala Sheikhan to Rasool Village,"Green Electric Bus, Mandi Bahauddin.",3,https://pakbus.app/routes/mandi-bahauddin-kathiala-sheikhan-to-rasool-village,006B52,FFFFFF
+bgdwd,ptc,EV6502,Khanewal to Jahaniya,"Green Electric Bus, Khanewal.",3,https://pakbus.app/routes/khanewal-khanewal-to-jahaniya,308C60,000000
+bhtqx,punjab-transport,EV05101,Rawalpindi Railway Station To Hamrahi Stop,"Electric feeder bus, Rawalpindi.",3,https://pakbus.app/routes/rawalpindi-rawalpindi-railway-station-to-hamrahi-stop,00F42F,000000
+bhvsh,punjab-transport,RT09C,Chungi No. 09 to Nadirabad Phatak Via Ali Wala,"Electric feeder bus, Multan.",3,https://pakbus.app/routes/multan-chungi-no-09-to-nadirabad-phatak-via-ali-wala,52D13A,000000
+bk6tp,pma,MBM,Metro Bus Multan,"Metro Bus, Multan.",3,https://pakbus.app/routes/multan-metro-bus-multan,5EB539,000000
+bkjes,ptc,EV45701,GBS Pakpattan to Bunga Hayat,"Green Electric Bus, Pakpattan.",3,https://pakbus.app/routes/pakpattan-gbs-pakpattan-to-bunga-hayat,2BA322,000000
+bkwch,smta,HYD-02,Hala Naka to Khesana Mori,"Peoples Bus Service, Hyderabad.",3,https://pakbus.app/routes/hyderabad-hyd-02-hala-naka-to-khesana-mori,FF0000,000000
+btakr,pma,RT-28,Samanabad to Gulshan Ravi Double Sarka,"Speedo feeder bus, Lahore.",3,https://pakbus.app/routes/lahore-samanabad-to-gulshan-ravi-double-sarka,D73636,FFFFFF
+bz793,ptc,EV511002,Gujjar Khan to T Chowk,"Green Electric Bus, Gujarkhan.",3,https://pakbus.app/routes/gujarkhan-gujjar-khan-to-t-chowk,18AA1A,000000
+bzhka,ptc,EV0054202,GBS Narowal to Shakargarh,"Green Electric Bus, Narowal.",3,https://pakbus.app/routes/narowal-gbs-narowal-to-shakargarh,308C60,000000
+c9aye,pma,RT-09,Railway Station to Gulshan Ravi OL Station,"Speedo feeder bus, Lahore.",3,https://pakbus.app/routes/lahore-railway-station-to-gulshan-ravi-ol-station,D73636,FFFFFF
+cdavn,pma,MFR04,Vehari Chowk to Nag Shah,"Feeder bus, Multan.",3,https://pakbus.app/routes/multan-vehari-chowk-to-nag-shah,EB2618,000000
+cdghm,pma,RLRT04,Kashmir Highway to Pak Secretariat PMBS,"Metro Bus Red Line, Rawalpindi.",3,https://pakbus.app/routes/rawalpindi-kashmir-highway-to-pak-secretariat-pmbs,FF0000,000000
+cgxgn,cda,FR-14A,Barakahu Terminal to Satra Meel,"Feeder bus, Rawalpindi.",3,https://pakbus.app/routes/islamabad-fr-14a-barakahu-terminal-to-satra-meel,0485AA,000000
+ch88m,punjab-transport,EV05110,Saddar Stop to Qabristan Chowk,"Electric feeder bus, Rawalpindi.",3,https://pakbus.app/routes/rawalpindi-saddar-stop-to-qabristan-chowk,00F42F,000000
+cnkza,smta,4-PB,Pink Bus (women only): Abdullah Chowk to Numaish,"Karachi Breeze, Karachi. Women-only service.",3,https://pakbus.app/routes/karachi-pink-bus-women-only-abdullah-chowk-to-numaish,FF57DF,000000
+crjtt,ptc,EV4404,GBS Okara to Channu Mahatam,"Green Electric Bus, Okara.",3,https://pakbus.app/routes/okara-gbs-okara-to-fatehpur,308C60,000000
+csvb2,pma,RLRT03,Faiz Ahmed Faiz to Saddar PMBS,"Metro Bus Red Line, Rawalpindi.",3,https://pakbus.app/routes/rawalpindi-faiz-ahmed-faiz-to-saddar-pmbs,FF0000,000000
+cwt6r,ptc,EV06401,GBS DG Khan to Choti Zareen Via Kot Chutta,"Green Electric Bus, Dera Ghazi Khan.",3,https://pakbus.app/routes/dera-ghazi-khan-gbs-dg-khan-to-choti-zareen-via-kot-chutta,2BA322,000000
+cxect,punjab-transport,RT26,Jinnah Bus Terminal To BRB,"Electric feeder bus, Lahore.",3,https://pakbus.app/routes/lahore-jinnah-bus-terminal-to-brb,BC2929,FFFFFF
+d2xss,cda,FR-07,PIMS Hospital to G-10 Metro Station,"Feeder bus, Rawalpindi.",3,https://pakbus.app/routes/islamabad-fr-07-pims-hospital-to-g-10-metro-station,F2D900,000000
+d92t4,ptc,EV06404,GBS DG Khan to GBS DG Khan (InterCity),"Green Electric Bus, Dera Ghazi Khan.",3,https://pakbus.app/routes/dera-ghazi-khan-gbs-dg-khan-to-gbs-dg-khan-intercity,2BA322,000000
+d97gy,punjab-transport,EVM02,GBS Murree to Rawat,"Green Electric Bus, Murree.",3,https://pakbus.app/routes/murree-gbs-murree-to-rawat,31FF00,000000
+ddfee,ptc,EV0054205,GBS Narowal to Zafarwal,"Green Electric Bus, Narowal.",3,https://pakbus.app/routes/narowal-gbs-narowal-to-zafarwal,308C60,000000
+dfneb,punjab-transport,EV05109,Umar Baig Chowk to TB Hospital,"Electric feeder bus, Rawalpindi.",3,https://pakbus.app/routes/rawalpindi-umar-baig-chowk-to-tb-hospital,00F42F,000000
+dvaqt,ptc,EV4403,GBS Okara to Sher Ghar,"Green Electric Bus, Okara.",3,https://pakbus.app/routes/okara-gbs-okara-to-sher-ghar,308C60,000000
+dw76h,pma,MFR04B,Nishter Hospital to Shujabad,"Feeder bus, Multan.",3,https://pakbus.app/routes/multan-nishter-hospital-to-shujabad,EB2618,000000
+dwnzx,smta,1,Green Line,"Karachi Breeze, Karachi.",3,https://pakbus.app/routes/karachi-green-line,008000,FFFFFF
+dyssa,pma,RT-25,Askari X to Airport,"Speedo feeder bus, Lahore.",3,https://pakbus.app/routes/lahore-askari-x-to-airport,D73636,FFFFFF
+e6h22,ptc,EV04803,GBS Sargodha to Kot Momin,"Green Electric Bus, Sargodha.",3,https://pakbus.app/routes/sargodha-gbs-sargodha-to-kot-momin,2BA322,000000
+ec57p,cda,FR-04B,Shuttle Service Terminal loop,"Feeder bus, Rawalpindi. Entry restrictions apply.",3,https://pakbus.app/routes/islamabad-fr-04b-shuttle-service-terminal-loop,19A7D7,000000
+emj59,ptc,EV56602,Wazirabad to Sheikhupura Morr,"Green Electric Bus, Wazirabad.",3,https://pakbus.app/routes/wazirabad-wazirabad-to-sheikhupura-morr,2BA322,000000
+epasd,ptc,EV06604,Railway Phattak to Railway Phattak,"Green Electric Bus, Muzaffargarh.",3,https://pakbus.app/routes/muzaffargarh-railway-phattak-to-railway-phattak,2BA322,000000
+eqg6w,pma,MFR03,Ghanta Ghar to Ibn-e-Sina Hospital,"Feeder bus, Multan.",3,https://pakbus.app/routes/multan-ghanta-ghar-to-ibn-e-sina-hospital,EB2618,000000
+eseeb,ptc,EV04806,GBS Sargodha to Shahpur,"Green Electric Bus, Sargodha.",3,https://pakbus.app/routes/sargodha-gbs-sargodha-to-shahpur,2BA322,000000
+exkas,smta,Pink-9,Pink Bus (women only): Gulshan-e-Hadeed to Tower,"Peoples Bus Service, Karachi. Women-only service.",3,https://pakbus.app/routes/karachi-pink-9-pink-bus-women-only-gulshan-e-hadeed-to-tower,FF0000,000000
+eyf6z,punjab-transport,RT11,Vehari Chowk to CMH,"Electric feeder bus, Multan.",3,https://pakbus.app/routes/multan-vehari-chowk-to-qasim-bela,52D13A,000000
+f3qsa,punjab-transport,RT20,Jinnah Bus Terminal to Raiwind,"Electric feeder bus, Lahore.",3,https://pakbus.app/routes/lahore-jinnah-bus-terminal-to-raiwind,BC2929,FFFFFF
+f3waz,smta,R4,Power House Chowrangi to Jackson Market,"Peoples Bus Service, Karachi.",3,https://pakbus.app/routes/karachi-r4-power-house-chowrangi-to-jackson-market,FF0000,000000
+f82k8,smta,EV-03,Malir Cantt to Numaish,"Peoples Bus Service, Karachi.",3,https://pakbus.app/routes/karachi-ev-03-malir-cantt-to-numaish,FF0000,000000
+f8bjz,smta,R1,Khokhrapar No 1 to Dockyard Stop,"Peoples Bus Service, Karachi.",3,https://pakbus.app/routes/karachi-r1-khokhrapar-no-1-to-dockyard-stop,FF0000,000000
+f8gka,ptc,EV56601,Wazirabad To Alipur Chatha,"Green Electric Bus, Wazirabad.",3,https://pakbus.app/routes/wazirabad-wazirabad-to-alipur-chatha,2BA322,000000
+fajmk,ptc,EV03,Depot Stop to Railway Station,"Green Electric Bus, Lahore.",3,https://pakbus.app/routes/lahore-depot-stop-to-railway-station,2BA322,000000
+fc2ng,cda,FR-01,Khanna Pul to Nust Metro Station,"Feeder bus, Rawalpindi.",3,https://pakbus.app/routes/islamabad-fr-01-khanna-pul-to-nust-metro-station,42697E,FFFFFF
+fc659,ptc,EV45402,GBS Khushab to Mitha Tiwana Stop,"Green Electric Bus, Khushab.",3,https://pakbus.app/routes/khushab-gbs-khushab-to-mitha-tiwana-stop,7BA182,000000
+fdzc2,cda,EX-16,PIMS Hospital to Media Chowk,"Feeder bus, Rawalpindi.",3,https://pakbus.app/routes/islamabad-ex-16-pims-hospital-to-media-chowk,E6217B,000000
+fg77g,ptc,EV511001,Gujar Khan to Sohawa,"Green Electric Bus, Gujarkhan.",3,https://pakbus.app/routes/gujarkhan-gujar-khan-to-sohawa,18AA1A,000000
+fhzr8,ptc,EV06402,GBS DG Khan to Shah Sadar Din,"Green Electric Bus, Dera Ghazi Khan.",3,https://pakbus.app/routes/dera-ghazi-khan-gbs-dg-khan-to-shah-sadar-din,2BA322,000000
+fp9p5,ptc,EV05402,Tehsil Chowk to Balkasar,"Green Electric Bus, Chakwal.",3,https://pakbus.app/routes/chakwal-tehsil-chowk-to-balkasar,2BA322,000000
+fyvr3,ptc,EV06203,Sama Satta to Al Raheem town,"Green Electric Bus, Bahawalpur.",3,https://pakbus.app/routes/bahawalpur-sama-satta-to-al-raheem-town,1C7107,FFFFFF
+g35z8,pma,RT-23,Canal to Chung,"Speedo feeder bus, Lahore.",3,https://pakbus.app/routes/lahore-canal-to-chung,D73636,FFFFFF
+g7qat,pma,RT-18,Bhatti Chowk to Mandiali Toll Plaza,"Speedo feeder bus, Lahore.",3,https://pakbus.app/routes/lahore-bhatti-chowk-to-mandiali-toll-plaza,D73636,FFFFFF
+gag83,cda,FR-09,Khanna Pul to Golra Morh Metro Station,"Feeder bus, Rawalpindi.",3,https://pakbus.app/routes/islamabad-fr-09-khanna-pul-to-golra-morh-metro-station,169200,000000
+gbwvy,smta,R11,Shireen Jinnah Colony to Miran Naka,"Peoples Bus Service, Karachi.",3,https://pakbus.app/routes/karachi-r11-shireen-jinnah-colony-to-miran-naka,FF0000,000000
+gdezg,pma,RT-15,Bhatti to R.A Bazar,"Speedo feeder bus, Lahore.",3,https://pakbus.app/routes/lahore-bhatti-to-r-a-bazar,D73636,FFFFFF
+gh79p,cda,FR-08A,PIMS Hospital to Capt. Naeem Tufail Shaheed Chowk,"Feeder bus, Rawalpindi.",3,https://pakbus.app/routes/islamabad-fr-08a-pims-hospital-to-capt-naeem-tufail-shaheed-chowk,955500,FFFFFF
+gjnb6,ptc,EV005601,E Bus Depot Govt. College to Shahdara Metro Stop,"Green Electric Bus, Sheikhupura.",3,https://pakbus.app/routes/sheikhupura-e-bus-depot-govt-college-to-shahdara-metro-stop,1AB815,000000
+gneec,ptc,EV04901,GBS Kasur to Kacha Paka,"Green Electric Bus, Kasur.",3,https://pakbus.app/routes/kasur-gbs-kasur-to-kacha-paka,1AB815,000000
+gnry8,ptc,EV06301,GBS Bahawalnagar to GBS Bahawalnagar,"Green Electric Bus, Bahawalnagar.",3,https://pakbus.app/routes/bahawalnagar-gbs-bahawalnagar-to-gbs-bahawalnagar,2BA322,000000
+gvr2k,ptc,EV-45902,GBS to Health Center Wan Bachran,"Green Electric Bus, Mianwali.",3,https://pakbus.app/routes/mianwali-gbs-to-health-center-wan-bachran,2BA322,000000
+gxgzp,ptc,EV05401,District Complex to Dhudial,"Green Electric Bus, Chakwal.",3,https://pakbus.app/routes/chakwal-district-complex-to-dhudial,2BA322,000000
+gyr5y,pma,RT-04,R.A. Bazar to Chungi Amar Sidhu,"Speedo feeder bus, Lahore.",3,https://pakbus.app/routes/lahore-r-a-bazar-to-chungi-amar-sidhu,D73636,FFFFFF
+h434a,ptc,EV04805,GBS Sargodha TO Mid Ranjha,"Green Electric Bus, Sargodha.",3,https://pakbus.app/routes/sargodha-gbs-sargodha-to-mid-ranjha,2BA322,000000
+h6aph,ptc,EV4701,Tehsil Chowk to Bhawana,"Green Electric Bus, Chiniot.",3,https://pakbus.app/routes/chiniot-tehsil-chowk-to-bhawana,079810,000000
+h7cj2,ptc,EV06701,Govt. collage to Fawara Chowk Burewala,"Green Electric Bus, Vehari.",3,https://pakbus.app/routes/vehari-govt-collage-to-fawara-chowk-burewala,4EE143,000000
+h8atz,ptc,EV5702,Hakeem Abad to Attock Khurd,"Green Electric Bus, Attock.",3,https://pakbus.app/routes/attock-hakeem-abad-to-attock-khurd,009809,000000
+h8bwr,ptc,EV582201,Asgharabad to Industrial area via Gojra Bypass,"Green Electric Bus, Muzaffarabad.",3,https://pakbus.app/routes/muzaffarabad-asgharabad-to-industrial-area-via-gojra-bypass,1AB815,000000
+h9byj,pma,MFR02,Qasim Fort to Suraj Miani,"Feeder bus, Multan.",3,https://pakbus.app/routes/multan-qasim-fort-to-suraj-miani,EB2618,000000
+hcapa,smta,SBA-01,Three Water Stop to Sakrand City Bus Stop,"Peoples Bus Service, Shaheed Benazirabad.",3,https://pakbus.app/routes/shaheed-benazirabad-sba-01-three-water-stop-to-sakrand-city-bus-stop,FF0000,000000
+hcw2m,smta,3-Exp,Abdullah Chowk to Numaish,"Karachi Breeze, Karachi.",3,https://pakbus.app/routes/karachi-abdullah-chowk-to-numaish,7CFCEA,000000
+hghfz,cda,FR-17,Humak Road to Aari Syedan Terminal,"Feeder bus, Rawalpindi.",3,https://pakbus.app/routes/islamabad-fr-17-humak-road-to-aari-syedan-terminal,3D5FFF,FFFFFF
+hh5s6,ptc,EV06403,GBS DG Khan to Sakhi Sarwar,"Green Electric Bus, Dera Ghazi Khan.",3,https://pakbus.app/routes/dera-ghazi-khan-gbs-dg-khan-to-sakhi-sarwar,2BA322,000000
+hk52z,cda,FR-06,PIMS Hospital to E-11 Markaz,"Feeder bus, Rawalpindi.",3,https://pakbus.app/routes/islamabad-fr-06-pims-hospital-to-e-11-markaz,E77504,000000
+hnw4p,ptc,EV04602,Toba Tek Singh to Gojra,"Green Electric Bus, Toba Tek Singh.",3,https://pakbus.app/routes/toba-tek-singh-toba-tek-singh-to-gojra,35A400,000000
+hp4pt,ptc,EV582203,Airport to parking area chatter via Alamdar chowk,"Green Electric Bus, Muzaffarabad.",3,https://pakbus.app/routes/muzaffarabad-airport-to-parking-area-chatter-via-alamdar-chowk,1AB815,000000
+hpyev,smta,R13,Tower to Hawks Bay Bus Stop,"Peoples Bus Service, Karachi.",3,https://pakbus.app/routes/karachi-r13-tower-to-hawks-bay-bus-stop,FF0000,000000
+htc6p,ptc,EV54704,Ghora Chowk to Jalalpur Bhattian,"Green Electric Bus, Hafizabad.",3,https://pakbus.app/routes/hafizabad-ghora-chowk-to-jalalpur-bhattian,2BA322,000000
+j2avw,ptc,EV04801,GBS Sargodha to GBS Bhera,"Green Electric Bus, Sargodha.",3,https://pakbus.app/routes/sargodha-gbs-sargodha-to-gbs-bhera,2BA322,000000
+j7q54,pma,MFR03B,Ghanta Ghar to Qadir Pur Raan,"Feeder bus, Multan.",3,https://pakbus.app/routes/multan-ghanta-ghar-to-qadir-pur-raan-mfr03b,EB2618,000000
+ja8z3,punjab-transport,EV0511A,Saddar Stop to Bhatta Chowk,"Electric feeder bus, Rawalpindi.",3,https://pakbus.app/routes/rawalpindi-saddar-stop-to-bhatta-chowk,00F42F,000000
+jreve,ptc,EV54602,College Chowk to Mano chak,"Green Electric Bus, Mandi Bahauddin.",3,https://pakbus.app/routes/mandi-bahauddin-college-chowk-to-mano-chak,006B52,FFFFFF
+jxjnz,ptc,EV06601,Fazal Mill to Khanpur Bagga Sher,"Green Electric Bus, Muzaffargarh.",3,https://pakbus.app/routes/muzaffargarh-fazal-mill-to-khanpur-bagga-sher,2BA322,000000
+jxmn2,ptc,EV60404,GBS Rajanpur to Hajipur,"Green Electric Bus, Rajanpur.",3,https://pakbus.app/routes/rajanpur-gbs-rajanpur-to-hajipur,2BA322,000000
+jydcy,pma,MFR12A,Aziz Hotel to Airport,"Feeder bus, Multan.",3,https://pakbus.app/routes/multan-aziz-hotel-to-airport,EB2618,000000
+k4x5v,cda,FR-11,Golra Morh Metro Station to I-16/4,"Feeder bus, Rawalpindi.",3,https://pakbus.app/routes/islamabad-fr-11-golra-morh-metro-station-to-i-16-4,82B201,000000
+k9nza,ptc,EV04802,GBS Sargodha to Sillanwali,"Green Electric Bus, Sargodha.",3,https://pakbus.app/routes/sargodha-gbs-sargodha-to-sillanwali,2BA322,000000
+kae5c,ptc,EV05601,GBS Nankana Sahab to Morr Khunda,"Green Electric Bus, Nankana Sahib.",3,https://pakbus.app/routes/nankana-sahib-gbs-nankana-sahab-to-morr-khunda,308C60,000000
+kazpg,smta,Pink-3,Pink Bus (women only): Power House Chowrangi to Nasir Jump,"Peoples Bus Service, Karachi. Women-only service.",3,https://pakbus.app/routes/karachi-pink-3-pink-bus-women-only-power-house-chowrangi-to-nasir-jump,FF0000,000000
+kfgn8,ptc,EV05602,GBS Nankana Sahab to Warburtton,"Green Electric Bus, Nankana Sahib.",3,https://pakbus.app/routes/nankana-sahib-gbs-nankana-sahab-to-warburtton,308C60,000000
+khd3d,pma,RT-10,Wahdat Road Station to Qartaba Chowk,"Speedo feeder bus, Lahore.",3,https://pakbus.app/routes/lahore-wahdat-road-station-to-qartaba-chowk,D73636,FFFFFF
+kk6yr,pma,RT-03,Rana Town to Railway Station,"Speedo feeder bus, Lahore.",3,https://pakbus.app/routes/lahore-rana-town-to-railway-station,D73636,FFFFFF
+kqep5,ptc,EV5201,GBS Sialkot to Pasrur,"Green Electric Bus, Sialkot.",3,https://pakbus.app/routes/sialkot-gbs-sialkot-to-pasrur,308C60,000000
+kqevm,ptc,EV04102,UAF to Sadhaar Bypass,"Green Electric Bus, Faisalabad.",3,https://pakbus.app/routes/faisalabad-uaf-to-sadhaar-bypass,2BA322,000000
+ksn42,ptc,EV0054203,GBS Narowal to Pasrur Chowk,"Green Electric Bus, Narowal.",3,https://pakbus.app/routes/narowal-gbs-narowal-to-pasrur-chowk,308C60,000000
+kvqr9,ptc,EV0054204,Narowal Circular Route,"Green Electric Bus, Narowal.",3,https://pakbus.app/routes/narowal-narowal-circular-route,308C60,000000
+kw92b,pma,RT-12,R.A Bazar to Nasir Bagh,"Speedo feeder bus, Lahore.",3,https://pakbus.app/routes/lahore-r-a-bazar-to-nasir-bagh,D73636,FFFFFF
+kwy44,ptc,EV06803,GBS Rahim Yar Khan to Kot Samba,"Green Electric Bus, Rahim Yar Khan.",3,https://pakbus.app/routes/rahim-yar-khan-gbs-rahim-yar-khan-to-kot-samba,2BA322,000000
+kxrq8,ptc,EV45301,GBS Bhakker to GBS Darya Khan,"Green Electric Bus, Bhakkar.",3,https://pakbus.app/routes/bhakkar-gbs-bhakker-to-gbs-darya-khan,2F5E4A,FFFFFF
+kzqs8,smta,R9,Gulshan-e-Hadeed to Tower,"Peoples Bus Service, Karachi.",3,https://pakbus.app/routes/karachi-r9-gulshan-e-hadeed-to-tower,FF0000,000000
+m26km,pma,MFR30,Dera Adda to Sher Shah Bypass,"Feeder bus, Multan.",3,https://pakbus.app/routes/multan-dera-adda-to-sher-shah-bypass,EB2618,000000
+m35aa,ptc,EV45702,GBS Pakpattan to Arifwala,"Green Electric Bus, Pakpattan.",3,https://pakbus.app/routes/pakpattan-gbs-pakpattan-to-arifwala,2BA322,000000
+m3qw7,pma,RT-14,Purana Kahna to R.A Bazar,"Speedo feeder bus, Lahore.",3,https://pakbus.app/routes/lahore-purana-kahna-to-r-a-bazar,D73636,FFFFFF
+m5bmz,smta,LRK-01,New Bus stand to Taluka Hospital,"Peoples Bus Service, Larkana.",3,https://pakbus.app/routes/larkana-lrk-01-new-bus-stand-to-taluka-hospital,FF0000,000000
+mbbkh,cda,FR-04A,Barakahu to Bari Imam,"Feeder bus, Rawalpindi.",3,https://pakbus.app/routes/islamabad-fr-04a-barakahu-to-bari-imam,D97BF9,000000
+mgy7w,ptc,EV06202,DHA to Cattle market (via 13 Solang),"Green Electric Bus, Bahawalpur.",3,https://pakbus.app/routes/bahawalpur-dha-to-cattle-market-via-13-solang,1C7107,FFFFFF
+mr4dw,ptc,EV04001,Arifwala Bypass to Musafir Khana,"Green Electric Bus, Sahiwal.",3,https://pakbus.app/routes/sahiwal-arifwala-bypass-to-musafir-khana,2BA322,000000
+n5yx9,ptc,EV4702,Tehsil Chowk to Lalian,"Green Electric Bus, Chiniot.",3,https://pakbus.app/routes/chiniot-tehsil-chowk-to-lalian,079810,000000
+n8rsf,ptc,EV06201,Dera Bakha to Lodhran entrance gate,"Green Electric Bus, Bahawalpur.",3,https://pakbus.app/routes/bahawalpur-dera-bakha-to-lodhran-entrance-gate,1C7107,FFFFFF
+n8sjr,ptc,EV0054201,GBS Narowal to Manga Pul,"Green Electric Bus, Narowal.",3,https://pakbus.app/routes/narowal-gbs-narowal-to-manga-pul,308C60,000000
+naz47,ptc,EV04902,GBS Kasur to Gajjumata Stop,"Green Electric Bus, Kasur.",3,https://pakbus.app/routes/kasur-gbs-kasur-to-gajjumata-stop,1AB815,000000
+ndym6,ptc,EV45401,GBS Khushab to Girot Chowk,"Green Electric Bus, Khushab.",3,https://pakbus.app/routes/khushab-gbs-khushab-to-girot-chowk,7BA182,000000
+ngpax,ptc,EV04002,KFC Bypass to Noor Shah Stop,"Green Electric Bus, Sahiwal.",3,https://pakbus.app/routes/sahiwal-kfc-bypass-to-noor-shah-stop,2BA322,000000
+nm8dr,punjab-transport,RT03B,Ghanta Ghar to Qadir Pur Raan,"Electric feeder bus, Multan.",3,https://pakbus.app/routes/multan-ghanta-ghar-to-qadir-pur-raan-rt03b,52D13A,000000
+nny66,ptc,EV06801,GBS Rahim Yar Khan to Lala Chowk,"Green Electric Bus, Rahim Yar Khan.",3,https://pakbus.app/routes/rahim-yar-khan-gbs-rahim-yar-khan-to-lala-chowk,2BA322,000000
+ns3nh,ptc,EV06804,GBS Rahim Yar Khan to Abu Dhabi Palace,"Green Electric Bus, Rahim Yar Khan.",3,https://pakbus.app/routes/rahim-yar-khan-gbs-rahim-yar-khan-to-abu-dhabi-palace,2BA322,000000
+nwray,smta,MPK-01,Mirpur Khas Bus Stand Stop to Mirwah Gorchani City,"Peoples Bus Service, Mirpurkhas.",3,https://pakbus.app/routes/mirpurkhas-mpk-01-mirpur-khas-bus-stand-stop-to-mirwah-gorchani-city,FF0000,000000
+nyhmk,ptc,EV06302,GBS Bahawalnagar to Dunga Bunga,"Green Electric Bus, Bahawalnagar.",3,https://pakbus.app/routes/bahawalnagar-gbs-bahawalnagar-to-dunga-bunga,2BA322,000000
+p4bp5,punjab-transport,EV05105,Marrir Metrobus Station to Motorway Chowk 26 No,"Electric feeder bus, Rawalpindi.",3,https://pakbus.app/routes/rawalpindi-marrir-metrobus-station-to-motorway-chowk-26-no,00F42F,000000
+p662a,pma,RT-27,Jinnah Bus Terminal to Bahria Town,"Speedo feeder bus, Lahore.",3,https://pakbus.app/routes/lahore-jinnah-bus-terminal-to-bahria-town,D73636,FFFFFF
+p8fda,pma,RT-17,Gajjumata to Rangers Wing Headquarter,"Speedo feeder bus, Lahore.",3,https://pakbus.app/routes/lahore-gajjumata-to-rangers-wing-headquarter,D73636,FFFFFF
+pap5a,punjab-transport,MFR-EV-01,Vehari Chowk to Nishtar Hospital,"Electric feeder bus, Multan.",3,https://pakbus.app/routes/multan-vehari-chowk-to-nishtar-hospital,52D13A,000000
+pb7wr,smta,HYD-01,Hyder Chowk to Hatri Police Station,"Peoples Bus Service, Hyderabad.",3,https://pakbus.app/routes/hyderabad-hyd-01-hyder-chowk-to-hatri-police-station,FF0000,000000
+pk9xc,ptc,EV5701,POF Sanjwal to Hazro,"Green Electric Bus, Attock.",3,https://pakbus.app/routes/attock-pof-sanjwal-to-hazro,009809,000000
+pkw2j,cda,FR-08C,PIMS Hospital to Capt. Naeem Tufail Shaheed Chowk,"Feeder bus, Rawalpindi.",3,https://pakbus.app/routes/islamabad-fr-08c-pims-hospital-to-capt-naeem-tufail-shaheed-chowk,9F8061,000000
+pqa7d,cda,FR-15,Gulberg to Rawat,"Feeder bus, Rawalpindi.",3,https://pakbus.app/routes/islamabad-fr-15-gulberg-to-rawat,ACD6C2,000000
+ps3vy,smta,R2,Power House Chowrangi to Korangi Crossing,"Peoples Bus Service, Karachi.",3,https://pakbus.app/routes/karachi-r2-power-house-chowrangi-to-korangi-crossing,FF0000,000000
+ptdkr,punjab-transport,EVM03,GBS Murree to New Murree,"Green Electric Bus, Murree.",3,https://pakbus.app/routes/murree-gbs-murree-to-new-murree,31FF00,000000
+pw82e,ptc,EV45901,GBS to Daud Khel,"Green Electric Bus, Mianwali.",3,https://pakbus.app/routes/mianwali-gbs-to-daud-khel,2BA322,000000
+px6f2,cda,FRG-1,Green Line,"Metro Bus, Rawalpindi.",3,https://pakbus.app/routes/islamabad-frg-1-green-line,008000,FFFFFF
+q33ab,pma,RT-20,Mull Adda to Jinnah Bus Terminal,"Speedo feeder bus, Lahore.",3,https://pakbus.app/routes/lahore-mull-adda-to-jinnah-bus-terminal,D73636,FFFFFF
+q54r7,smta,R8,Tower to Yousuf Goth Bus Stop,"Peoples Bus Service, Karachi.",3,https://pakbus.app/routes/karachi-r8-tower-to-yousuf-goth-bus-stop,FF0000,000000
+q7zep,punjab-transport,RT03,Ghanta Ghar to Ibne Sina Hospital,"Electric feeder bus, Multan.",3,https://pakbus.app/routes/multan-ghanta-ghar-to-ibne-sina-hospital,52D13A,000000
+q82ad,pma,MFR11,Vehari Chowk to CMH,"Feeder bus, Multan.",3,https://pakbus.app/routes/multan-vehari-chowk-to-cmh,EB2618,000000
+qamgz,ptc,EV582202,Asgharabad to Industrial area via Bank Road,"Green Electric Bus, Muzaffarabad.",3,https://pakbus.app/routes/muzaffarabad-asgharabad-to-industrial-area-via-bank-road,1AB815,000000
+qbkhz,smta,2,Orange Line,"Karachi Breeze, Karachi.",3,https://pakbus.app/routes/karachi-orange-line,FFA500,000000
+qgwdr,ptc,EV54402,Fauji Foundation to Mangla,"Green Electric Bus, Jhelum.",3,https://pakbus.app/routes/jhelum-fauji-foundation-to-mangla,2BA322,000000
+qvj7a,pma,MFR08B,Vehari Chowk to Basti Malook,"Feeder bus, Multan.",3,https://pakbus.app/routes/multan-vehari-chowk-to-basti-malook,EB2618,000000
+qz3yg,ptc,EV05403,Tehsil Chowk to Mohal Mughlan,"Green Electric Bus, Chakwal.",3,https://pakbus.app/routes/chakwal-tehsil-chowk-to-mohal-mughlan,2BA322,000000
+r8cqr,punjab-transport,RT01A,Dera Adda to Dehar Chowk,"Electric feeder bus, Multan.",3,https://pakbus.app/routes/multan-dera-adda-to-dehar-chowk,52D13A,000000
+rc8ce,ptc,EV06603,Jhang Mor to Turkey Hospital,"Green Electric Bus, Muzaffargarh.",3,https://pakbus.app/routes/muzaffargarh-jhang-mor-to-turkey-hospital,2BA322,000000
+rg45y,pma,RT-21,Shalamar station to Khaira Pull,"Speedo feeder bus, Lahore.",3,https://pakbus.app/routes/lahore-shalamar-station-to-khaira-pull,D73636,FFFFFF
+rgxsr,pma,LMBS-RT01,Metro Bus Lahore,"Metro Bus, Lahore.",3,https://pakbus.app/routes/lahore-metro-bus-lahore,49AB41,000000
+rme55,smta,Pink10,Pink Bus (women only): Quaid e Azam Mazar to Ibrahim Hyderi,"Peoples Bus Service, Karachi. Women-only service.",3,https://pakbus.app/routes/karachi-pink10-pink-bus-women-only-quaid-e-azam-mazar-to-ibrahim-hyderi,FF0000,000000
+rqq4r,pma,RLRT01,Red Line - PMBS,"Metro Bus Red Line, Rawalpindi.",3,https://pakbus.app/routes/rawalpindi-red-line-pmbs,FF0000,000000
+rs627,ptc,EV04603,GBS Toba Tek Singh to Peer Mahal,"Green Electric Bus, Toba Tek Singh.",3,https://pakbus.app/routes/toba-tek-singh-gbs-toba-tek-singh-to-peer-mahal,35A400,000000
+rs787,cda,FR-03A,PIMS Hospital to Said Pur Village,"Feeder bus, Rawalpindi.",3,https://pakbus.app/routes/islamabad-fr-03a-pims-hospital-to-said-pur-village,4CFE99,000000
+s293z,ptc,EV4401,GBS Okara To Deepal Pur,"Green Electric Bus, Okara.",3,https://pakbus.app/routes/okara-gbs-okara-to-deepal-pur,308C60,000000
+s9vd2,ptc,EV04601,Toba Tek Singh to Kamalia,"Green Electric Bus, Toba Tek Singh.",3,https://pakbus.app/routes/toba-tek-singh-toba-tek-singh-to-kamalia,35A400,000000
+sc5b8,ptc,EV05302,GBS Gujrat to Daulat Nagar,"Green Electric Bus, Gujrat.",3,https://pakbus.app/routes/gujrat-gbs-gujrat-to-daulat-nagar,308C60,000000
+sd37g,pma,RT-08,Canal to Jinnah Terminal,"Speedo feeder bus, Lahore.",3,https://pakbus.app/routes/lahore-canal-to-jinnah-terminal-rt-08,D73636,FFFFFF
+se948,ptc,EV04701,GBS Jhang to Gojra Bypass,"Green Electric Bus, Jhang.",3,https://pakbus.app/routes/jhang-gbs-jhang-to-gojra-bypass,35A400,000000
+sfwbj,pma,MFR09C,Chungi No 9 to Nadirabad Phatak via Ali Wala,"Feeder bus, Multan.",3,https://pakbus.app/routes/multan-chungi-no-9-to-nadirabad-phatak-via-ali-wala,EB2618,000000
+sjnde,pma,RT-05,Bhatti Chowk to Shadbagh Underpass,"Speedo feeder bus, Lahore.",3,https://pakbus.app/routes/lahore-bhatti-chowk-to-shadbagh-underpass,D73636,FFFFFF
+ss43v,pma,RT-16,Canal to Jinnah Terminal,"Speedo feeder bus, Lahore.",3,https://pakbus.app/routes/lahore-canal-to-jinnah-terminal-rt-16,D73636,FFFFFF
+swbyf,ptc,EV54701,Jinnah Chowk - Jinnah Chowk,"Green Electric Bus, Hafizabad.",3,https://pakbus.app/routes/hafizabad-jinnah-chowk-jinnah-chowk,2BA322,000000
+swegt,pma,MFR01C,Dera Adda to E-Khidmat Center via Dehhr Chowk,"Feeder bus, Multan.",3,https://pakbus.app/routes/multan-dera-adda-to-e-khidmat-center-via-dehhr-chowk,EB2618,000000
+syq9t,ptc,EV06204,Bhatta no 1/ Alina hospital to Mari Qasim Shah,"Green Electric Bus, Bahawalpur.",3,https://pakbus.app/routes/bahawalpur-bhatta-no-1-alina-hospital-to-mari-qasim-shah,1C7107,FFFFFF
+t4ama,pma,MFR09,Chungi no 9 to Nag Shah,"Feeder bus, Multan.",3,https://pakbus.app/routes/multan-chungi-no-9-to-nag-shah,EB2618,000000
+tcjjp,cda,FR-13,Golra Morh Metro Station to Fateh Jang,"Feeder bus, Rawalpindi.",3,https://pakbus.app/routes/islamabad-fr-13-golra-morh-metro-station-to-fateh-jang,ED87CA,000000
+tsvz7,cda,FR-08B,Khanna Pul Terminal to Nilore,"Feeder bus, Rawalpindi.",3,https://pakbus.app/routes/islamabad-fr-08b-khanna-pul-terminal-to-nilore,DECC84,000000
+v3kbv,smta,Pink-2,Pink Bus (women only): Power House Chowrangi to Korangi Crossing,"Peoples Bus Service, Karachi. Women-only service.",3,https://pakbus.app/routes/karachi-pink-2-pink-bus-women-only-power-house-chowrangi-to-korangi-crossing,FF0000,000000
+v7jpq,ptc,EV45903,GBS to Ban Hafiz Jee,"Green Electric Bus, Mianwali.",3,https://pakbus.app/routes/mianwali-gbs-to-ban-hafiz-jee,2BA322,000000
+v7mc8,ptc,EV04703,GBS Jhang to UVAS,"Green Electric Bus, Jhang.",3,https://pakbus.app/routes/jhang-gbs-jhang-to-uvas,35A400,000000
+vae65,punjab-transport,EVM01,GBS Murree to Barrian,"Green Electric Bus, Murree.",3,https://pakbus.app/routes/murree-gbs-murree-to-barrian,31FF00,000000
+vc7yq,ptc,EV06602,EV Bus to Naag Shah,"Green Electric Bus, Muzaffargarh.",3,https://pakbus.app/routes/muzaffargarh-railway-phattak-to-mehmood-mills,2BA322,000000
+vhksn,punjab-transport,RT01B,Dera Adda to E-Khidmat Center via Women University,"Electric feeder bus, Multan.",3,https://pakbus.app/routes/multan-dera-adda-to-e-khidmat-center-via-women-university-rt01b,52D13A,000000
+vnzxk,smta,R3,Power House Chowrangi to Nasir Jump,"Peoples Bus Service, Karachi.",3,https://pakbus.app/routes/karachi-r3-power-house-chowrangi-to-nasir-jump,FF0000,000000
+vsxfc,ptc,EV04804,GBS Sargodha to Chota Sahiwal,"Green Electric Bus, Sargodha.",3,https://pakbus.app/routes/sargodha-gbs-sargodha-to-chota-sahiwal,2BA322,000000
+vsxp8,smta,R12,Khokhrapar Chaman Colony to Lucky Star,"Peoples Bus Service, Karachi.",3,https://pakbus.app/routes/karachi-r12-khokhrapar-chaman-colony-to-lucky-star,FF0000,000000
+vwec4,ptc,EV60602,"GBS Layyah to THQ Hospital, Chowk Azam","Green Electric Bus, Layyah.",3,https://pakbus.app/routes/layyah-gbs-layyah-to-thq-hospital-chowk-azam,308C60,000000
+vxzma,ptc,EV6503,Khanewal to Qadirpur Raan,"Green Electric Bus, Khanewal.",3,https://pakbus.app/routes/khanewal-khanewal-to-qadirpur-raan,308C60,000000
+vzwy3,smta,Pink-1,Pink Bus (women only): Khokhrapar No 1 to Tower,"Peoples Bus Service, Karachi. Women-only service.",3,https://pakbus.app/routes/karachi-pink-1-pink-bus-women-only-khokhrapar-no-1-to-tower,FF0000,000000
+w7qfn,ptc,EV060802,Shahida Islam Hospital to Duniyapur,"Green Electric Bus, Lodhran.",3,https://pakbus.app/routes/lodhran-shahida-islam-hospital-to-duniyapur,3CD930,000000
+w9v4h,pma,MFR39,Northern Bypass to Dars Chawan,"Feeder bus, Multan.",3,https://pakbus.app/routes/multan-northern-bypass-to-dars-chawan,EB2618,000000
+wafag,smta,SUK-01,Rohri Railway Station to Globe chowk Lab e Mehran,"Peoples Bus Service, Sukkur.",3,https://pakbus.app/routes/sukkur-suk-01-rohri-railway-station-to-globe-chowk-lab-e-mehran,FF0000,000000
+wb2j2,punjab-transport,RT09B,Chungi No. 09 to Nadirabad Phatak,"Electric feeder bus, Multan.",3,https://pakbus.app/routes/multan-chungi-no-09-to-nadirabad-phatak,52D13A,000000
+wdj3s,ptc,EV54403,Fauji Foundation to Sanghoi,"Green Electric Bus, Jhelum.",3,https://pakbus.app/routes/jhelum-fauji-foundation-to-sanghoi,2BA322,000000
+wkftz,ptc,EV5202,GBS Sialkot to Daska,"Green Electric Bus, Sialkot.",3,https://pakbus.app/routes/sialkot-gbs-sialkot-to-daska,308C60,000000
+wv5f3,ptc,EV54401,Fauji Foundation to Technical College,"Green Electric Bus, Jhelum.",3,https://pakbus.app/routes/jhelum-fauji-foundation-to-technical-college,2BA322,000000
+wydge,ptc,EV6501,Khanewal to Kabirwala,"Green Electric Bus, Khanewal.",3,https://pakbus.app/routes/khanewal-khanewal-to-kabirwala,308C60,000000
+wzvn6,ptc,EV60403,Rajanpur to Kot Mithan,"Green Electric Bus, Rajanpur.",3,https://pakbus.app/routes/rajanpur-rajanpur-to-kot-mithan,2BA322,000000
+x28sb,ptc,EV06802,GBS Rahim Yar Khan to GBS Sadiqabad,"Green Electric Bus, Rahim Yar Khan.",3,https://pakbus.app/routes/rahim-yar-khan-gbs-rahim-yar-khan-to-gbs-sadiqabad,2BA322,000000
+xdc7x,ptc,EV4703,Tehsil Chowk to Bhutto Colony,"Green Electric Bus, Chiniot.",3,https://pakbus.app/routes/chiniot-tehsil-chowk-to-bhutto-colony,079810,000000
+xmvbj,pma,LFR01,Shahdara to Gajjumata,"Speedo feeder bus, Lahore.",3,https://pakbus.app/routes/lahore-shahdara-to-gajjumata,D73636,FFFFFF
+xtcmk,ptc,EV60401,Rajanpur to Fazilpur,"Green Electric Bus, Rajanpur.",3,https://pakbus.app/routes/rajanpur-rajanpur-to-fazilpur,2BA322,000000
+y86sm,punjab-transport,EV05104,Saddar Metrobus Station to Munawar Colony,"Electric feeder bus, Rawalpindi.",3,https://pakbus.app/routes/rawalpindi-saddar-metrobus-station-to-munawar-colony,00F42F,000000
+ya37w,ptc,EV04004,GBS Sahiwal to Adda Kameer,"Green Electric Bus, Sahiwal.",3,https://pakbus.app/routes/sahiwal-gbs-sahiwal-to-adda-kameer,2BA322,000000
+ycagm,pma,RT-13,Depot Chowk to Kalma Chowk,"Speedo feeder bus, Lahore.",3,https://pakbus.app/routes/lahore-depot-chowk-to-kalma-chowk,D73636,FFFFFF
+ycy27,pma,MFR01,Dera Adda to Dehhr Chowk,"Feeder bus, Multan.",3,https://pakbus.app/routes/multan-dera-adda-to-dehhr-chowk,EB2618,000000
+ydm68,punjab-transport,RT01D,Dera Adda to DHA,"Electric feeder bus, Multan.",3,https://pakbus.app/routes/multan-dera-adda-to-dha,52D13A,000000
+yfegw,ptc,EV04702,GBS Jhang to Aliabad,"Green Electric Bus, Jhang.",3,https://pakbus.app/routes/jhang-gbs-jhang-to-aliabad,35A400,000000
+ynvew,ptc,EV4402,Sahiwal Bypass to KFC Bypass,"Green Electric Bus, Okara.",3,https://pakbus.app/routes/okara-sahiwal-bypass-to-kfc-bypass,308C60,000000
+ynww6,ptc,EV04101,Kamal Pur to Roshan Wala Bypass,"Green Electric Bus, Faisalabad.",3,https://pakbus.app/routes/faisalabad-kamal-pur-to-roshan-wala-bypass,2BA322,000000
+ys5wk,ptc,EV04807,GBS Sargodha to Lak Morr,"Green Electric Bus, Sargodha.",3,https://pakbus.app/routes/sargodha-gbs-sargodha-to-lak-morr,2BA322,000000
+yxk67,ptc,EV60402,Rajanpur Intercity,"Green Electric Bus, Rajanpur.",3,https://pakbus.app/routes/rajanpur-rajanpur-intercity,2BA322,000000
+yxtzz,ptc,EV04005,Electro Bus Depot to Harappa Museum,"Green Electric Bus, Sahiwal.",3,https://pakbus.app/routes/sahiwal-electro-bus-depot-to-harappa-museum,2BA322,000000
+z3dcy,cda,FR-14,Barakahu to Mandi Morh,"Feeder bus, Rawalpindi.",3,https://pakbus.app/routes/islamabad-fr-14-barakahu-to-mandi-morh,641AA6,FFFFFF
+z3mjx,pma,RT-24,KSK to Railway Station,"Speedo feeder bus, Lahore.",3,https://pakbus.app/routes/lahore-ksk-to-railway-station,D73636,FFFFFF
+z7pp5,pma,RT01,Orange Line,"Orange Line metro train, Lahore.",1,https://pakbus.app/routes/lahore-orange-line,F0AD1A,000000
+za4py,pma,RT-07,Depot Chowk to Chungi Amer Sidhu,"Speedo feeder bus, Lahore.",3,https://pakbus.app/routes/lahore-depot-chowk-to-chungi-amer-sidhu,D73636,FFFFFF
+zee86,pma,MFR01B,Dera Adda to E-Khidmat Center via Women University,"Feeder bus, Multan.",3,https://pakbus.app/routes/multan-dera-adda-to-e-khidmat-center-via-women-university-mfr01b,EB2618,000000
+zh87m,punjab-transport,RT09,Chungi No. 09 to Nag Shah,"Electric feeder bus, Multan.",3,https://pakbus.app/routes/multan-chungi-no-09-to-nag-shah,52D13A,000000
+zmdve,ptc,EV45703,GBS Pakpattan to Noorpur,"Green Electric Bus, Pakpattan.",3,https://pakbus.app/routes/pakpattan-gbs-pakpattan-to-noorpur,2BA322,000000
+zne4z,ptc,EV60601,GBS Layyah to Pahar Pur,"Green Electric Bus, Layyah.",3,https://pakbus.app/routes/layyah-gbs-layyah-to-pahar-pur,308C60,000000
+zqkzn,cda,ST-02,PIMS to Capt. Naeem Tufail Shaheed Chowk,"Feeder bus, Rawalpindi.",3,https://pakbus.app/routes/islamabad-st-02-pims-to-capt-naeem-tufail-shaheed-chowk,808080,000000
+zrjr9,pma,MFR12B,Aziz Hotel to Nishtar Hospital,"Feeder bus, Multan.",3,https://pakbus.app/routes/multan-aziz-hotel-to-nishtar-hospital,EB2618,000000
+zsate,ptc,EV05301,"GBS, Gujrat to Mangowal","Green Electric Bus, Gujrat.",3,https://pakbus.app/routes/gujrat-gbs-gujrat-to-mangowal,308C60,000000
+zwx9j,pma,MFR07B,Vehari Chowk to 32 Pull,"Feeder bus, Multan.",3,https://pakbus.app/routes/multan-vehari-chowk-to-32-pull,EB2618,000000
+zx5z2,ptc,EV45403,GBS Khushab to Mangwal,"Green Electric Bus, Khushab.",3,https://pakbus.app/routes/khushab-gbs-khushab-to-mangwal,7BA182,000000

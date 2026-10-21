@@ -1,0 +1,58 @@
+network_id,network_name
+n0999f5c060cf8258,Metro Bus
+n0b9b0f4a703d79bb,Peoples Bus Service
+n112d453450b893d7,Green Electric Bus
+n148c323e54ba5b95,Green Electric Bus
+n14b409f6ea39838f,Green Electric Bus
+n1595c40e6973c106,Green Electric Bus
+n2136ccd5623c58f9,Green Electric Bus
+n23242b984c99bbd6,Green Electric Bus
+n2fd82cf66e2add96,Green Electric Bus
+n36d38131a60d1dca,Green Electric Bus
+n37b002bfb3b85b16,Green Electric Bus
+n3953432e2cf9aec4,Green Electric Bus
+n3d2c786a50d49087,Green Electric Bus
+n47d13a803409ba34,Green Electric Bus
+n49819aac1e5a440b,Orange Line metro train
+n4c2dd5d4e59c3187,Green Electric Bus
+n518a088759b69863,Green Electric Bus
+n5268e30fc07aee36,Green Electric Bus
+n5642db0597a3ae7f,Green Electric Bus
+n5b0851e35e7f266f,Green Electric Bus
+n606419a3daa252d2,Green Electric Bus
+n675d1bdd935aab57,Green Electric Bus
+n6a0ea06dad6b7611,Peoples Bus Service
+n6d43d23b249a67d4,Metro Bus
+n6dcf4915968c8039,Electric feeder bus
+n6e9bf1f2fed0d29a,Green Electric Bus
+n740ff2717832e22b,Metro Bus Red Line
+n76a48713288f49c1,Green Electric Bus
+n7a6675aeadeaaea7,Peoples Bus Service
+n7bbc3158482410d8,Peoples Bus Service
+n7ceadd078369ad9b,Feeder bus
+n8b47510eaf4db36f,Green Electric Bus
+n8ba8a0e6fb0d6d33,Green Electric Bus
+n908ac0f5a52a557b,Metro Bus
+n90cd0ab8a1f90e6b,Peoples Bus Service
+n943b884bbc427a33,Feeder bus
+n97ad0d8390eb83e9,Green Electric Bus
+n9ad836bd3a1af52a,Karachi Breeze
+na3116dcf3217a498,Green Electric Bus
+na43dc235d79d05e7,Green Electric Bus
+nab0777617c6781b1,Green Electric Bus
+nb405370dcc36c42c,Green Electric Bus
+nb5172e6851160a37,Green Electric Bus
+nc423abd99e4981eb,Green Electric Bus
+nccd98a8beb81c591,Electric feeder bus
+ncdab8b2747e12e17,Speedo feeder bus
+ncfb18ea57a88cb84,Green Electric Bus
+nd4a7b44cc58c090f,Green Electric Bus
+ndc424a0cf33cc80e,Feeder bus
+nde914c0f3733454a,Peoples Bus Service
+ndf58db73a79e6d52,Green Electric Bus
+nea91043c341d8451,Green Electric Bus
+nf0b71e2cb9c14774,Speedo feeder bus
+nf4fb363a7279b5a0,Green Electric Bus
+nf9263f1d45fd91d6,Green Electric Bus
+nff2cfdbc3c74b678,Electric feeder bus
+nffd8c4ad36342351,Green Electric Bus

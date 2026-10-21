@@ -1,0 +1,450 @@
+pattern_id,route_id,pattern_name,pattern_name_ur,direction_id,shape_id,women_only,restricted_access
+c459q,aavg7,Babu Sabu to Main Market Gulberg,بابو صابو سے مین مارکیٹ گلبرگ,0,,0,0
+w6ghf,aavg7,Main Market Gulberg to Babu Sabu,مین مارکیٹ گلبرگ سے بابو صابو,1,,0,0
+d2dgy,achff,Khanqah Dogran to E-Bus Depot,خانقاہ ڈوگراں سے ای بس ڈپو,0,,0,0
+tjhxj,achff,E-Bus Depot to Khanqah Dogran,ای بس ڈپو سے خانقاہ ڈوگراں,1,,0,0
+dmqdz,aez23,Paragon City to Railway Station,پیراگون سٹی سے ریلوے اسٹیشن,0,,0,0
+hngjy,aez23,Railway Station to Paragon City,ریلوے اسٹیشن سے پیراگون سٹی,1,,0,0
+n73ys,aezna,Golra Morh Metro Station to Taxila,گولڑہ موڑ میٹرو اسٹیشن سے ٹیکسلا,0,,0,0
+r62af,aezna,Taxila to Golra Morh Metro Station,ٹیکسلا سے گولڑہ موڑ میٹرو اسٹیشن,1,,0,0
+cjhkg,afvp9,Chishtian to GBS Bahawalnagar,چشتیاں سے بہاولنگر بس اڈہ,0,,0,0
+e6ygq,afvp9,GBS Bahawalnagar to Chishtian,بہاولنگر بس اڈہ سے چشتیاں,1,,0,0
+mwcyw,ammha,PIMS to Gulberg,پمز سے گلبرگ,0,,0,0
+phe9f,ammha,Gulberg to PIMS,گلبرگ سے پمز,1,phe9f,0,0
+c7ry9,amswb,Adda Gamber to Admore Pump Farid Town,اڈہ گمبر سے ایڈمور پمپ فرید ٹاؤن,0,,0,0
+p6dh5,amswb,Admore Pump Farid Town To Adda Gamber,ایڈمور پمپ فرید ٹاؤن سے اڈہ گمبر,1,,0,0
+jsm9r,atg2x,E-Khidmat Center to Dera Adda via Dehar Chowk,ای خدمت سینٹر سے ڈیرہ اڈہ براستہ ڈہر چوک,0,,0,0
+qd7z4,atg2x,Dera Adda to E-Khidmat Center via Dehar Chowk,ڈیرہ اڈہ سے ای خدمت سینٹر براستہ ڈہر چوک,1,,0,0
+dfn43,atntz,RT-10-Chungi No 9 to Nawabpur,RT-10 چونگی نمبر 9 سے نواب پور,0,,0,0
+ejf3k,atntz,RT-10-Nawabpur to Chungi No.9,RT-10 نواب پور سے چونگی نمبر 9,1,,0,0
+kjqqb,avvay,RT-9B-Nadirabad Phatak To -Chungi No 9,RT-9B نادر آباد پھاٹک سے چونگی نمبر 9,0,,0,0
+mj7ja,avvay,RT-9B-Chungi No 9 To Nadirabad Phatak,RT-9B چونگی نمبر 9 سے نادر آباد پھاٹک,1,,0,0
+cyfjd,awvfs,Ibrahim Hyderi to Quaid-e-Azam Mazar,ابراہیم حیدری سے مزارِ قائد اعظم,0,cyfjd,0,0
+jwx9j,awvfs,Quaid e Azam Mazar to Ibrahim Hyderi,مزارِ قائد اعظم سے ابراہیم حیدری,1,jwx9j,0,0
+dxswp,az9zx,PIMS Hospital to Aiwan e Sadar Colony,پمز ہسپتال سے ایوانِ صدر کالونی,0,dxswp,0,0
+e2z4p,az9zx,Aiwan e Sadar Colony to PIMS Hospital,ایوانِ صدر کالونی سے پمز ہسپتال,1,,0,0
+ks9qq,b395m,Peer Mahal to Tibba Sultanpur,پیر محل سے ٹبہ سلطان پور,0,,0,0
+tqfbw,b395m,Tibba Sultanpur to Peer Mahal,ٹبہ سلطان پور سے پیر محل,1,,0,0
+amzmm,b98w6,Behal to GBS Bhakkar,بہل سے بھکر بس اڈہ,0,,0,0
+enkav,b98w6,GBS Bhakkar to Behal,بھکر بس اڈہ سے بہل,1,,0,0
+ap3cz,bbjvx,Fawara Chowk to Koral Chowk,فوارہ چوک سے کورال چوک,0,,0,0
+eqyn8,bbjvx,Koral Chowk to Fawara Chowk,کورال چوک سے فوارہ چوک,1,,0,0
+awr5y,bdy43,Kahror Pakka to Shahida Islam Hospital,کہروڑ پکا سے شاہدہ اسلام ہسپتال,0,,0,0
+p7cbt,bdy43,Shahida Islam Hospital to Kahror Pakka,شاہدہ اسلام ہسپتال سے کہروڑ پکا,1,,0,0
+gvznc,bf249,Kathiala Sheikhan to Rasool Village,کٹھیالہ شیخاں سے گاؤں رسول,0,,0,0
+szsmn,bf249,Rasool Village to Kathiala Sheikhan,گاؤں رسول سے کٹھیالہ شیخاں,1,,0,0
+nk4a8,bgdwd,Jahaniya to Khanewal,جہانیاں سے خانیوال,0,,0,0
+za698,bgdwd,Khanewal to Jahaniya,خانیوال سے جہانیاں,1,,0,0
+nvej4,bhtqx,Rawalpindi Railway Station To Hamrahi Stop,راولپنڈی ریلوے اسٹیشن سے ہمراہی اسٹاپ,0,,0,0
+tfd28,bhtqx,Hamrahi Stop To Rawalpindi Railway Station,ہمراہی اسٹاپ سے راولپنڈی ریلوے اسٹیشن,1,,0,0
+qdsmb,bhvsh,Nadirabad Phatak to Chungi No. 09 Via Ali Wala,نادر آباد پھاٹک سے چونگی نمبر 9 براستہ علی والا,0,,0,0
+vvycr,bhvsh,Chungi No. 09 to Nadirabad Phatak Via Ali Wala,چونگی نمبر 9 سے نادر آباد پھاٹک براستہ علی والا,1,,0,0
+er97x,bk6tp,BZU to Kumharan,بی زیڈ یو سے کمہاراں,0,,0,0
+znztf,bk6tp,Kumharan to BZU,کمہاراں سے بی زیڈ یو,1,,0,0
+b4gy2,bkjes,Bunga Hayat to GBS Pakpattan,بنگہ حیات سے پاکپتن بس اڈہ,0,,0,0
+xzm34,bkjes,GBS Pakpattan to Bunga Hayat,پاکپتن بس اڈہ سے بنگہ حیات,1,,0,0
+ap9xm,bkwch,Khesana Mori to Hala Naka,کھیسانہ موری سے ہالا ناکہ,0,ap9xm,0,0
+zm8r3,bkwch,Hala Naka to Khesana Mori,ہالا ناکہ سے کھیسانہ موری,1,zm8r3,0,0
+hjpkc,btakr,Samanabad to Gulshan Ravi Double Sarka,سمن آباد سے گلشن راوی ڈبل سڑک,0,,0,0
+twgc4,btakr,Gulshan Ravi Double Sarka to Samanabad,گلشن راوی ڈبل سڑک سے سمن آباد,1,,0,0
+cqmpv,bz793,Gujar Khan to T Chowk,گوجر خان سے ٹی چوک,0,,0,0
+w4fgs,bz793,T Chowk to Gujar Khan,ٹی چوک سے گوجر خان,1,,0,0
+fkb46,bzhka,Shakargarh to GBS Narowal,شکرگڑھ سے نارووال بس اڈہ,0,,0,0
+r4qec,bzhka,GBS Narowal to Shakargarh,نارووال بس اڈہ سے شکرگڑھ,1,,0,0
+v88jq,c9aye,Gulshan Ravi OL Station to Railway Station,گلشن راوی اورنج لائن اسٹیشن سے ریلوے اسٹیشن,0,,0,0
+zeesw,c9aye,Railway Station to Gulshan Ravi OL Station,ریلوے اسٹیشن سے گلشن راوی اورنج لائن اسٹیشن,1,,0,0
+p23v5,cdavn,RT-04-Vehari Chowk to Nag Shah,RT-04 وہاڑی چوک سے ناگ شاہ,0,,0,0
+xy382,cdavn,RT-04-Nag Shah to Vehari Chowk,RT-04 ناگ شاہ سے وہاڑی چوک,1,,0,0
+haj2j,cdghm,Pak Secretariat to Kashmir Highway,پاک سیکرٹریٹ سے کشمیر ہائی وے,0,,0,0
+npbta,cdghm,Kashmir Highway to Pak Secretariat,کشمیر ہائی وے سے پاک سیکرٹریٹ,1,,0,0
+n95vp,cgxgn,Barakahu Terminal to Satra Meel,بارہ کہو ٹرمینل سے سترہ میل,0,n95vp,0,0
+wqqfv,cgxgn,Satra Meel to Barakahu Terminal,سترہ میل سے بارہ کہو ٹرمینل,1,wqqfv,0,0
+bmc3b,ch88m,Qabristan Chowk to Saddar Stop,قبرستان چوک سے صدر اسٹاپ,0,,0,0
+qpwrb,ch88m,Saddar Stop to Qabristan Chowk,صدر اسٹاپ سے قبرستان چوک,1,,0,0
+s2dv3,cnkza,Numaish to Abdullah Chowk,نمائش سے عبداللہ چوک,0,s2dv3,1,0
+vd7jz,cnkza,Abdullah Chowk to Numaish,عبداللہ چوک سے نمائش,1,vd7jz,1,0
+deaqq,crjtt,GBS Okara to Channu Mahatam,اوکاڑہ بس اڈہ سے چنوں مہاتم,0,,0,0
+p9fhp,crjtt,Channu Mahatam to GBS Okara,چنوں مہاتم سے اوکاڑہ بس اڈہ,1,,0,0
+me5tv,csvb2,Faiz Ahmed Faiz to Saddar,فیض احمد فیض سے صدر,0,,0,0
+vtvpb,csvb2,Saddar to Faiz Ahmed Faiz,صدر سے فیض احمد فیض,1,,0,0
+hsamq,cwt6r,GBS DG Khan to Choti Zareen via Kot Chutta,ڈیرہ غازی خان بس اڈہ سے چوٹی زیریں براستہ کوٹ چھٹہ,0,,0,0
+wy647,cwt6r,Choti Zareen to GBS DG Khan via Kot Chutta,چوٹی زیریں سے ڈیرہ غازی خان بس اڈہ براستہ کوٹ چھٹہ,1,,0,0
+qewfb,cxect,Jinnah Terminal to BRB,جناح ٹرمینل سے بی آر بی,0,,0,0
+xbms7,cxect,BRB to Jinnah,بی آر بی سے جناح,1,,0,0
+aghje,d2xss,G-10 Metro Station to PIMS Hospital,جی-10 میٹرو اسٹیشن سے پمز ہسپتال,0,,0,0
+wnq8q,d2xss,PIMS Hospital to G-10 Metro Station,پمز ہسپتال سے جی-10 میٹرو اسٹیشن,1,,0,0
+rgyqq,d92t4,GBS DG Khan to GBS DG Khan,ڈیرہ غازی خان بس اڈہ سے ڈیرہ غازی خان بس اڈہ,0,,0,0
+w5syr,d92t4,GBS DG Khan to GBS DG Khan,ڈیرہ غازی خان بس اڈہ سے ڈیرہ غازی خان بس اڈہ,1,,0,0
+hg7bf,d97gy,Rawat to GBS Murree,روات سے مری بس اڈہ,0,,0,0
+rvf4a,d97gy,GBS Murree to Rawat,مری بس اڈہ سے روات,1,,0,0
+vkg82,ddfee,Zafarwal to GBS Narowal,ظفروال سے نارووال بس اڈہ,0,,0,0
+vqgz8,ddfee,GBS Narowal to Zafarwal,نارووال بس اڈہ سے ظفروال,1,,0,0
+d9zrg,dfneb,Umar Baig Chowk to TB Hospital,عمر بیگ چوک سے ٹی بی ہسپتال,0,,0,0
+dh7gf,dfneb,TB Hospital to Umar Baig Chowk,ٹی بی ہسپتال سے عمر بیگ چوک,1,,0,0
+r24cb,dvaqt,Sher Ghar to GBS Okara,شیر گڑھ سے اوکاڑہ بس اڈہ,0,,0,0
+z2a5e,dvaqt,GBS Okara to Sher Ghar,اوکاڑہ بس اڈہ سے شیر گڑھ,1,,0,0
+sendb,dw76h,RT-4B-Nishter Hospital To Adda Shujabad,RT-4B نشتر ہسپتال سے اڈہ شجاع آباد,0,,0,0
+te999,dw76h,RT-4B-Adda Shujaabad To Nishter Hospital,RT-4B اڈہ شجاع آباد سے نشتر ہسپتال,1,,0,0
+evptf,dwnzx,Numaish to Abdullah Chowk,نمائش سے عبداللہ چوک,0,evptf,0,0
+zhz4h,dwnzx,Abdullah Chowk to Numaish,عبداللہ چوک سے نمائش,1,zhz4h,0,0
+mtkh4,dyssa,Airport to Askari X,ایئرپورٹ سے عسکری 10,0,,0,0
+qv8bv,dyssa,Askari X to Airport,عسکری 10 سے ایئرپورٹ,1,,0,0
+wyvmc,e6h22,GBS Sargodha to Kot Momin,سرگودھا بس اڈہ سے کوٹ مومن,0,,0,0
+zj93s,e6h22,Kot Momin to GBS Sargodha,کوٹ مومن سے سرگودھا بس اڈہ,1,,0,0
+z3t6g,ec57p,Shuttle Service Terminal loop,شٹل سروس ٹرمینل لوپ,0,z3t6g,0,1
+hhw8h,emj59,Wazirabad to Sheikhupura Morr,وزیرآباد سے شیخوپورہ موڑ,0,,0,0
+w79nb,emj59,Sheikhupura Morr to Wazirabad,شیخوپورہ موڑ سے وزیرآباد,1,,0,0
+cyqxk,epasd,Railway Phattak to Railway Phattak,ریلوے پھاٹک سے ریلوے پھاٹک,0,,0,0
+tfqjw,epasd,Railway Phattak to Railway Phattak,ریلوے پھاٹک سے ریلوے پھاٹک,1,,0,0
+eqny8,eqg6w,RT-03-Ghanta Ghar To Ibn-e-sina Hospital,RT-03 گھنٹہ گھر سے ابنِ سینا ہسپتال,0,,0,0
+rvary,eqg6w,RT-03-Ibn-e-sina Hospital to Ghanta Ghar,RT-03 ابنِ سینا ہسپتال سے گھنٹہ گھر,1,,0,0
+psm3q,eseeb,GBS Sargodha to Shahpur,سرگودھا بس اڈہ سے شاہ پور,0,,0,0
+rpmps,eseeb,Shahpur to GBS Sargodha,شاہ پور سے سرگودھا بس اڈہ,1,,0,0
+jfc3y,exkas,Gulshan-e-Hadeed to Tower,گلشنِ حدید سے ٹاور,0,jfc3y,1,0
+xr2g7,exkas,Tower to Gulshan-e-Hadeed,ٹاور سے گلشنِ حدید,1,xr2g7,1,0
+v3nff,eyf6z,Vehari Chowk to CMH,وہاڑی چوک سے سی ایم ایچ,0,,0,0
+zfp8n,eyf6z,CMH to Vehari Chowk,سی ایم ایچ سے وہاڑی چوک,1,,0,0
+bqdb5,f3qsa,Raiwind to Jinnah Bus Terminal,رائیونڈ سے جناح بس ٹرمینل,0,,0,0
+cp2b7,f3qsa,Jinnah Bus Terminal to Raiwind,جناح بس ٹرمینل سے رائیونڈ,1,,0,0
+dmcvq,f3waz,Power House Chowrangi to Jackson Market,پاور ہاؤس چورنگی سے جیکسن مارکیٹ,0,dmcvq,0,0
+hxyhr,f3waz,Jackson Market to Power House Chowrangi,جیکسن مارکیٹ سے پاور ہاؤس چورنگی,1,hxyhr,0,0
+bcv76,f82k8,Numaish to Malir Cantt,نمائش سے ملیر کینٹ,0,bcv76,0,0
+d3m5n,f82k8,Malir Cantt to Numaish,ملیر کینٹ سے نمائش,1,d3m5n,0,0
+b6q83,f8bjz,Dockyard Stop to Khokhrapar No.1,ڈاک یارڈ اسٹاپ سے کھوکھراپار نمبر 1,0,b6q83,0,0
+zv8tf,f8bjz,Khokhrapar No 1 to Dockyard Stop,کھوکھراپار نمبر 1 سے ڈاک یارڈ اسٹاپ,1,zv8tf,0,0
+frdv2,f8gka,Alipur Chatha to Wazirabad,علی پور چٹھہ سے وزیرآباد,0,,0,0
+ze97k,f8gka,Wazirabad To Alipur Chatha,وزیرآباد سے علی پور چٹھہ,1,,0,0
+fahz7,fajmk,Depot Stop to Railway Station,ڈپو اسٹاپ سے ریلوے اسٹیشن,0,,0,0
+sw3d4,fajmk,Railway Station to Depot Stop,ریلوے اسٹیشن سے ڈپو اسٹاپ,1,,0,0
+bn2g6,fc2ng,Nust Metro Station to Khanna Pul Terminal,نسٹ میٹرو اسٹیشن سے کھنہ پل ٹرمینل,0,,0,0
+vsh9f,fc2ng,Khanna Pul to Nust Metro Station,کھنہ پل سے نسٹ میٹرو اسٹیشن,1,,0,0
+cd93f,fc659,GBS Khushab to Mitha Tiwana Stop,خوشاب بس اڈہ سے مٹھہ ٹوانہ اسٹاپ,0,,0,0
+h3cpp,fc659,Mitha Tiwana Stop to GBS Khushab,مٹھہ ٹوانہ اسٹاپ سے خوشاب بس اڈہ,1,,0,0
+jeq2n,fdzc2,Media Chowk to PIMS Hospital,میڈیا چوک سے پمز ہسپتال,0,,0,0
+r2a4n,fdzc2,PIMS Hospital to Media Chowk,پمز ہسپتال سے میڈیا چوک,1,,0,0
+mg6s2,fg77g,Sohawa to Gujar Khan,سوہاوہ سے گوجر خان,0,,0,0
+zw5ej,fg77g,Gujar Khan to Sohawa,گوجر خان سے سوہاوہ,1,,0,0
+ez6ks,fhzr8,GBS DG Khan to Shah Sadar Din,ڈیرہ غازی خان بس اڈہ سے شاہ صدر دین,0,,0,0
+xefq3,fhzr8,Shah Sadar Din to GBS DG Khan,شاہ صدر دین سے ڈیرہ غازی خان بس اڈہ,1,,0,0
+f49s6,fp9p5,Tehsil Chowk to Balkasar,تحصیل چوک سے بلکسر,0,,0,0
+v7y2k,fp9p5,Balkasar to Tehsil Chowk,بلکسر سے تحصیل چوک,1,,0,0
+h7ks9,fyvr3,Al Raheem town to Sama Satta,الرحیم ٹاؤن سے سمہ سٹہ,0,,0,0
+r6tkk,fyvr3,Sama Satta to Al Raheem town,سمہ سٹہ سے الرحیم ٹاؤن,1,,0,0
+kc2vb,g35z8,chung to canal,چونگ سے نہر,0,,0,0
+p4snz,g35z8,Canal to Chung,نہر سے چونگ,1,,0,0
+kkp8c,g7qat,Mandiali Toll Plaza to Bhatti Chowk,منڈیالی ٹول پلازہ سے بھاٹی چوک,0,,0,0
+n3q7s,g7qat,Bhatti Chowk to Mandiali Toll Plaza,بھاٹی چوک سے منڈیالی ٹول پلازہ,1,,0,0
+km44e,gag83,Khanna Pul to Golra Morh Metro Station,کھنہ پل سے گولڑہ موڑ میٹرو اسٹیشن,0,,0,0
+ps6vv,gag83,Golra Morh Metro Station to Khanna Pul,گولڑہ موڑ میٹرو اسٹیشن سے کھنہ پل,1,,0,0
+bwh2j,gbwvy,Miran Naka to Shireen Jinnah Colony,میراں ناکہ سے شیریں جناح کالونی,0,bwh2j,0,0
+ez9y6,gbwvy,Shireen Jinnah Colony to Miran Naka,شیریں جناح کالونی سے میراں ناکہ,1,ez9y6,0,0
+fpty3,gdezg,R.A Bazar to Bhatti,آر اے بازار سے بھٹی,0,,0,0
+tt6kd,gdezg,Bhatti to R.A Bazar,بھٹی سے آر اے بازار,1,,0,0
+rn4hb,gh79p,PIMS Hospital to Capt. Naeem Tufail Shaheed Chowk,پمز ہسپتال سے کیپٹن نعیم طفیل شہید چوک,0,rn4hb,0,0
+snafv,gh79p,Capt. Naeem Tufail Shaheed Chowk to PIMS Hospital,کیپٹن نعیم طفیل شہید چوک سے پمز ہسپتال,1,snafv,0,0
+etfkc,gjnb6,Shahdara Metro Stop to E Bus Depot Govt. College,شاہدرہ میٹرو اسٹاپ سے ای بس ڈپو گورنمنٹ کالج,0,,0,0
+v38t9,gjnb6,E-Bus Depot Govt. College to Shahdara Metro Stop,ای بس ڈپو گورنمنٹ کالج سے شاہدرہ میٹرو اسٹاپ,1,,0,0
+azq47,gneec,GBS Kasur to Kacha Paka,قصور بس اڈہ سے کچا پکا,0,,0,0
+zxaza,gneec,Kacha Paka to GBS Kasur,کچا پکا سے قصور بس اڈہ,1,,0,0
+be44r,gnry8,GBS to GBS Backward,بس اڈہ سے بس اڈہ واپسی,0,,0,0
+crz3x,gnry8,GBS to GBS Forward,بس اڈہ سے بس اڈہ آمد,1,,0,0
+j856x,gvr2k,GBS Mainwali to Wan Bachran,میانوالی بس اڈہ سے واں بھچراں,0,,0,0
+jjpvw,gvr2k,Wan Bachran to GBS Mianwali,واں بھچراں سے میانوالی بس اڈہ,1,,0,0
+ea77g,gxgzp,District Complex to Dhudial,ڈسٹرکٹ کمپلیکس سے دھدیال,0,,0,0
+r9y6a,gxgzp,Dhudial to District Complex,دھدیال سے ڈسٹرکٹ کمپلیکس,1,,0,0
+cdvy6,gyr5y,R.A. Bazar to Chungi Amar Sidhu,آر اے بازار سے چونگی امر سدھو,0,,0,0
+wwvex,gyr5y,Chungi Amar Sidhu to R.A. Bazar,چونگی امر سدھو سے آر اے بازار,1,,0,0
+mthh8,h434a,GBS Sargodha TO Mid Ranjha,سرگودھا بس اڈہ سے مڈ رانجھا,0,,0,0
+sfb4s,h434a,Mid Ranjha to GBS Sargodha,مڈھ رانجھا سے سرگودھا بس اڈہ,1,,0,0
+pfwa9,h6aph,Bhawana to Tehsil Chowk,بھوانہ سے تحصیل چوک,0,,0,0
+tcedq,h6aph,Tehsil Chowk to Bhawana,تحصیل چوک سے بھوانہ,1,,0,0
+anwbn,h7cj2,Fawara Chowk Burewala to College Chowk,فوارہ چوک، بورے والا سے کالج چوک,0,,0,0
+nrqfy,h7cj2,College Chowk to Fawara Chowk Burewala,کالج چوک سے فوارہ چوک، بورے والا,1,,0,0
+dzevb,h8atz,Hakeem Abad to Attock Khurd,حکیم آباد سے اٹک خورد,0,,0,0
+xcgtz,h8atz,Attock Khurd to Hakeem Abad,اٹک خورد سے حکیم آباد,1,,0,0
+kr5jt,h8bwr,Asgharabad to Industrial area via Gojra Bypass,اصغر آباد سے انڈسٹریل ایریا براستہ گوجرہ بائی پاس,0,,0,0
+r9rsp,h8bwr,Industrial area to Asgharabad via Gojra Bypass,انڈسٹریل ایریا سے اصغر آباد براستہ گوجرہ بائی پاس,1,,0,0
+crpgj,h9byj,RT-02-Qasim Fort To Suraj Miani,RT-02 قلعہ قاسم باغ سے سورج میانی,0,,0,0
+yhfgv,h9byj,RT-02-Suraj Miani To Qasim Fort,RT-02 سورج میانی سے قلعہ قاسم باغ,1,,0,0
+j6sy5,hcapa,Three Water Stop to Sakrand City Bus Stop,تھری واٹر اسٹاپ سے سکرنڈ شہر بس اسٹاپ,0,j6sy5,0,0
+jncy9,hcapa,Sakrand City Bus Stop to Three Water Stop,سکرنڈ شہر بس اسٹاپ سے تھری واٹر اسٹاپ,1,jncy9,0,0
+f2pny,hcw2m,Abdullah Chowk to Numaish,عبداللہ چوک سے نمائش,0,f2pny,0,0
+jw3s4,hcw2m,Numaish to Abdullah Chowk,نمائش سے عبداللہ چوک,1,jw3s4,0,0
+ffnka,hghfz,Aari Syedan Terminal to Humak Road,آڑی سیداں ٹرمینل سے ہمک روڈ,0,ffnka,0,0
+wqwen,hghfz,Humak Road to Aari Syedan Terminal,ہمک روڈ سے آڑی سیداں ٹرمینل,1,wqwen,0,0
+vca2b,hh5s6,Sakhi Sarwar to GBS DG Khan,سخی سرور سے ڈیرہ غازی خان بس اڈہ,0,,0,0
+zq3pm,hh5s6,GBS DG Khan to Sakhi Sarwar,ڈیرہ غازی خان بس اڈہ سے سخی سرور,1,,0,0
+j36xw,hk52z,E-11 Markaz to PIMS Hospital,ای-11 مرکز سے پمز ہسپتال,0,,0,0
+qhmyb,hk52z,PIMS Hospital to E-11 Markaz,پمز ہسپتال سے ای-11 مرکز,1,qhmyb,0,0
+bkwxg,hnw4p,Toba Tek Singh to Gojra,ٹوبہ ٹیک سنگھ سے گوجرہ,0,,0,0
+fwdf7,hnw4p,Gojra to Toba Tek Singh,گوجرہ سے ٹوبہ ٹیک سنگھ,1,,0,0
+d544w,hp4pt,Airport to Parking Area Chatter via Alamdar Chowk,ایئرپورٹ سے پارکنگ ایریا چھتر براستہ علمدار چوک,0,,0,0
+qv6rq,hp4pt,Parking Area Chatter to Airport via Alamdar Chowk,پارکنگ ایریا چھتر سے ایئرپورٹ براستہ علمدار چوک,1,,0,0
+vdhtg,hpyev,Tower to Hawks Bay Bus Stop,ٹاور سے ہاکس بے بس اسٹاپ,0,vdhtg,0,0
+w345r,hpyev,Hawks Bay Bus Stop to Tower,ہاکس بے بس اسٹاپ سے ٹاور,1,w345r,0,0
+mdqnz,htc6p,Jalalpur Bhattian to Ghora Chowk,جلالپور بھٹیاں سے گھوڑا چوک,0,,0,0
+w55zc,htc6p,Ghora Chowk to Jalalpur Bhattian,گھوڑا چوک سے جلالپور بھٹیاں,1,,0,0
+hqre2,j2avw,GBS Bhera To GBS Sargodha,بھیرہ بس اڈہ سے سرگودھا بس اڈہ,0,,0,0
+qzxms,j2avw,GBS Sargodha to GBS Bhera,سرگودھا بس اڈہ سے بھیرہ بس اڈہ,1,,0,0
+nz9jt,j7q54,RT-3B-Ghanta Ghar To Qadir Pur Raan,RT-3B گھنٹہ گھر سے قادر پور راں,0,,0,0
+tx53y,j7q54,RT-3B-Qadir Pur Raan to Ghanta Ghar,RT-3B قادر پور راں سے گھنٹہ گھر,1,,0,0
+cphf7,ja8z3,Bhatta Chowk to Saddar Stop,بھٹہ چوک سے صدر اسٹاپ,0,,0,0
+krwaj,ja8z3,Saddar Stop to Bhatta Chowk,صدر اسٹاپ سے بھٹہ چوک,1,,0,0
+ankg7,jreve,Mano chak to College Chowk,مانو چک سے کالج چوک,0,,0,0
+e43k2,jreve,College Chowk to Mano chak via Phalia,کالج چوک سے مانو چک براستہ پھالیہ,1,,0,0
+a6869,jxjnz,Khanpur Bagga Sher to Fazal Mill,خانپور بگا شیر سے فضل مل,0,,0,0
+v4yas,jxjnz,Fazal Mill to Khanpur Bagga Sher,فضل مل سے خانپور بگا شیر,1,,0,0
+d5nt8,jxmn2,Hajipura to GBS Rajanpur,حاجی پورہ سے راجن پور بس اڈہ,0,,0,0
+fmz4y,jxmn2,GBS Rajanpur to Hajipura,راجن پور بس اڈہ سے حاجی پورہ,1,,0,0
+hyejj,jydcy,RT-12A-Aziz Hotel To Airport,RT-12A عزیز ہوٹل سے ایئرپورٹ,0,,0,0
+p3kpp,jydcy,RT-12A-Airport To Aziz Hotel,RT-12A ایئرپورٹ سے عزیز ہوٹل,1,,0,0
+hvw6z,k4x5v,Golra Morh Metro Station to I-16/4,گولڑہ موڑ میٹرو اسٹیشن سے آئی-16/4,0,hvw6z,0,0
+y99mc,k4x5v,I-16/4 to Golra Morh Metro Station,آئی-16/4 سے گولڑہ موڑ میٹرو اسٹیشن,1,y99mc,0,0
+gh2dk,k9nza,GBS Sargodha to Sillanwali,سرگودھا بس اڈہ سے سلانوالی,0,,0,0
+yfe4w,k9nza,Sillanwali to GBS Sargodha,سلانوالی سے سرگودھا بس اڈہ,1,,0,0
+kxrjt,kae5c,GBS Nankana Sahab to Morr Khunda,ننکانہ صاحب بس اڈہ سے موڑ کھنڈا,0,,0,0
+p64mn,kae5c,Morr Khunda to GBS Nankana Sahab,موڑ کھنڈا سے ننکانہ صاحب بس اڈہ,1,,0,0
+fjavp,kazpg,Nasir Jump to Power House Chowrangi,ناصر جمپ سے پاور ہاؤس چورنگی,0,fjavp,1,0
+wp2sx,kazpg,Power House Chowrangi to Nasir Jump,پاور ہاؤس چورنگی سے ناصر جمپ,1,wp2sx,1,0
+bcwkt,kfgn8,GBS Nankana Sahab to Warburtton,ننکانہ صاحب بس اڈہ سے واربرٹن,0,,0,0
+gmbnv,kfgn8,Warburton to GBS Nankana Sahib,واربرٹن سے ننکانہ صاحب بس اڈہ,1,,0,0
+ed9qb,khd3d,Qartaba Chowk to Wahdat Road Station,قرطبہ چوک سے وحدت روڈ اسٹیشن,0,,0,0
+wp4h4,khd3d,Wahdat Road Station to Qartaba Chowk,وحدت روڈ اسٹیشن سے قرطبہ چوک,1,,0,0
+jw3jt,kk6yr,Rana Town to Railway Station,رانا ٹاؤن سے ریلوے اسٹیشن,0,,0,0
+vks33,kk6yr,Railway Station to Rana Town,ریلوے اسٹیشن سے رانا ٹاؤن,1,,0,0
+kjsfn,kqep5,GBS Sialkot to Pasrur,سیالکوٹ بس اڈہ سے پسرور,0,,0,0
+qahds,kqep5,Pasrur to GBS Sialkot,پسرور سے سیالکوٹ بس اڈہ,1,,0,0
+e3hyv,kqevm,Sadhaar Bypass to UAF,سدھار بائی پاس سے زرعی یونیورسٹی,0,,0,0
+jhjmq,kqevm,UAF to Sadhaar Bypass,زرعی یونیورسٹی سے سدھار بائی پاس,1,,0,0
+nfww6,ksn42,GBS Narowal to Pasrur Chowk,نارووال بس اڈہ سے پسرور چوک,0,,0,0
+sxejn,ksn42,Pasrur Chowk to GBS Narowal,پسرور چوک سے نارووال بس اڈہ,1,,0,0
+kdnx2,kvqr9,Narowal Circular Route,نارووال سرکلر روٹ,0,,0,0
+tfyrg,kvqr9,Narowal Circular Route,نارووال سرکلر روٹ,1,,0,0
+tzdee,kw92b,Nasir Bagh to R.A Bazar,ناصر باغ سے آر اے بازار,0,,0,0
+w7txv,kw92b,R.A Bazar to Nasir Bagh,آر اے بازار سے ناصر باغ,1,,0,0
+aqnwm,kwy44,Kot Samba to GBS Rahim Yar Khan,کوٹ سمابہ سے رحیم یار خان بس اڈہ,0,,0,0
+rsrck,kwy44,GBS Rahim Yar Khan to Kot Samba,رحیم یار خان بس اڈہ سے کوٹ سمابہ,1,,0,0
+e28me,kxrq8,GBS Bhakkar to GBS Darya Khan,بھکر بس اڈہ سے دریا خان بس اڈہ,0,,0,0
+vkdfr,kxrq8,GBS Darya Khan to GBS Bhakkar,دریا خان بس اڈہ سے بھکر بس اڈہ,1,,0,0
+ee6xa,kzqs8,Gulshan-e-Hadeed to Tower,گلشنِ حدید سے ٹاور,0,ee6xa,0,0
+vk3rm,kzqs8,Tower to Gulshan-e-Hadeed,ٹاور سے گلشنِ حدید,1,vk3rm,0,0
+gyz38,m26km,RT-30-Dera Adda To Sher Shah Bypass,RT-30 ڈیرہ اڈہ سے شیر شاہ بائی پاس,0,,0,0
+s56rd,m26km,RT-30-Sher Shah Bypass To Dera Adda,RT-30 شیر شاہ بائی پاس سے ڈیرہ اڈہ,1,,0,0
+eca9j,m35aa,GBS Pakpattan to Arifwala,پاکپتن بس اڈہ سے عارف والا,0,,0,0
+fykee,m35aa,Arifwala to GBS Pakpattan,عارف والا سے پاکپتن بس اڈہ,1,,0,0
+aa78c,m3qw7,R.A Bazar to Purana Kahna,آر اے بازار سے پرانا کاہنہ,0,,0,0
+rrec9,m3qw7,Purana Kahna to R.A Bazar,پرانا کاہنہ سے آر اے بازار,1,,0,0
+deaw7,m5bmz,Taluka Hospital to New Bus stand,تعلقہ ہسپتال سے نیا بس اسٹینڈ,0,deaw7,0,0
+r3qrn,m5bmz,New Bus stand to Taluka Hospital,نیا بس اسٹینڈ سے تعلقہ ہسپتال,1,r3qrn,0,0
+an8n4,mbbkh,Barakahu to Bari Imam,بارہ کہو سے بری امام,0,,0,0
+rj6z4,mbbkh,Bari Imam to Barakahu,بری امام سے بارہ کہو,1,,0,0
+p79qp,mgy7w,Cattle Market to DHA via 13 Solang,مویشی منڈی سے ڈی ایچ اے براستہ 13 سولنگ,0,,0,0
+se2ty,mgy7w,DHA to Cattle Market via 13 solang,ڈی ایچ اے سے مویشی منڈی براستہ 13 سولنگ,1,,0,0
+cxy5h,mr4dw,Musafir Khana to Arifwala Bypass,مسافر خانہ سے عارف والا بائی پاس,0,,0,0
+w8j9k,mr4dw,Arifwala Bypass to Musafir Khana,عارف والا بائی پاس سے مسافر خانہ,1,,0,0
+gpfzn,n5yx9,Tehsil Chowk to Lalian,تحصیل چوک سے لالیاں,0,,0,0
+ymxp3,n5yx9,Lalian to Tehsil Chowk,لالیاں سے تحصیل چوک,1,,0,0
+f5f5z,n8rsf,Dera Bakha to Lodhran Entrance Gate,ڈیرہ بکھا سے لودھراں داخلی گیٹ,0,,0,0
+hx9dv,n8rsf,Lodhran Entrance Gate to Dera Bakha,لودھراں داخلی گیٹ سے ڈیرہ بکھا,1,,0,0
+jnxax,n8sjr,Manga Pul to GBS Narowal,مانگا پل سے نارووال بس اڈہ,0,,0,0
+yqjnn,n8sjr,GBS Narowal to Manga Pul,نارووال بس اڈہ سے مانگا پل,1,,0,0
+dr8q2,naz47,GBS Kasur to Gajjumata Stop,قصور بس اڈہ سے گجومتہ اسٹاپ,0,,0,0
+nyqcg,naz47,Gajjumata Stop to GBS Kasur,گجومتہ اسٹاپ سے قصور بس اڈہ,1,,0,0
+eyvbs,ndym6,GBS Khushab to Girot Chowk,خوشاب بس اڈہ سے گروٹ چوک,0,,0,0
+z6xan,ndym6,Girot Chowk to GBS Khushab,گروٹ چوک سے خوشاب بس اڈہ,1,,0,0
+hy6vb,ngpax,Noor Shah Stop to KFC Bypass,نور شاہ اسٹاپ سے کے ایف سی بائی پاس,0,,0,0
+v3vxg,ngpax,KFC Bypass to Noor Shah Stop,کے ایف سی بائی پاس سے نور شاہ اسٹاپ,1,,0,0
+b4trd,nm8dr,Qadirpur Raan to Ghanta Ghar,قادر پور راں سے گھنٹہ گھر,0,,0,0
+mmzay,nm8dr,Ghanta Ghar to Qadirpur Raan,گھنٹہ گھر سے قادر پور راں,1,,0,0
+j2npr,nny66,GBS Rahim Yar Khan to Lala Chowk,رحیم یار خان بس اڈہ سے لالہ چوک,0,,0,0
+kymgz,nny66,Lala Chowk to GBS Rahim Yar Khan,لالہ چوک سے رحیم یار خان بس اڈہ,1,,0,0
+q49ar,ns3nh,GBS Rahim Yar Khan to Abu Dhabi Palace,رحیم یار خان بس اڈہ سے ابوظہبی پیلس,0,,0,0
+qstqd,ns3nh,Abu Dhabi Palace to GBS Rahim Yar Khan,ابوظہبی پیلس سے رحیم یار خان بس اڈہ,1,,0,0
+cggzn,nwray,Mirwah Gorchani City to Mirpur Khas Bus Stand Stop,میرواہ گورچانی شہر سے میرپورخاص بس اسٹینڈ اسٹاپ,0,cggzn,0,0
+mxyxc,nwray,Mirpur Khas Bus Stand Stop to Mirwah Gorchani City,میرپورخاص بس اسٹینڈ اسٹاپ سے میرواہ گورچانی شہر,1,mxyxc,0,0
+h84vj,nyhmk,GBS Bahawalnagar to Dunga Bunga,بہاولنگر بس اڈہ سے ڈونگہ بونگہ,0,,0,0
+rkjyc,nyhmk,Dunga Bunga to GBS Bahawalnagar,ڈونگہ بونگہ سے بہاولنگر بس اڈہ,1,,0,0
+ftswb,p4bp5,Motorway Chowk 26 No to Marrir Metrobus Station,موٹروے چوک 26 نمبر سے مریڑ میٹرو بس اسٹیشن,0,,0,0
+nf4fg,p4bp5,Marrir Metrobus Station to Motorway Chowk 26 No,مریڑ میٹرو بس اسٹیشن سے موٹروے چوک 26 نمبر,1,,0,0
+jqkv9,p662a,Bahria Town to Jinnah Bus Terminal,بحریہ ٹاؤن سے جناح بس ٹرمینل,0,,0,0
+n7e65,p662a,Jinnah Bus Terminal to Bahria Town,جناح بس ٹرمینل سے بحریہ ٹاؤن,1,,0,0
+qxrpy,p8fda,Gajjumata to Rangers Wing Headquarter,گجومتہ سے رینجرز ونگ ہیڈ کوارٹر,0,,0,0
+wfzjh,p8fda,Rangers Wing Headquarter to Gajjumata,رینجرز ونگ ہیڈ کوارٹر سے گجومتہ,1,,0,0
+ca8eh,pap5a,Nishtar Hospital to Vehari Chowk,نشتر ہسپتال سے وہاڑی چوک,0,,0,0
+fzzpw,pap5a,Vehari Chowk to Nishtar Hospital,وہاڑی چوک سے نشتر ہسپتال,1,,0,0
+crnc9,pb7wr,Hatri Police Station to Hyder Chowk,ہٹری پولیس اسٹیشن سے حیدر چوک,0,crnc9,0,0
+exy6h,pb7wr,Hyder Chowk to Hatri Police Station,حیدر چوک سے ہٹری پولیس اسٹیشن,1,exy6h,0,0
+sx3ya,pk9xc,POF Sanjwal to Hazro,پی او ایف سنجوال سے حضرو,0,,0,0
+thcm5,pk9xc,Hazro to POF Sanjwal,حضرو سے پی او ایف سنجوال,1,,0,0
+cbe97,pkw2j,PIMS Hospital to Capt. Naeem Tufail Shaheed Chowk,پمز ہسپتال سے کیپٹن نعیم طفیل شہید چوک,0,,0,0
+zg4se,pkw2j,Capt. Naeem Tufail Shaheed Chowk to PIMS Hospital,کیپٹن نعیم طفیل شہید چوک سے پمز ہسپتال,1,zg4se,0,0
+f2eb4,pqa7d,Rawat to Gulberg,روات سے گلبرگ,0,,0,0
+s6hnq,pqa7d,Gulberg to Rawat,گلبرگ سے روات,1,,0,0
+ew55t,ps3vy,Korangi Crossing to Power House Chowrangi,کورنگی کراسنگ سے پاور ہاؤس چورنگی,0,ew55t,0,0
+pw56c,ps3vy,Power House Chowrangi to Korangi Crossing,پاور ہاؤس چورنگی سے کورنگی کراسنگ,1,pw56c,0,0
+b4xr5,ptdkr,GBS Murree to New Murree,مری بس اڈہ سے نیو مری,0,,0,0
+m68wj,ptdkr,New Murree to GBS Murree,نیو مری سے مری بس اڈہ,1,,0,0
+k3ggx,pw82e,Daud Khel to GBS mianwali,داؤد خیل سے میانوالی بس اڈہ,0,,0,0
+nny8f,pw82e,GBS Mianwali to Daud Khel,میانوالی بس اڈہ سے داؤد خیل,1,,0,0
+crvc7,px6f2,Barakahu to PIMS,بارہ کہو سے پمز,0,crvc7,0,0
+w3brb,px6f2,PIMS to Barakahu,پمز سے بارہ کہو,1,w3brb,0,0
+pw6am,q33ab,Jinnah Bus Terminal to Mull Adda,جناح بس ٹرمینل سے مل اڈہ,0,,0,0
+xzxyw,q33ab,Mull Adda to Jinnah Bus Terminal,مل اڈہ سے جناح بس ٹرمینل,1,,0,0
+vxkqq,q54r7,Tower to Yousuf Goth Bus Stop,ٹاور سے یوسف گوٹھ بس اسٹاپ,0,vxkqq,0,0
+xqthr,q54r7,Yousuf Goth Bus Stop to Tower,یوسف گوٹھ بس اسٹاپ سے ٹاور,1,xqthr,0,0
+cvcmk,q7zep,Ibn-e-Sina Hospital to Ghanta Ghar,ابنِ سینا ہسپتال سے گھنٹہ گھر,0,,0,0
+hf6qb,q7zep,Ghanta Ghar to Ibn-e-Sina Hospital,گھنٹہ گھر سے ابنِ سینا ہسپتال,1,,0,0
+g96gw,q82ad,RT-11-CMH To Vehari Chowk,RT-11 سی ایم ایچ سے وہاڑی چوک,0,,0,0
+w8kv5,q82ad,RT-11-Vehari Chowk To CMH,RT-11 وہاڑی چوک سے سی ایم ایچ,1,,0,0
+be9ha,qamgz,Industrial Area to Asgharabad via Bank Road,انڈسٹریل ایریا سے اصغر آباد براستہ بینک روڈ,0,,0,0
+ks3vc,qamgz,Asgharabad to Industrial Area via Bank Road,اصغر آباد سے انڈسٹریل ایریا براستہ بینک روڈ,1,,0,0
+j9kb6,qbkhz,TMA Orangi Town to Board Office1,ٹی ایم اے اورنگی ٹاؤن سے بورڈ آفس 1,0,,0,0
+msf3g,qbkhz,Jinnah University to TMA Orangi Town,جناح یونیورسٹی سے ٹی ایم اے اورنگی ٹاؤن,1,msf3g,0,0
+eswf7,qgwdr,Mangla to Fauji Foundation,منگلا سے فوجی فاؤنڈیشن,0,,0,0
+vhgjs,qgwdr,Fauji Foundation to Mangla,فوجی فاؤنڈیشن سے منگلا,1,,0,0
+bn324,qvj7a,RT-8B-Basti Malook To Vehari Chowk,RT-8B بستی ملوک سے وہاڑی چوک,0,,0,0
+ecyzr,qvj7a,RT-8B-Vehari Chowk To Basti Malook,RT-8B وہاڑی چوک سے بستی ملوک,1,,0,0
+q6w63,qz3yg,Mohal Mughlan to Tehsil Chowk,ملہال مغلاں سے تحصیل چوک,0,,0,0
+yjxah,qz3yg,Tehsil Chowk to Mohal Mughlan,تحصیل چوک سے ملہال مغلاں,1,,0,0
+sj36a,r8cqr,Dera Adda to Dehar Chowk,ڈیرہ اڈہ سے ڈہر چوک,0,,0,0
+tq3xx,r8cqr,Dehar Chowk to Dera Adda,ڈہر چوک سے ڈیرہ اڈہ,1,,0,0
+rdtcm,rc8ce,Jhang Mor to Turkey Hospital,جھنگ موڑ سے ترکی ہسپتال,0,,0,0
+zsrn3,rc8ce,Turkey Hospital to Jhang Morr,ترکی ہسپتال سے جھنگ موڑ,1,,0,0
+d2h5j,rg45y,Khaira Pull to Shalamar OL Station,کھیرا پل سے شالامار اورنج لائن اسٹیشن,0,,0,0
+ffgsk,rg45y,Shalamar OL Station Station to Khaira Pull,شالامار اورنج لائن اسٹیشن سے کھیرا پل,1,,0,0
+h7w9v,rgxsr,Towards Shadara,شاہدرہ کی طرف,0,,0,0
+t9pek,rgxsr,Towards Gajjumata,گجومتہ کی طرف,1,,0,0
+c7ww7,rme55,Quaid e Azam Mazar to Ibrahim Hyderi,مزارِ قائد اعظم سے ابراہیم حیدری,0,c7ww7,1,0
+s6kbt,rme55,Ibrahim Hyderi to Quaid-e-Azam Mazar,ابراہیم حیدری سے مزارِ قائد اعظم,1,s6kbt,1,0
+a8ae7,rqq4r,Pak Secretariate to Saddar,پاک سیکرٹریٹ سے صدر,0,,0,0
+xa6yp,rqq4r,Saddar to Pak Secretariate,صدر سے پاک سیکرٹریٹ,1,,0,0
+e5558,rs627,Peer Mahal to GBS TT Singh,پیر محل سے ٹوبہ ٹیک سنگھ بس اڈہ,0,,0,0
+en65b,rs627,GBS TT Singh to Peer Mahal,ٹوبہ ٹیک سنگھ بس اڈہ سے پیر محل,1,,0,0
+h586j,rs787,Said Pur Village to PIMS Hospital,سید پور گاؤں سے پمز ہسپتال,0,,0,0
+qeyqd,rs787,PIMS Hospital to Said Pur Village,پمز ہسپتال سے سید پور گاؤں,1,qeyqd,0,0
+aghap,s293z,Gbs Okara To Deepal Pur,اوکاڑہ بس اڈہ سے دیپالپور,0,,0,0
+zahn5,s293z,Deepal Pur to Gbs Okara,دیپالپور سے اوکاڑہ بس اڈہ,1,,0,0
+a6v2g,s9vd2,Toba Tek Singh to Kamalia,ٹوبہ ٹیک سنگھ سے کمالیہ,0,,0,0
+zqntx,s9vd2,Kamalia to Toba Tek Singh,کمالیہ سے ٹوبہ ٹیک سنگھ,1,,0,0
+k9jz6,sc5b8,GBS Gujrat to Daulat Nagar,گجرات بس اڈہ سے دولت نگر,0,,0,0
+vm9fp,sc5b8,Daulat Nagar to GBS Gujrat,دولت نگر سے گجرات بس اڈہ,1,,0,0
+fpvyf,sd37g,RT-8 Canal to Jinnah Terminal,RT-8 نہر سے جناح ٹرمینل,0,,0,0
+j6b3w,sd37g,RT-8 Jinnah Terminal to Canal,RT-8 جناح ٹرمینل سے نہر,1,,0,0
+q57wc,se948,GBS Jhang to Gojra Bypass,جھنگ بس اڈہ سے گوجرہ بائی پاس,0,,0,0
+rm6mh,se948,Gojra Bypass to GBS Jhang,گوجرہ بائی پاس سے جھنگ بس اڈہ,1,,0,0
+rakqb,sfwbj,RT-9C-Nadirabad Phatak To Chungi No 9 Via Ali Wala,RT-9C نادر آباد پھاٹک سے چونگی نمبر 9 براستہ علی والا,0,,0,0
+x68h2,sfwbj,RT-9C-Chungi No 9 To Nadirabad Phatak Via Ali Wala,RT-9C چونگی نمبر 9 سے نادر آباد پھاٹک براستہ علی والا,1,,0,0
+ctczk,sjnde,Bhatti Chowk to Shadbagh Underpass,بھاٹی چوک سے شادباغ انڈرپاس,0,,0,0
+zjcdz,sjnde,Shadbagh Underpass to Bhatti Chowk,شادباغ انڈرپاس سے بھاٹی چوک,1,,0,0
+nh2a5,ss43v,Rt 16 Jinnah Terminal to Canal,Rt 16 جناح ٹرمینل سے نہر,0,,0,0
+qpjqw,ss43v,RT 16 Canal to Jinnah Terminal,RT 16 نہر سے جناح ٹرمینل,1,,0,0
+bebpw,swbyf,Jinnah Chowk Inner city Backward,جناح چوک اندرونِ شہر واپسی,0,,0,0
+jw45h,swbyf,Jinnah Chowk Inner City Forward,جناح چوک اندرونِ شہر آمد,1,,0,0
+eh5nr,swegt,RT-01C-E-khidmat TO Dera Adda Via Dehhr Chowk,RT-01C ای خدمت سے ڈیرہ اڈہ براستہ دہڑ چوک,0,,0,0
+vsp6e,swegt,RT-01C-Dera Adda To E-khidmat Via Dehhr Chowk,RT-01C ڈیرہ اڈہ سے ای خدمت براستہ دہڑ چوک,1,,0,0
+v94f7,syq9t,Mari Qasim Shah to Bhatta no 1/ Alina hospital,ماڑی قاسم شاہ سے بھٹہ نمبر 1 / علینہ ہسپتال,0,,0,0
+ykykc,syq9t,Bhatta no 1/ Alina hospital to Mari Qasim Shah,بھٹہ نمبر 1 / علینہ ہسپتال سے ماڑی قاسم شاہ,1,,0,0
+b3v2r,t4ama,RT-09-Chungi No 9 To Nag Shah,RT-09 چونگی نمبر 9 سے ناگ شاہ,0,,0,0
+d5kvt,t4ama,RT-09-Nag Shah To Chungi No 9,RT-09 ناگ شاہ سے چونگی نمبر 9,1,,0,0
+e4va6,tcjjp,Golra Morh Metro Station to Fateh Jang,گولڑہ موڑ میٹرو اسٹیشن سے فتح جنگ,0,e4va6,0,0
+tc9dy,tcjjp,Fateh Jang to Golra Morh Metro Station,فتح جنگ سے گولڑہ موڑ میٹرو اسٹیشن,1,,0,0
+hb2jn,tsvz7,Nilore to Khanna Pul Terminal,نیلور سے کھنہ پل ٹرمینل,0,hb2jn,0,0
+sdwvn,tsvz7,Khanna Pul Terminal to Nilore,کھنہ پل ٹرمینل سے نیلور,1,,0,0
+p7ty3,v3kbv,Korangi Crossing to Power House Chowrangi,کورنگی کراسنگ سے پاور ہاؤس چورنگی,0,p7ty3,1,0
+zxa7f,v3kbv,Power House Chowrangi to Korangi Crossing,پاور ہاؤس چورنگی سے کورنگی کراسنگ,1,zxa7f,1,0
+hwcc2,v7jpq,Ban Hafiz Jee to GBS Mianwali,بن حافظ جی سے میانوالی بس اڈہ,0,,0,0
+ky8pw,v7jpq,GBS Mianwali to Ban Hafiz Jee,میانوالی بس اڈہ سے بن حافظ جی,1,,0,0
+cyar9,v7mc8,GBS Jhang to UVAS,جھنگ بس اڈہ سے یو وی اے ایس,0,,0,0
+h62ch,v7mc8,UVAS to GBS Jhang,یو وی اے ایس سے جھنگ بس اڈہ,1,,0,0
+fpkfz,vae65,GBS Murree to Barrian,مری بس اڈہ سے باڑیاں,0,,0,0
+y3mdj,vae65,Barrian to GBS Murree,باڑیاں سے مری بس اڈہ,1,,0,0
+b7jnv,vc7yq,Naag Shah to EV Bus,ناگ شاہ سے ای وی بس,0,,0,0
+rcvkb,vc7yq,EV Bus to Naag Shah,ای وی بس سے ناگ شاہ,1,,0,0
+dezp2,vhksn,Dera Adda to E-Khidmat Center via Women University,ڈیرہ اڈہ سے ای خدمت سینٹر براستہ ویمن یونیورسٹی,0,,0,0
+s7f9m,vhksn,E-Khidmat Center to Dera Adda via Women University,ای خدمت سینٹر سے ڈیرہ اڈہ براستہ ویمن یونیورسٹی,1,,0,0
+egxca,vnzxk,Nasir Jump to Power House Chowrangi,ناصر جمپ سے پاور ہاؤس چورنگی,0,,0,0
+t6kww,vnzxk,Power House Chowrangi to Nasir Jump,پاور ہاؤس چورنگی سے ناصر جمپ,1,,0,0
+jvkqt,vsxfc,GBS Sargodha to Chota Sahiwal,سرگودھا بس اڈہ سے چھوٹا ساہیوال,0,,0,0
+zva6v,vsxfc,Chota Sahiwal to GBS Sargodha,چھوٹا ساہیوال سے سرگودھا بس اڈہ,1,,0,0
+c45pa,vsxp8,Lucky Star to Khokhrapar Chaman Colony,لکی اسٹار سے کھوکھراپار چمن کالونی,0,c45pa,0,0
+md2kk,vsxp8,Khokhrapar Chaman Colony to Lucky Star,کھوکھراپار چمن کالونی سے لکی اسٹار,1,md2kk,0,0
+gdax9,vwec4,GBS Layyah to THQ Hospital,لیہ بس اڈہ سے ٹی ایچ کیو ہسپتال,0,,0,0
+hf4vk,vwec4,THQ Hospital to GBS Layyah,ٹی ایچ کیو ہسپتال سے لیہ بس اڈہ,1,,0,0
+bbp7j,vxzma,Qadirpur Raan to Khanewal,قادر پور راں سے خانیوال,0,,0,0
+kjj2q,vxzma,Khanewal to Qadirpur Raan,خانیوال سے قادر پور راں,1,,0,0
+f8f85,vzwy3,Tower to Khokhrapar No.1,ٹاور سے کھوکھراپار نمبر 1,0,f8f85,1,0
+tgekv,vzwy3,Khokhrapar No 1 to Tower,کھوکھراپار نمبر 1 سے ٹاور,1,tgekv,1,0
+ndkth,w7qfn,Shahida Islam Hospital to Duniyapur,شاہدہ اسلام ہسپتال سے دنیاپور,0,,0,0
+z7pq5,w7qfn,Duniyapur to Shahida Islam Hospital,دنیاپور سے شاہدہ اسلام ہسپتال,1,,0,0
+m573k,w9v4h,RT-39-Dars Chawan To Northern Bypass,RT-39 درس چاواں سے ناردرن بائی پاس,0,,0,0
+r3tqv,w9v4h,RT-39-Northern Bypass To Dars Chawan,RT-39 ناردرن بائی پاس سے درس چاواں,1,,0,0
+cjxq9,wafag,Rohri Railway Station to Globe chowk Lab e Mehran,روہڑی ریلوے اسٹیشن سے گلوب چوک لبِ مہران,0,cjxq9,0,0
+e3fp2,wafag,Globe chowk Lab e Mehran to Rohri Railway Station,گلوب چوک لبِ مہران سے روہڑی ریلوے اسٹیشن,1,e3fp2,0,0
+wy336,wb2j2,Nadirabad Phatak to Chungi No. 09,نادر آباد پھاٹک سے چونگی نمبر 9,0,,0,0
+x9fwf,wb2j2,Chungi No. 09 to Nadirabad Phatak,چونگی نمبر 9 سے نادر آباد پھاٹک,1,,0,0
+mvc2a,wdj3s,Sanghoi to Fauji Foundation,سنگھوئی سے فوجی فاؤنڈیشن,0,,0,0
+zdeby,wdj3s,Fauji Foundation to Sanghoi,فوجی فاؤنڈیشن سے سنگھوئی,1,,0,0
+aynb5,wkftz,GBS Sialkot to Daska,سیالکوٹ بس اڈہ سے ڈسکہ,0,,0,0
+zvy5f,wkftz,Daska to GBS Sialkot,ڈسکہ سے سیالکوٹ بس اڈہ,1,,0,0
+gqktm,wv5f3,Technical College to Fauji Foundation,ٹیکنیکل کالج سے فوجی فاؤنڈیشن,0,,0,0
+t3mfx,wv5f3,Fauji Foundation to Technical College,فوجی فاؤنڈیشن سے ٹیکنیکل کالج,1,,0,0
+cr87n,wydge,Khanewal to Kabirwala,خانیوال سے کبیروالا,0,,0,0
+sjhym,wydge,Kabirwala to Khanewal,کبیروالا سے خانیوال,1,,0,0
+haggt,wzvn6,Rajanpur to Kot Mithan,راجن پور سے کوٹ مٹھن,0,,0,0
+tsesb,wzvn6,Kot Mithan to Rajanpur,کوٹ مٹھن سے راجن پور,1,,0,0
+gv9ac,x28sb,GBS Sadiqabad to GBS Rahim Yar Khan,صادق آباد بس اڈہ سے رحیم یار خان بس اڈہ,0,,0,0
+w36by,x28sb,GBS Rahim Yar Khan to GBS Sadiqabad,رحیم یار خان بس اڈہ سے صادق آباد بس اڈہ,1,,0,0
+f6hsn,xdc7x,Tehsil Chowk to Bhutto Colony,تحصیل چوک سے بھٹو کالونی,0,,0,0
+m464t,xdc7x,Bhutto Colony to Tehsil Chowk,بھٹو کالونی سے تحصیل چوک,1,,0,0
+fxh3z,xmvbj,Shahdara to Gajjumata,شاہدرہ سے گجومتہ,0,,0,0
+t5798,xmvbj,Gajjumata to Shahdara,گجومتہ سے شاہدرہ,1,,0,0
+ev7qf,xtcmk,Fazilpur to Rajanpur,فاضل پور سے راجن پور,0,,0,0
+kt7mb,xtcmk,Rajanpur to Fazilpur,راجن پور سے فاضل پور,1,,0,0
+k64rt,y86sm,Munawar Colony to Saddar Metrobus Station,منور کالونی سے صدر میٹرو بس اسٹیشن,0,,0,0
+kq9fh,y86sm,Saddar Metrobus Station to Munawar Colony,صدر میٹرو بس اسٹیشن سے منور کالونی,1,,0,0
+jra2k,ya37w,GBS Sahiwal to Adda Kameer,ساہیوال بس اڈہ سے اڈہ کمیر,0,,0,0
+z87k5,ya37w,Adda Kameer to GBS Sahiwal,اڈہ کمیر سے ساہیوال بس اڈہ,1,,0,0
+bfrxt,ycagm,Depot Chowk to Kalma Chowk,ڈپو چوک سے کلمہ چوک,0,,0,0
+bkg2t,ycagm,Kalma Chowk to Depot Chowk,کلمہ چوک سے ڈپو چوک,1,,0,0
+n8cmy,ycy27,RT-01-Dehhr Chowk To Dera Adda,RT-01 دہڑ چوک سے ڈیرہ اڈہ,0,,0,0
+q5c95,ycy27,RT-01-Dera Adda To Dehhr Chowk,RT-01 ڈیرہ اڈہ سے دہڑ چوک,1,,0,0
+bybp8,ydm68,Dera Adda to DHA,ڈیرہ اڈہ سے ڈی ایچ اے,0,,0,0
+zgqc7,ydm68,DHA to Dera Adda,ڈی ایچ اے سے ڈیرہ اڈہ,1,,0,0
+ded4k,yfegw,Aliabad to GBS Jhang,علی آباد سے جھنگ بس اڈہ,0,,0,0
+hc9n3,yfegw,GBS Jhang to Aliabad,جھنگ بس اڈہ سے علی آباد,1,,0,0
+asp98,ynvew,Sahiwal Bypass to KFC Bypass,ساہیوال بائی پاس سے کے ایف سی بائی پاس,0,,0,0
+vbn73,ynvew,KFC Bypass to sahiwal Bypass,کے ایف سی بائی پاس سے ساہیوال بائی پاس,1,,0,0
+jy8n6,ynww6,Roshan Wala Bypass to Kamal Pur,روشن والا بائی پاس سے کمال پور,0,,0,0
+rcv8y,ynww6,Kamal Pur to Roshan Wala Bypass,کمال پور سے روشن والا بائی پاس,1,,0,0
+k62za,ys5wk,Lak Morr to GBS Sargodha,لک موڑ سے سرگودھا بس اڈہ,0,,0,0
+r5q2k,ys5wk,GBS Sargodha to Lak Morr,سرگودھا بس اڈہ سے لک موڑ,1,,0,0
+trg7c,yxk67,Backward-RajanPur Innercity,راجن پور اندرونِ شہر واپسی,0,,0,0
+wmqfp,yxk67,Forward-RajanPur Innercity,راجن پور اندرونِ شہر آمد,1,,0,0
+pzwv3,yxtzz,Harappa Museum to Electro Bus Depot,ہڑپہ عجائب گھر سے الیکٹرو بس ڈپو,0,,0,0
+rfjkp,yxtzz,Electro Bus Depot to Harappa Museum,الیکٹرو بس ڈپو سے ہڑپہ عجائب گھر,1,,0,0
+e8ybj,z3dcy,Mandi Morh to Barahkahu,منڈی موڑ سے بارہ کہو,0,e8ybj,0,0
+x3mh5,z3dcy,Barakahu to Mandi Morh,بارہ کہو سے منڈی موڑ,1,,0,0
+g9m9p,z3mjx,KSK to Railway Station,کالا شاہ کاکو سے ریلوے اسٹیشن,0,,0,0
+n83th,z3mjx,Railway Station to KSK,ریلوے اسٹیشن سے کالا شاہ کاکو,1,,0,0
+r7yet,z7pp5,To Dera Gujran,ڈیرہ گجراں کی طرف,0,,0,0
+rzg49,z7pp5,To Ali Town,علی ٹاؤن کی طرف,1,,0,0
+tq4vq,za4py,Depot Chowk to Chungi Amer Sidhu,ڈپو چوک سے چونگی امر سدھو,0,,0,0
+yr6kb,za4py,Chungi Amer Sidhu to Depot Chowk,چونگی امر سدھو سے ڈپو چوک,1,,0,0
+t33cm,zee86,RT-01B-Dera Adda To E-khidmat Via Women University,RT-01B ڈیرہ اڈہ سے ای خدمت براستہ ویمن یونیورسٹی,0,,0,0
+zqdg2,zee86,RT-01B-E-khidmat To Dera Adda Via Women University,RT-01B ای خدمت سے ڈیرہ اڈہ براستہ ویمن یونیورسٹی,1,,0,0
+rtf6w,zh87m,Chungi No. 09 to Nag Shah,چونگی نمبر 9 سے ناگ شاہ,0,,0,0
+ygrsv,zh87m,Nag Shah to Chungi No. 09,ناگ شاہ سے چونگی نمبر 9,1,,0,0
+bp9gq,zmdve,Noorpur to GBS Pakpattan,نور پور سے پاکپتن بس اڈہ,0,,0,0
+ym76h,zmdve,GBS Pakpattan to Noorpur,پاکپتن بس اڈہ سے نور پور,1,,0,0
+fjcs2,zne4z,Pahar Pur to GBS Layyah,پہاڑ پور سے لیہ بس اڈہ,0,,0,0
+hppk2,zne4z,GBS Layyah to Pahar Pur,لیہ بس اڈہ سے پہاڑ پور,1,,0,0
+bkb7a,zqkzn,PIMS to Capt. Naeem Tufail Shaheed Chowk,پمز سے کیپٹن نعیم طفیل شہید چوک,0,,0,0
+cwpp8,zqkzn,Capt. Naeem Tufail Shaheed Chowk to PIMS,کیپٹن نعیم طفیل شہید چوک سے پمز,1,,0,0
+w6e5d,zrjr9,RT-12B-Nishtar Hospital To Aziz Hotel,RT-12B نشتر ہسپتال سے عزیز ہوٹل,0,,0,0
+ysbny,zrjr9,RT-12B-Aziz Hotel To Nishtar Hospital,RT-12B عزیز ہوٹل سے نشتر ہسپتال,1,,0,0
+n5jgg,zsate,GBS Gujrat to Mangowal,گجرات بس اڈہ سے منگووال,0,,0,0
+vc8vw,zsate,Mangowal to GBS Gujrat,منگووال سے گجرات بس اڈہ,1,,0,0
+sa5az,zwx9j,RT-7B-32 Pull To Vehari Chowk,RT-7B 32 پل سے وہاڑی چوک,0,,0,0
+zjz5y,zwx9j,RT-7B-Vehari Chowk To 32 Pull,RT-7B وہاڑی چوک سے 32 پل,1,,0,0
+nz56z,zx5z2,Mangwal to GBS Khushab,منگوال سے خوشاب بس اڈہ,0,,0,0
+q8mwe,zx5z2,GBS Khushab to Mangwal,خوشاب بس اڈہ سے منگوال,1,,0,0
