@@ -72,7 +72,6 @@ class _RouteDetailsScreenState extends State<RouteDetailsScreen> {
     }).toList();
   }
 
-  // UPDATED: Fall back to stop_id if the stop name is unavailable.
   String _stopName(Map<String, dynamic> stop) {
     final name = (stop['stop_name'] ??
         stop['name'] ??
@@ -1000,6 +999,9 @@ class _RouteDetailsScreenState extends State<RouteDetailsScreen> {
                   busNumber: widget.busNumber,
                   from: widget.from,
                   to: widget.to,
+
+                  // Pass the selected GTFS route stops to tracking.
+                  routeStops: _stops,
                 ),
               ),
             );

@@ -1,19 +1,23 @@
+
 import 'package:flutter/material.dart';
 
 class LiveBusTrackingScreen extends StatefulWidget {
   final String busNumber;
   final String from;
   final String to;
+  final List<Map<String, dynamic>> routeStops;
 
   const LiveBusTrackingScreen({
     super.key,
     this.busNumber = 'M-12',
     this.from = 'Central Station',
     this.to = 'City Mall',
+    this.routeStops = const [],
   });
 
   @override
-  State<LiveBusTrackingScreen> createState() => _LiveBusTrackingScreenState();
+  State<LiveBusTrackingScreen> createState() =>
+      _LiveBusTrackingScreenState();
 }
 
 class _LiveBusTrackingScreenState extends State<LiveBusTrackingScreen> {
@@ -27,7 +31,65 @@ class _LiveBusTrackingScreenState extends State<LiveBusTrackingScreen> {
   static const Color textDark = Color(0xFF12212D);
   static const Color textMuted = Color(0xFF6B7C88);
   static const Color lightBorder = Color(0xFFE1EDF1);
-  static const Color success = Color(0xFF22C55E);
+  static const Color warning = Color(0xFFB7791F);
+
+  /// Extract readable names from the selected GTFS route stops.
+  List<String> get _routeStopNames {
+    return widget.routeStops
+        .map((stop) {
+      final value = stop['stop_name'] ??
+          stop['name'] ??
+          stop['stopName'] ??
+          stop['stop_id'];
+
+      return value?.toString().trim() ?? '';
+    })
+        .where((name) => name.isNotEmpty)
+        .toList();
+  }
+
+  /// Use actual route endpoints when available.
+  String get _routeStart {
+    final stops = _routeStopNames;
+
+    if (stops.isNotEmpty) {
+      return stops.first;
+    }
+
+    return widget.from.trim().isNotEmpty ? widget.from : 'Not available';
+  }
+
+  String get _routeEnd {
+    final stops = _routeStopNames;
+
+    if (stops.isNotEmpty) {
+      return stops.last;
+    }
+
+    return widget.to.trim().isNotEmpty ? widget.to : 'Not available';
+  }
+
+  /// This is the next stop in the route sequence, not the bus's
+  /// actual current next stop.
+  String get _nextRouteStop {
+    final stops = _routeStopNames;
+
+    if (stops.length < 2) {
+      return 'Not available';
+    }
+
+    final originIndex = stops.indexWhere(
+          (stop) => stop.toLowerCase() == widget.from.trim().toLowerCase(),
+    );
+
+    if (originIndex >= 0 && originIndex + 1 < stops.length) {
+      return stops[originIndex + 1];
+    }
+
+    return stops[1];
+  }
+
+  int get _routeStopCount => _routeStopNames.length;
 
   @override
   Widget build(BuildContext context) {
@@ -53,15 +115,15 @@ class _LiveBusTrackingScreenState extends State<LiveBusTrackingScreen> {
                   _buildStatsRow(),
                   const SizedBox(height: 26),
                   _buildSectionTitle(
-                    'Journey Progress',
-                    'Follow the bus along your selected route',
+                    'Journey Route',
+                    'Stops from the selected GTFS route',
                   ),
                   const SizedBox(height: 14),
                   _buildJourneyProgress(),
                   const SizedBox(height: 26),
                   _buildSectionTitle(
-                    'Live Bus Information',
-                    'Current vehicle and service details',
+                    'Route Information',
+                    'Live vehicle information is not available',
                   ),
                   const SizedBox(height: 14),
                   _buildBusInfoCard(),
@@ -113,6 +175,12 @@ class _LiveBusTrackingScreenState extends State<LiveBusTrackingScreen> {
             child: Image.asset(
               'assets/branding/movira_icon.png',
               fit: BoxFit.cover,
+              errorBuilder: (context, error, stackTrace) {
+                return const Icon(
+                  Icons.directions_bus_rounded,
+                  color: teal,
+                );
+              },
             ),
           ),
         ),
@@ -122,7 +190,7 @@ class _LiveBusTrackingScreenState extends State<LiveBusTrackingScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'LIVE TRACKING',
+                'ROUTE TRACKING',
                 style: TextStyle(
                   color: navy,
                   fontSize: 17,
@@ -132,7 +200,7 @@ class _LiveBusTrackingScreenState extends State<LiveBusTrackingScreen> {
               ),
               SizedBox(height: 2),
               Text(
-                'Real-time bus movement',
+                'GTFS route preview',
                 style: TextStyle(
                   color: textMuted,
                   fontSize: 10.5,
@@ -149,10 +217,7 @@ class _LiveBusTrackingScreenState extends State<LiveBusTrackingScreen> {
             color: softCyan,
             borderRadius: BorderRadius.circular(14),
           ),
-          child: const Icon(
-            Icons.location_searching_rounded,
-            color: teal,
-          ),
+          child: const Icon(Icons.route_rounded, color: teal),
         ),
       ],
     );
@@ -197,43 +262,13 @@ class _LiveBusTrackingScreenState extends State<LiveBusTrackingScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row(
-                  children: [
-                    Text(
-                      'Bus ${widget.busNumber}',
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 18,
-                        fontWeight: FontWeight.w900,
-                      ),
-                    ),
-                    const SizedBox(width: 10),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 9,
-                        vertical: 5,
-                      ),
-                      decoration: BoxDecoration(
-                        color: success.withOpacity(0.14),
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      child: const Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(Icons.circle, size: 7, color: success),
-                          SizedBox(width: 5),
-                          Text(
-                            'LIVE',
-                            style: TextStyle(
-                              color: success,
-                              fontSize: 9.5,
-                              fontWeight: FontWeight.w900,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
+                Text(
+                  'Bus ${widget.busNumber}',
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w900,
+                  ),
                 ),
                 const SizedBox(height: 6),
                 Text(
@@ -244,22 +279,29 @@ class _LiveBusTrackingScreenState extends State<LiveBusTrackingScreen> {
                     fontWeight: FontWeight.w600,
                   ),
                 ),
-                const SizedBox(height: 6),
-                const Text(
-                  'Tracking active • GPS connected',
-                  style: TextStyle(
-                    color: cyan,
-                    fontSize: 10.5,
-                    fontWeight: FontWeight.w800,
-                  ),
+                const SizedBox(height: 8),
+                const Row(
+                  children: [
+                    Icon(
+                      Icons.info_outline_rounded,
+                      color: cyan,
+                      size: 15,
+                    ),
+                    SizedBox(width: 5),
+                    Expanded(
+                      child: Text(
+                        'No live vehicle feed connected',
+                        style: TextStyle(
+                          color: cyan,
+                          fontSize: 10.5,
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
-          ),
-          const Icon(
-            Icons.chevron_right_rounded,
-            color: cyan,
-            size: 28,
           ),
         ],
       ),
@@ -307,15 +349,19 @@ class _LiveBusTrackingScreenState extends State<LiveBusTrackingScreen> {
                 child: const Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(Icons.circle, color: success, size: 8),
+                    Icon(
+                      Icons.route_rounded,
+                      color: teal,
+                      size: 14,
+                    ),
                     SizedBox(width: 6),
                     Text(
-                      'LIVE MAP',
+                      'ILLUSTRATIVE PREVIEW',
                       style: TextStyle(
                         color: navy,
-                        fontSize: 10,
+                        fontSize: 9.5,
                         fontWeight: FontWeight.w900,
-                        letterSpacing: 0.6,
+                        letterSpacing: 0.3,
                       ),
                     ),
                   ],
@@ -326,14 +372,13 @@ class _LiveBusTrackingScreenState extends State<LiveBusTrackingScreen> {
               top: 16,
               right: 16,
               child: Container(
-                width: 42,
-                height: 42,
+                padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
                   color: navy,
                   borderRadius: BorderRadius.circular(14),
                 ),
                 child: const Icon(
-                  Icons.my_location_rounded,
+                  Icons.location_off_outlined,
                   color: cyan,
                   size: 21,
                 ),
@@ -365,7 +410,7 @@ class _LiveBusTrackingScreenState extends State<LiveBusTrackingScreen> {
                       ],
                     ),
                     child: const Icon(
-                      Icons.directions_bus_filled_rounded,
+                      Icons.route_rounded,
                       color: navy,
                       size: 30,
                     ),
@@ -389,23 +434,23 @@ class _LiveBusTrackingScreenState extends State<LiveBusTrackingScreen> {
                 child: const Row(
                   children: [
                     Icon(
-                      Icons.navigation_rounded,
+                      Icons.info_outline_rounded,
                       color: teal,
                       size: 20,
                     ),
                     SizedBox(width: 10),
                     Expanded(
                       child: Text(
-                        'Bus is moving toward Main Market',
+                        'Actual vehicle position is unavailable',
                         style: TextStyle(
                           color: Colors.white,
-                          fontSize: 11.5,
+                          fontSize: 11,
                           fontWeight: FontWeight.w800,
                         ),
                       ),
                     ),
                     Text(
-                      '3 min',
+                      'N/A',
                       style: TextStyle(
                         color: cyan,
                         fontSize: 11.5,
@@ -440,46 +485,60 @@ class _LiveBusTrackingScreenState extends State<LiveBusTrackingScreen> {
               color: softCyan,
               borderRadius: BorderRadius.circular(15),
             ),
-            child: const Icon(Icons.location_on_rounded, color: teal),
+            child: const Icon(
+              Icons.location_on_rounded,
+              color: teal,
+            ),
           ),
           const SizedBox(width: 13),
-          const Expanded(
+          Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  'Next Stop',
+                const Text(
+                  'Next Route Stop',
                   style: TextStyle(
                     color: textMuted,
                     fontSize: 11,
                     fontWeight: FontWeight.w700,
                   ),
                 ),
-                SizedBox(height: 4),
+                const SizedBox(height: 4),
                 Text(
-                  'Main Market',
-                  style: TextStyle(
+                  _nextRouteStop,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
                     color: textDark,
                     fontSize: 15,
                     fontWeight: FontWeight.w900,
                   ),
                 ),
+                const SizedBox(height: 3),
+                const Text(
+                  'Route sequence only, not live tracking',
+                  style: TextStyle(
+                    color: textMuted,
+                    fontSize: 10,
+                  ),
+                ),
               ],
             ),
           ),
+          const SizedBox(width: 8),
           Container(
             padding: const EdgeInsets.symmetric(
-              horizontal: 12,
+              horizontal: 10,
               vertical: 8,
             ),
             decoration: BoxDecoration(
-              color: const Color(0xFFE8FBF2),
+              color: const Color(0xFFFFF4DF),
               borderRadius: BorderRadius.circular(14),
             ),
             child: const Text(
-              'Arriving in 3 min',
+              'Not live',
               style: TextStyle(
-                color: Color(0xFF138A4B),
+                color: warning,
                 fontSize: 10.5,
                 fontWeight: FontWeight.w900,
               ),
@@ -496,8 +555,8 @@ class _LiveBusTrackingScreenState extends State<LiveBusTrackingScreen> {
         Expanded(
           child: _statCard(
             icon: Icons.schedule_rounded,
-            value: '3 min',
-            label: 'ETA',
+            value: 'N/A',
+            label: 'Live ETA',
             color: cyan,
           ),
         ),
@@ -505,7 +564,7 @@ class _LiveBusTrackingScreenState extends State<LiveBusTrackingScreen> {
         Expanded(
           child: _statCard(
             icon: Icons.straighten_rounded,
-            value: '1.2 km',
+            value: 'N/A',
             label: 'Distance',
             color: teal,
           ),
@@ -513,10 +572,10 @@ class _LiveBusTrackingScreenState extends State<LiveBusTrackingScreen> {
         const SizedBox(width: 10),
         Expanded(
           child: _statCard(
-            icon: Icons.speed_rounded,
-            value: 'On Time',
-            label: 'Status',
-            color: success,
+            icon: Icons.sensors_off_rounded,
+            value: 'Offline',
+            label: 'Live Feed',
+            color: warning,
           ),
         ),
       ],
@@ -555,6 +614,7 @@ class _LiveBusTrackingScreenState extends State<LiveBusTrackingScreen> {
           const SizedBox(height: 3),
           Text(
             label,
+            textAlign: TextAlign.center,
             style: const TextStyle(
               color: textMuted,
               fontSize: 9.5,
@@ -603,57 +663,22 @@ class _LiveBusTrackingScreenState extends State<LiveBusTrackingScreen> {
           Row(
             children: [
               _progressPoint(
-                label: widget.from,
+                label: _routeStart,
                 icon: Icons.trip_origin_rounded,
                 color: teal,
               ),
               Expanded(
-                child: Stack(
-                  alignment: Alignment.center,
-                  children: [
-                    Container(
-                      height: 4,
-                      margin: const EdgeInsets.symmetric(horizontal: 8),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFE4EDF1),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                    ),
-                    FractionallySizedBox(
-                      widthFactor: 0.52,
-                      alignment: Alignment.centerLeft,
-                      child: Container(
-                        height: 4,
-                        margin: const EdgeInsets.symmetric(horizontal: 8),
-                        decoration: BoxDecoration(
-                          gradient: const LinearGradient(
-                            colors: [teal, cyan],
-                          ),
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                      ),
-                    ),
-                    Align(
-                      alignment: const Alignment(0.05, 0),
-                      child: Container(
-                        width: 24,
-                        height: 24,
-                        decoration: const BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: navy,
-                        ),
-                        child: const Icon(
-                          Icons.directions_bus_rounded,
-                          color: cyan,
-                          size: 14,
-                        ),
-                      ),
-                    ),
-                  ],
+                child: Container(
+                  height: 4,
+                  margin: const EdgeInsets.symmetric(horizontal: 8),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFE4EDF1),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
                 ),
               ),
               _progressPoint(
-                label: widget.to,
+                label: _routeEnd,
                 icon: Icons.location_on_rounded,
                 color: cyan,
                 alignRight: true,
@@ -661,31 +686,26 @@ class _LiveBusTrackingScreenState extends State<LiveBusTrackingScreen> {
             ],
           ),
           const SizedBox(height: 16),
-          const Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          Row(
             children: [
-              Text(
-                'Departed',
-                style: TextStyle(
-                  color: textMuted,
-                  fontSize: 10,
-                  fontWeight: FontWeight.w700,
-                ),
+              const Icon(
+                Icons.info_outline_rounded,
+                color: warning,
+                size: 16,
               ),
-              Text(
-                '52% complete',
-                style: TextStyle(
-                  color: teal,
-                  fontSize: 10,
-                  fontWeight: FontWeight.w900,
-                ),
-              ),
-              Text(
-                '12 min left',
-                style: TextStyle(
-                  color: textMuted,
-                  fontSize: 10,
-                  fontWeight: FontWeight.w700,
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  _routeStopCount > 0
+                      ? '$_routeStopCount stops found in the selected route. '
+                      'Actual vehicle progress is unavailable.'
+                      : 'Route stop details are unavailable. '
+                      'Vehicle progress is not being reported.',
+                  style: const TextStyle(
+                    color: textMuted,
+                    fontSize: 10.5,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
               ),
             ],
@@ -702,10 +722,11 @@ class _LiveBusTrackingScreenState extends State<LiveBusTrackingScreen> {
     bool alignRight = false,
   }) {
     return SizedBox(
-      width: 78,
+      width: 88,
       child: Column(
-        crossAxisAlignment:
-        alignRight ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+        crossAxisAlignment: alignRight
+            ? CrossAxisAlignment.end
+            : CrossAxisAlignment.start,
         children: [
           Icon(icon, color: color, size: 18),
           const SizedBox(height: 5),
@@ -738,26 +759,32 @@ class _LiveBusTrackingScreenState extends State<LiveBusTrackingScreen> {
         children: [
           _infoRow(
             icon: Icons.directions_bus_rounded,
-            label: 'Bus',
+            label: 'Route / Bus',
             value: widget.busNumber,
           ),
           const Divider(height: 22, color: Color(0xFFE7EEF1)),
           _infoRow(
             icon: Icons.location_on_outlined,
-            label: 'Next Stop',
-            value: 'Main Market',
+            label: 'Next Route Stop',
+            value: _nextRouteStop,
           ),
           const Divider(height: 22, color: Color(0xFFE7EEF1)),
           _infoRow(
             icon: Icons.pin_drop_outlined,
-            label: 'Remaining Stops',
-            value: '6',
+            label: 'Stops in Route',
+            value: _routeStopCount > 0 ? '$_routeStopCount' : 'N/A',
           ),
           const Divider(height: 22, color: Color(0xFFE7EEF1)),
           _infoRow(
             icon: Icons.payments_outlined,
             label: 'Fare',
-            value: 'Rs. 80',
+            value: 'Not provided',
+          ),
+          const Divider(height: 22, color: Color(0xFFE7EEF1)),
+          _infoRow(
+            icon: Icons.timer_off_outlined,
+            label: 'Live ETA',
+            value: 'Unavailable',
           ),
         ],
       ),
@@ -791,12 +818,15 @@ class _LiveBusTrackingScreenState extends State<LiveBusTrackingScreen> {
             ),
           ),
         ),
-        Text(
-          value,
-          style: const TextStyle(
-            color: textDark,
-            fontSize: 12.5,
-            fontWeight: FontWeight.w900,
+        Flexible(
+          child: Text(
+            value,
+            textAlign: TextAlign.right,
+            style: const TextStyle(
+              color: textDark,
+              fontSize: 12.5,
+              fontWeight: FontWeight.w900,
+            ),
           ),
         ),
       ],
@@ -804,20 +834,19 @@ class _LiveBusTrackingScreenState extends State<LiveBusTrackingScreen> {
   }
 
   void _showRoutePreview() {
-    showModalBottomSheet(
+    final routeStops = _routeStopNames;
+    final stops = routeStops.isNotEmpty
+        ? routeStops
+        : <String>[
+      if (widget.from.trim().isNotEmpty) widget.from.trim(),
+      if (widget.to.trim().isNotEmpty) widget.to.trim(),
+    ];
+
+    showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (context) {
-        final stops = [
-          'Central Station',
-          'Main Market',
-          'College Road',
-          'Civil Hospital',
-          'City Center',
-          widget.to,
-        ];
-
+      builder: (sheetContext) {
         return Container(
           margin: const EdgeInsets.all(12),
           padding: const EdgeInsets.fromLTRB(20, 18, 20, 24),
@@ -827,73 +856,118 @@ class _LiveBusTrackingScreenState extends State<LiveBusTrackingScreen> {
           ),
           child: SafeArea(
             top: false,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  'Full Route Preview',
-                  style: TextStyle(
-                    color: textDark,
-                    fontSize: 19,
-                    fontWeight: FontWeight.w900,
+            child: SizedBox(
+              height: MediaQuery.of(sheetContext).size.height * 0.65,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Full Route Preview',
+                    style: TextStyle(
+                      color: textDark,
+                      fontSize: 19,
+                      fontWeight: FontWeight.w900,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 5),
-                Text(
-                  'Bus ${widget.busNumber} • ${widget.from} → ${widget.to}',
-                  style: const TextStyle(
-                    color: textMuted,
-                    fontSize: 11,
+                  const SizedBox(height: 5),
+                  Text(
+                    'Bus ${widget.busNumber} • '
+                        '${widget.from} → ${widget.to}',
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      color: textMuted,
+                      fontSize: 11,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 18),
-                ...List.generate(stops.length, (index) {
-                  final last = index == stops.length - 1;
-                  return Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Column(
-                        children: [
-                          Container(
-                            width: 14,
-                            height: 14,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: index == 0
-                                  ? teal
-                                  : last
-                                  ? cyan
-                                  : navySoft,
-                            ),
-                          ),
-                          if (!last)
-                            Container(
-                              width: 2,
-                              height: 30,
-                              color: lightBorder,
-                            ),
-                        ],
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Padding(
-                          padding: const EdgeInsets.only(bottom: 14),
-                          child: Text(
-                            stops[index],
-                            style: const TextStyle(
-                              color: textDark,
-                              fontSize: 12.5,
-                              fontWeight: FontWeight.w800,
-                            ),
-                          ),
+                  const SizedBox(height: 6),
+                  const Text(
+                    'Stops shown in the GTFS route sequence. '
+                        'This is not live vehicle tracking.',
+                    style: TextStyle(
+                      color: textMuted,
+                      fontSize: 10.5,
+                    ),
+                  ),
+                  const SizedBox(height: 18),
+                  Expanded(
+                    child: stops.isEmpty
+                        ? const Center(
+                      child: Text(
+                        'No route stops are available.',
+                        style: TextStyle(
+                          color: textMuted,
+                          fontSize: 13,
                         ),
                       ),
-                    ],
-                  );
-                }),
+                    )
+                        : ListView.builder(
+                      itemCount: stops.length,
+                      itemBuilder: (context, index) {
+                        final isFirst = index == 0;
+                        final isLast = index == stops.length - 1;
 
-              ],
+                        return Row(
+                          crossAxisAlignment:
+                          CrossAxisAlignment.start,
+                          children: [
+                            Column(
+                              children: [
+                                Container(
+                                  width: 14,
+                                  height: 14,
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    color: isFirst
+                                        ? teal
+                                        : isLast
+                                        ? cyan
+                                        : navySoft,
+                                  ),
+                                ),
+                                if (!isLast)
+                                  Container(
+                                    width: 2,
+                                    height: 30,
+                                    color: lightBorder,
+                                  ),
+                              ],
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Padding(
+                                padding:
+                                const EdgeInsets.only(bottom: 14),
+                                child: Text(
+                                  stops[index],
+                                  style: const TextStyle(
+                                    color: textDark,
+                                    fontSize: 12.5,
+                                    fontWeight: FontWeight.w800,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            if (isFirst || isLast)
+                              Padding(
+                                padding:
+                                const EdgeInsets.only(left: 8),
+                                child: Text(
+                                  isFirst ? 'START' : 'END',
+                                  style: const TextStyle(
+                                    color: textMuted,
+                                    fontSize: 9,
+                                    fontWeight: FontWeight.w900,
+                                  ),
+                                ),
+                              ),
+                          ],
+                        );
+                      },
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         );
