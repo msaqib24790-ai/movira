@@ -1,8 +1,10 @@
 
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+
 import 'firebase_options.dart';
 import 'screens/welcome_screen.dart';
+import 'services/gtfs_service.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -10,6 +12,8 @@ Future<void> main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+
+  await GtfsService.instance.loadData();
 
   runApp(const MoviraApp());
 }

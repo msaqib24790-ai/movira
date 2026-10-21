@@ -1,4 +1,7 @@
+
 import 'package:flutter/material.dart';
+
+import '../../services/gtfs_service.dart';
 import 'route_details_screen.dart';
 
 class RouteResultsScreen extends StatefulWidget {
@@ -17,7 +20,6 @@ class RouteResultsScreen extends StatefulWidget {
 
 class _RouteResultsScreenState extends State<RouteResultsScreen> {
   static const Color navy = Color(0xFF071B2C);
-  static const Color darkNavy = Color(0xFF04101E);
   static const Color navySoft = Color(0xFF123247);
   static const Color teal = Color(0xFF00C7B7);
   static const Color cyan = Color(0xFF21D4FD);
@@ -32,60 +34,203 @@ class _RouteResultsScreenState extends State<RouteResultsScreen> {
   static const Color cardColor = Color(0xFFFFFFFF);
 
   int _selectedSort = 0;
+  List<Map<String, dynamic>> _routes = [];
+  String? _errorMessage;
 
-  final List<Map<String, dynamic>> _routes = [
-    {
-      'bus': 'M-12',
-      'time': '24 min',
-      'fare': 'Rs. 80',
-      'stops': '8 stops',
-      'next': '3 min',
-      'status': 'On Time',
-      'statusColor': const Color(0xFF22C55E),
-      'badge': 'FASTEST',
-      'badgeColor': cyan,
-      'departure': '11:10 PM',
-      'arrival': '11:34 PM',
-    },
-    {
-      'bus': 'M-08',
-      'time': '31 min',
-      'fare': 'Rs. 60',
-      'stops': '11 stops',
-      'next': '6 min',
-      'status': 'On Time',
-      'statusColor': const Color(0xFF22C55E),
-      'badge': 'CHEAPEST',
-      'badgeColor': teal,
-      'departure': '11:13 PM',
-      'arrival': '11:44 PM',
-    },
-    {
-      'bus': 'M-21',
-      'time': '28 min',
-      'fare': 'Rs. 90',
-      'stops': '6 stops',
-      'next': '9 min',
-      'status': 'Delayed',
-      'statusColor': const Color(0xFFF59E0B),
-      'badge': 'FEWER STOPS',
-      'badgeColor': const Color(0xFF8B5CF6),
-      'departure': '11:16 PM',
-      'arrival': '11:44 PM',
-    },
-  ];
+  @override
+  void initState() {
+    super.initState();
+    _loadRoutes();
+  }
 
-  void _openRouteDetails(Map<String, dynamic> route) {
+  void _loadRoutes() {
+    try {
+      final results = GtfsService.instance.searchRoutes(
+        from: widget.from,
+        to: widget.to,
+      );
+
+      _routes = results
+          .map((route) => Map<String, dynamic>.from(route))
+          .toList();
+
+      _sortRoutes();
+    } catch (_) {
+      _routes = [];
+      _errorMessage =
+      'Unable to load routes from the transit dataset.';
+    }
+  }
+
+  Map<String, dynamic> _asMap(dynamic value) {
+    if (value is Map) {
+      return Map<String, dynamic>.from(value);
+    }
+    return <String, dynamic>{};
+  }
+
+  String _text(dynamic value, {String fallback = ''}) {
+    if (value == null) return fallback;
+
+    final result = value.toString().trim();
+
+    if (result.isEmpty || result.toLowerCase() == 'null') {
+      return fallback;
+    }
+
+    return result;
+  }
+
+  Map<String, dynamic> _routeData(Map<String, dynamic> result) {
+    return _asMap(result['route']);
+  }
+
+  String _routeName(Map<String, dynamic> result) {
+    final route = _routeData(result);
+
+    final shortName = _text(
+      route['route_short_name'] ??
+          route['short_name'] ??
+          route['route_name'] ??
+          route['name'],
+    );
+
+    if (shortName.isNotEmpty) return shortName;
+
+    final longName = _text(
+      route['route_long_name'] ?? route['long_name'],
+    );
+
+    if (longName.isNotEmpty) return longName;
+
+    return _text(
+      route['route_id'] ?? route['id'],
+      fallback: 'Unknown route',
+    );
+  }
+
+  List<dynamic> _stops(Map<String, dynamic> result) {
+    final value = result['stops'];
+    return value is List ? value : [];
+  }
+
+  String _stopName(dynamic stop) {
+    if (stop is String) return stop;
+
+    final data = _asMap(stop);
+
+    return _text(
+      data['stop_name'] ??
+          data['name'] ??
+          data['stopName'] ??
+          data['stop_id'],
+      fallback: 'Unnamed stop',
+    );
+  }
+
+  int _stopCount(Map<String, dynamic> result) {
+    final stops = _stops(result);
+
+    // The returned stop segment is the source of truth.
+    if (stops.isNotEmpty) return stops.length;
+
+    final suppliedCount = result['stop_count'];
+
+    if (suppliedCount is num) {
+      return suppliedCount.toInt();
+    }
+
+    return 0;
+  }
+
+  List<dynamic> _departureTimes(Map<String, dynamic> result) {
+    final value = result['departure_times'];
+    return value is List ? value : [];
+  }
+
+  String _departureLabel(Map<String, dynamic> result) {
+    final times = _departureTimes(result);
+
+    if (times.isEmpty) {
+      return 'Departure time unavailable';
+    }
+
+    final first = times.first;
+
+    if (first is String || first is num) {
+      return _text(
+        first,
+        fallback: 'Departure time unavailable',
+      );
+    }
+
+    final data = _asMap(first);
+
+    return _text(
+      data['departure_time'] ??
+          data['departure'] ??
+          data['time'] ??
+          data['departureTime'],
+      fallback: 'Departure time unavailable',
+    );
+  }
+
+  String _networkLabel(Map<String, dynamic> result) {
+    final networks = result['networks'];
+
+    if (networks is List && networks.isNotEmpty) {
+      final names = networks.map((network) {
+        if (network is String) return network;
+
+        final data = _asMap(network);
+
+        return _text(
+          data['network_name'] ??
+              data['name'] ??
+              data['network_id'] ??
+              data['id'],
+        );
+      }).where((name) => name.isNotEmpty).toList();
+
+      if (names.isNotEmpty) return names.join(', ');
+    }
+
+    return 'Transit network not specified';
+  }
+
+  void _sortRoutes() {
+    if (_selectedSort == 1) {
+      _routes.sort(
+            (a, b) => _stopCount(a).compareTo(_stopCount(b)),
+      );
+    } else if (_selectedSort == 2) {
+      _routes.sort(
+            (a, b) => _routeName(a)
+            .toLowerCase()
+            .compareTo(_routeName(b).toLowerCase()),
+      );
+    }
+  }
+
+  void _selectSort(int index) {
+    setState(() {
+      _selectedSort = index;
+      _sortRoutes();
+    });
+  }
+
+  void _openRouteDetails(Map<String, dynamic> result) {
     Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => RouteDetailsScreen(
-          busNumber: route['bus'],
+          busNumber: _routeName(result),
           from: widget.from,
           to: widget.to,
-          duration: route['time'],
-          fare: route['fare'],
-          status: route['status'],
+          duration: 'Not provided by dataset',
+          fare: 'Not provided by dataset',
+          status: 'Service status unverified',
+          routeResult: result,
         ),
       ),
     );
@@ -98,22 +243,14 @@ class _RouteResultsScreenState extends State<RouteResultsScreen> {
       body: Stack(
         children: [
           const _RouteResultsBackground(),
-
           SafeArea(
             child: SingleChildScrollView(
-              padding: const EdgeInsets.fromLTRB(
-                20,
-                18,
-                20,
-                40,
-              ),
+              padding: const EdgeInsets.fromLTRB(20, 18, 20, 40),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   _buildHeader(),
-
                   const SizedBox(height: 26),
-
                   const Text(
                     'Best routes for you',
                     style: TextStyle(
@@ -123,11 +260,10 @@ class _RouteResultsScreenState extends State<RouteResultsScreen> {
                       letterSpacing: -0.4,
                     ),
                   ),
-
                   const SizedBox(height: 8),
-
                   const Text(
-                    'Compare route options and choose the journey that works best.',
+                    'Compare matching routes found in the available '
+                        'transit dataset.',
                     style: TextStyle(
                       color: textMuted,
                       fontSize: 14,
@@ -135,38 +271,49 @@ class _RouteResultsScreenState extends State<RouteResultsScreen> {
                       fontWeight: FontWeight.w500,
                     ),
                   ),
-
                   const SizedBox(height: 24),
-
                   _buildJourneySummary(),
-
                   const SizedBox(height: 26),
-
                   _buildSortRow(),
-
                   const SizedBox(height: 18),
-
-                  _buildTopRecommendation(),
-
-                  const SizedBox(height: 22),
-
-                  const Text(
-                    'Other route options',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 19,
-                      fontWeight: FontWeight.w900,
-                    ),
-                  ),
-
-                  const SizedBox(height: 14),
-
-                  ..._routes.skip(1).map(
-                        (route) => Padding(
-                      padding: const EdgeInsets.only(bottom: 14),
-                      child: _buildRouteCard(route),
-                    ),
-                  ),
+                  if (_errorMessage != null)
+                    _buildMessageCard(
+                      icon: Icons.error_outline_rounded,
+                      title: 'Unable to load routes',
+                      message: _errorMessage!,
+                    )
+                  else if (_routes.isEmpty)
+                    _buildMessageCard(
+                      icon: Icons.route_outlined,
+                      title: 'No matching direct routes found',
+                      message:
+                      'The available dataset did not return a direct '
+                          'route matching these stop names. Check the '
+                          'spelling or try another stop.',
+                    )
+                  else ...[
+                      _buildTopRecommendation(),
+                      if (_routes.length > 1) ...[
+                        const SizedBox(height: 24),
+                        const Text(
+                          'Other route options',
+                          style: TextStyle(
+                            color: textDark,
+                            fontSize: 19,
+                            fontWeight: FontWeight.w900,
+                          ),
+                        ),
+                        const SizedBox(height: 14),
+                        ..._routes.skip(1).map(
+                              (route) => Padding(
+                            padding: const EdgeInsets.only(bottom: 14),
+                            child: _buildRouteCard(route),
+                          ),
+                        ),
+                      ],
+                    ],
+                  const SizedBox(height: 18),
+                  _buildDatasetNotice(),
                 ],
               ),
             ),
@@ -180,9 +327,7 @@ class _RouteResultsScreenState extends State<RouteResultsScreen> {
     return Row(
       children: [
         GestureDetector(
-          onTap: () {
-            Navigator.pop(context);
-          },
+          onTap: () => Navigator.pop(context),
           child: Container(
             width: 44,
             height: 44,
@@ -204,9 +349,7 @@ class _RouteResultsScreenState extends State<RouteResultsScreen> {
             ),
           ),
         ),
-
         const SizedBox(width: 14),
-
         Container(
           width: 46,
           height: 46,
@@ -227,12 +370,16 @@ class _RouteResultsScreenState extends State<RouteResultsScreen> {
             child: Image.asset(
               'assets/branding/movira_icon.png',
               fit: BoxFit.cover,
+              errorBuilder: (context, error, stackTrace) {
+                return const Icon(
+                  Icons.directions_bus_rounded,
+                  color: teal,
+                );
+              },
             ),
           ),
         ),
-
         const SizedBox(width: 11),
-
         const Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -258,7 +405,6 @@ class _RouteResultsScreenState extends State<RouteResultsScreen> {
             ],
           ),
         ),
-
         Container(
           width: 44,
           height: 44,
@@ -284,10 +430,7 @@ class _RouteResultsScreenState extends State<RouteResultsScreen> {
         gradient: const LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [
-            teal,
-            cyan,
-          ],
+          colors: [teal, cyan],
         ),
         boxShadow: const [
           BoxShadow(
@@ -306,9 +449,7 @@ class _RouteResultsScreenState extends State<RouteResultsScreen> {
                 color: navy,
                 size: 20,
               ),
-
               const SizedBox(width: 12),
-
               Expanded(
                 child: Text(
                   widget.from,
@@ -321,7 +462,6 @@ class _RouteResultsScreenState extends State<RouteResultsScreen> {
               ),
             ],
           ),
-
           Padding(
             padding: const EdgeInsets.only(left: 9),
             child: Align(
@@ -333,7 +473,6 @@ class _RouteResultsScreenState extends State<RouteResultsScreen> {
               ),
             ),
           ),
-
           Row(
             children: [
               const Icon(
@@ -341,9 +480,7 @@ class _RouteResultsScreenState extends State<RouteResultsScreen> {
                 color: navy,
                 size: 20,
               ),
-
               const SizedBox(width: 12),
-
               Expanded(
                 child: Text(
                   widget.to,
@@ -354,11 +491,8 @@ class _RouteResultsScreenState extends State<RouteResultsScreen> {
                   ),
                 ),
               ),
-
               GestureDetector(
-                onTap: () {
-                  Navigator.pop(context);
-                },
+                onTap: () => Navigator.pop(context),
                 child: Container(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 12,
@@ -386,14 +520,14 @@ class _RouteResultsScreenState extends State<RouteResultsScreen> {
   }
 
   Widget _buildSortRow() {
-    final sorts = [
+    const sorts = [
       'Recommended',
-      'Fastest',
-      'Cheapest',
+      'Fewest stops',
+      'Route name',
     ];
 
     return SizedBox(
-      height: 42,
+      height: 44,
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         itemCount: sorts.length,
@@ -402,11 +536,7 @@ class _RouteResultsScreenState extends State<RouteResultsScreen> {
           final selected = _selectedSort == index;
 
           return GestureDetector(
-            onTap: () {
-              setState(() {
-                _selectedSort = index;
-              });
-            },
+            onTap: () => _selectSort(index),
             child: AnimatedContainer(
               duration: const Duration(milliseconds: 220),
               padding: const EdgeInsets.symmetric(
@@ -446,7 +576,16 @@ class _RouteResultsScreenState extends State<RouteResultsScreen> {
   }
 
   Widget _buildTopRecommendation() {
-    final route = _routes.first;
+    final result = _routes.first;
+    final routeName = _routeName(result);
+    final stopCount = _stopCount(result);
+    final departure = _departureLabel(result);
+    final network = _networkLabel(result);
+    final stops = _stops(result);
+
+    final stopSummary = stopCount > 0
+        ? '$stopCount stops recorded'
+        : 'Stop count unavailable';
 
     return Container(
       width: double.infinity,
@@ -456,11 +595,7 @@ class _RouteResultsScreenState extends State<RouteResultsScreen> {
         gradient: const LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [
-            navy,
-            navySoft,
-            Color(0xFF15516A),
-          ],
+          colors: [navy, navySoft, Color(0xFF15516A)],
         ),
         boxShadow: const [
           BoxShadow(
@@ -485,7 +620,7 @@ class _RouteResultsScreenState extends State<RouteResultsScreen> {
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: const Text(
-                  'BEST MATCH',
+                  'GTFS MATCH',
                   style: TextStyle(
                     color: cyan,
                     fontSize: 10,
@@ -495,81 +630,45 @@ class _RouteResultsScreenState extends State<RouteResultsScreen> {
                 ),
               ),
               const Spacer(),
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 10,
-                  vertical: 6,
-                ),
-                decoration: BoxDecoration(
-                  color: (route['statusColor'] as Color).withOpacity(0.12),
-                  borderRadius: BorderRadius.circular(18),
-                ),
-                child: Row(
-                  children: [
-                    Icon(
-                      Icons.circle,
-                      color: route['statusColor'],
-                      size: 8,
-                    ),
-                    const SizedBox(width: 6),
-                    Text(
-                      route['status'],
-                      style: TextStyle(
-                        color: route['statusColor'],
-                        fontSize: 10.5,
-                        fontWeight: FontWeight.w900,
-                      ),
-                    ),
-                  ],
-                ),
+              const Icon(
+                Icons.route_outlined,
+                color: teal,
+                size: 21,
               ),
             ],
           ),
-
           const SizedBox(height: 18),
-
           Row(
             children: [
               Container(
                 width: 58,
                 height: 58,
                 decoration: const BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [teal, cyan],
-                  ),
-                  borderRadius: BorderRadius.all(
-                    Radius.circular(18),
-                  ),
+                  gradient: LinearGradient(colors: [teal, cyan]),
+                  borderRadius: BorderRadius.all(Radius.circular(18)),
                 ),
-                child: Center(
-                  child: Text(
-                    route['bus'],
-                    style: const TextStyle(
-                      color: navy,
-                      fontSize: 15,
-                      fontWeight: FontWeight.w900,
-                    ),
-                  ),
+                child: const Icon(
+                  Icons.directions_bus_rounded,
+                  color: navy,
+                  size: 29,
                 ),
               ),
-
               const SizedBox(width: 14),
-
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      '${route['departure']} → ${route['arrival']}',
+                      routeName,
                       style: const TextStyle(
                         color: Colors.white,
-                        fontSize: 15,
+                        fontSize: 19,
                         fontWeight: FontWeight.w900,
                       ),
                     ),
                     const SizedBox(height: 5),
                     Text(
-                      '${route['time']} • ${route['stops']}',
+                      stopSummary,
                       style: const TextStyle(
                         color: softText,
                         fontSize: 12,
@@ -578,71 +677,126 @@ class _RouteResultsScreenState extends State<RouteResultsScreen> {
                   ],
                 ),
               ),
-
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 10,
-                  vertical: 7,
-                ),
-                decoration: BoxDecoration(
-                  color: (route['badgeColor'] as Color).withOpacity(0.12),
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                child: Text(
-                  route['badge'],
-                  style: TextStyle(
-                    color: route['badgeColor'],
-                    fontSize: 9.5,
-                    fontWeight: FontWeight.w900,
-                  ),
-                ),
-              ),
             ],
           ),
-
-          const SizedBox(height: 18),
-
+          const SizedBox(height: 20),
           Row(
             children: [
               _infoItem(
                 icon: Icons.schedule_rounded,
-                label: 'Next Bus',
-                value: route['next'],
-              ),
-              _divider(),
-              _infoItem(
-                icon: Icons.payments_outlined,
-                label: 'Fare',
-                value: route['fare'],
+                label: 'Departure',
+                value: departure,
               ),
               _divider(),
               _infoItem(
                 icon: Icons.pin_drop_outlined,
                 label: 'Stops',
-                value: route['stops'],
+                value: stopCount > 0 ? '$stopCount' : 'N/A',
+              ),
+              _divider(),
+              _infoItem(
+                icon: Icons.account_tree_outlined,
+                label: 'Networks',
+                value: _text(
+                  result['networks'] is List
+                      ? (result['networks'] as List).length
+                      : null,
+                  fallback: 'N/A',
+                ),
               ),
             ],
           ),
+          const SizedBox(height: 18),
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(0.07),
+              borderRadius: BorderRadius.circular(14),
+            ),
+            child: Text(
+              network,
+              style: const TextStyle(
+                color: softText,
+                fontSize: 11,
+                height: 1.5,
+              ),
+            ),
+          ),
+          if (stops.isNotEmpty) ...[
+            const SizedBox(height: 16),
+            const Text(
+              'Stops in this route',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 13,
+                fontWeight: FontWeight.w900,
+              ),
+            ),
+            const SizedBox(height: 10),
+            ...stops.take(4).toList().asMap().entries.map((entry) {
+              final isLast = entry.key == stops.take(4).length - 1;
 
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 9),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Column(
+                      children: [
+                        Icon(
+                          entry.key == 0
+                              ? Icons.trip_origin_rounded
+                              : Icons.circle,
+                          size: entry.key == 0 ? 17 : 9,
+                          color: entry.key == 0 ? cyan : teal,
+                        ),
+                        if (!isLast)
+                          Container(
+                            width: 1,
+                            height: 13,
+                            color: Colors.white24,
+                          ),
+                      ],
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Text(
+                        _stopName(entry.value),
+                        style: const TextStyle(
+                          color: softText,
+                          fontSize: 11.5,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            }),
+            if (stops.length > 4)
+              Text(
+                '+ ${stops.length - 4} more stops',
+                style: const TextStyle(
+                  color: cyan,
+                  fontSize: 11,
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+          ],
           const SizedBox(height: 20),
-
           SizedBox(
             width: double.infinity,
             height: 54,
             child: DecoratedBox(
               decoration: BoxDecoration(
-                gradient: const LinearGradient(
-                  colors: [teal, cyan],
-                ),
+                gradient: const LinearGradient(colors: [teal, cyan]),
                 borderRadius: BorderRadius.circular(18),
               ),
               child: Material(
                 color: Colors.transparent,
                 child: InkWell(
                   borderRadius: BorderRadius.circular(18),
-                  onTap: () {
-                    _openRouteDetails(route);
-                  },
+                  onTap: () => _openRouteDetails(result),
                   child: const Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -670,12 +824,16 @@ class _RouteResultsScreenState extends State<RouteResultsScreen> {
     );
   }
 
-  Widget _buildRouteCard(Map<String, dynamic> route) {
+  Widget _buildRouteCard(Map<String, dynamic> result) {
+    final routeName = _routeName(result);
+    final stopCount = _stopCount(result);
+    final departure = _departureLabel(result);
+
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(17),
       decoration: BoxDecoration(
-        color: white,
+        color: cardColor,
         borderRadius: BorderRadius.circular(22),
         border: Border.all(color: lightBorder),
         boxShadow: const [
@@ -697,35 +855,29 @@ class _RouteResultsScreenState extends State<RouteResultsScreen> {
                   color: softCyan,
                   borderRadius: BorderRadius.circular(16),
                 ),
-                child: Center(
-                  child: Text(
-                    route['bus'],
-                    style: const TextStyle(
-                      color: teal,
-                      fontSize: 13,
-                      fontWeight: FontWeight.w900,
-                    ),
-                  ),
+                child: const Icon(
+                  Icons.directions_bus_rounded,
+                  color: teal,
                 ),
               ),
-
               const SizedBox(width: 13),
-
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      '${route['departure']} → ${route['arrival']}',
+                      routeName,
                       style: const TextStyle(
                         color: textDark,
-                        fontSize: 13.5,
+                        fontSize: 14,
                         fontWeight: FontWeight.w900,
                       ),
                     ),
                     const SizedBox(height: 5),
                     Text(
-                      '${route['time']} • ${route['stops']} • ${route['fare']}',
+                      stopCount > 0
+                          ? '$stopCount stops recorded'
+                          : 'Stop count unavailable',
                       style: const TextStyle(
                         color: textMuted,
                         fontSize: 11,
@@ -734,34 +886,14 @@ class _RouteResultsScreenState extends State<RouteResultsScreen> {
                   ],
                 ),
               ),
-
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  Text(
-                    route['badge'],
-                    style: TextStyle(
-                      color: route['badgeColor'],
-                      fontSize: 9.5,
-                      fontWeight: FontWeight.w900,
-                    ),
-                  ),
-                  const SizedBox(height: 5),
-                  Text(
-                    route['status'],
-                    style: TextStyle(
-                      color: route['statusColor'],
-                      fontSize: 10.5,
-                      fontWeight: FontWeight.w800,
-                    ),
-                  ),
-                ],
+              const Icon(
+                Icons.dataset_outlined,
+                color: teal,
+                size: 22,
               ),
             ],
           ),
-
           const SizedBox(height: 14),
-
           Row(
             children: [
               const Icon(
@@ -770,18 +902,17 @@ class _RouteResultsScreenState extends State<RouteResultsScreen> {
                 size: 17,
               ),
               const SizedBox(width: 6),
-              Text(
-                'Next bus in ${route['next']}',
-                style: const TextStyle(
-                  color: textMuted,
-                  fontSize: 11.5,
+              Expanded(
+                child: Text(
+                  departure,
+                  style: const TextStyle(
+                    color: textMuted,
+                    fontSize: 11.5,
+                  ),
                 ),
               ),
-              const Spacer(),
               TextButton(
-                onPressed: () {
-                  _openRouteDetails(route);
-                },
+                onPressed: () => _openRouteDetails(result),
                 child: const Text(
                   'Details',
                   style: TextStyle(
@@ -797,6 +928,82 @@ class _RouteResultsScreenState extends State<RouteResultsScreen> {
     );
   }
 
+  Widget _buildMessageCard({
+    required IconData icon,
+    required String title,
+    required String message,
+  }) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(22),
+      decoration: BoxDecoration(
+        color: white,
+        borderRadius: BorderRadius.circular(22),
+        border: Border.all(color: lightBorder),
+      ),
+      child: Column(
+        children: [
+          Icon(icon, color: teal, size: 42),
+          const SizedBox(height: 14),
+          Text(
+            title,
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+              color: textDark,
+              fontSize: 17,
+              fontWeight: FontWeight.w900,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            message,
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+              color: textMuted,
+              fontSize: 12,
+              height: 1.6,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDatasetNotice() {
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: lightBorder),
+      ),
+      child: const Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(
+            Icons.info_outline_rounded,
+            color: teal,
+            size: 21,
+          ),
+          SizedBox(width: 10),
+          Expanded(
+            child: Text(
+              'These results are based on the available GTFS dataset. '
+                  'Live bus positions, verified current service status, '
+                  'fares, and journey durations are not confirmed here. '
+                  'Departure entries are shown only when supplied by the dataset.',
+              style: TextStyle(
+                color: textMuted,
+                fontSize: 11,
+                height: 1.6,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _infoItem({
     required IconData icon,
     required String label,
@@ -805,30 +1012,25 @@ class _RouteResultsScreenState extends State<RouteResultsScreen> {
     return Expanded(
       child: Column(
         children: [
-          Icon(
-            icon,
-            color: cyan,
-            size: 21,
-          ),
-
+          Icon(icon, color: cyan, size: 21),
           const SizedBox(height: 6),
-
           Text(
             label,
+            textAlign: TextAlign.center,
             style: const TextStyle(
               color: softText,
               fontSize: 10,
             ),
           ),
-
-          const SizedBox(height: 3),
-
+          const SizedBox(height: 5),
           Text(
             value,
             textAlign: TextAlign.center,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
             style: const TextStyle(
               color: Colors.white,
-              fontSize: 11.5,
+              fontSize: 10.5,
               fontWeight: FontWeight.w900,
             ),
           ),
@@ -841,7 +1043,8 @@ class _RouteResultsScreenState extends State<RouteResultsScreen> {
     return Container(
       width: 1,
       height: 42,
-      color: Colors.white.withOpacity(0.08),
+      margin: const EdgeInsets.symmetric(horizontal: 7),
+      color: Colors.white.withOpacity(0.16),
     );
   }
 }
@@ -866,7 +1069,6 @@ class _RouteResultsBackground extends StatelessWidget {
             ),
           ),
         ),
-
         Positioned(
           top: -120,
           right: -90,
@@ -879,7 +1081,6 @@ class _RouteResultsBackground extends StatelessWidget {
             ),
           ),
         ),
-
         Positioned(
           bottom: -130,
           left: -100,
