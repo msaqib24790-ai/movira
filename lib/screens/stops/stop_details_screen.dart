@@ -1,13 +1,17 @@
 import 'package:flutter/material.dart';
+
+import '../../services/gtfs_service.dart';
 import '../buses/bus_details_screen.dart';
 
 class StopDetailsScreen extends StatefulWidget {
+  final String stopId;
   final String stopName;
   final String distance;
   final String walkingTime;
 
   const StopDetailsScreen({
     super.key,
+    this.stopId = '',
     this.stopName = 'Central Station',
     this.distance = '250 m',
     this.walkingTime = '3 min walk',
@@ -22,41 +26,178 @@ class _StopDetailsScreenState extends State<StopDetailsScreen> {
   static const Color navySoft = Color(0xFF123247);
   static const Color teal = Color(0xFF00C7B7);
   static const Color cyan = Color(0xFF21D4FD);
-
   static const Color ice = Color(0xFFF4FBFD);
   static const Color white = Color(0xFFFFFFFF);
   static const Color softCyan = Color(0xFFDDFBFA);
-
   static const Color textDark = Color(0xFF12212D);
   static const Color textMuted = Color(0xFF6B7C88);
   static const Color lightBorder = Color(0xFFE1EDF1);
 
-  final List<Map<String, dynamic>> _upcomingBuses = [
-    {
-      'bus': 'M-12',
-      'destination': 'City Mall',
-      'eta': '2 min',
-      'status': 'On Time',
-      'statusColor': const Color(0xFF22C55E),
-      'platform': 'Bay 2',
-    },
-    {
-      'bus': 'M-03',
-      'destination': 'University',
-      'eta': '6 min',
-      'status': 'On Time',
-      'statusColor': const Color(0xFF22C55E),
-      'platform': 'Bay 1',
-    },
-    {
-      'bus': 'M-08',
-      'destination': 'Airport',
-      'eta': '11 min',
-      'status': 'Delayed',
-      'statusColor': const Color(0xFFF59E0B),
-      'platform': 'Bay 3',
-    },
-  ];
+  bool _isLoading = true;
+  String? _loadError;
+
+  Map<String, String>? _stopRecord;
+
+  List<Map<String, dynamic>> _allStopDepartures = [];
+  List<Map<String, dynamic>> _todayDepartures = [];
+  List<Map<String, dynamic>> _upcomingDepartures = [];
+  List<Map<String, dynamic>> _servingRoutes = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadStopData();
+  }
+
+  Future<void> _loadStopData() async {
+    try {
+      final service = GtfsService.instance;
+
+      await service.loadData();
+
+      if (widget.stopId.isEmpty) {
+        if (!mounted) return;
+
+        setState(() {
+          _isLoading = false;
+          _loadError = 'No stop ID was provided. Please select a stop from Nearby Stops.';
+        });
+        return;
+      }
+
+      final stop = service.getStopById(widget.stopId);
+
+      final allDepartures = service.scheduledDepartures
+          .where(
+            (departure) => departure['stop_id']?.toString() == widget.stopId,
+          )
+          .toList();
+
+      final now = DateTime.now();
+      final currentTime =
+          '${now.hour.toString().padLeft(2, '0')}:'
+          '${now.minute.toString().padLeft(2, '0')}:00';
+
+      final todayDepartures = allDepartures.where((departure) {
+        final days = departure['days']?.toString() ?? '';
+
+        if (days.length < 7) return false;
+
+        // GTFS day flags: Monday through Sunday.
+        return days[now.weekday - 1] == '1';
+      }).toList();
+
+      todayDepartures.sort((a, b) {
+        final aTime = a['departure_time']?.toString() ?? '';
+        final bTime = b['departure_time']?.toString() ?? '';
+        return aTime.compareTo(bTime);
+      });
+
+      final upcoming = todayDepartures.where((departure) {
+        final time = departure['departure_time']?.toString() ?? '';
+        return time.compareTo(currentTime) >= 0;
+      }).toList();
+
+      // Build a unique list of routes with scheduled departures
+      // at this stop. The route and pattern data come from GTFS.
+      final routeMap = <String, Map<String, dynamic>>{};
+
+      for (final departure in allDepartures) {
+        final routeValue = departure['route'];
+        final patternValue = departure['pattern'];
+
+        final route = routeValue is Map
+            ? Map<String, dynamic>.from(routeValue)
+            : <String, dynamic>{};
+
+        final pattern = patternValue is Map
+            ? Map<String, dynamic>.from(patternValue)
+            : <String, dynamic>{};
+
+        final routeId = route['route_id']?.toString() ?? '';
+
+        if (routeId.isEmpty) continue;
+
+        final routeName = route['route_short_name']?.toString().trim() ?? '';
+
+        final patternName = pattern['pattern_name']?.toString().trim() ?? '';
+
+        routeMap.putIfAbsent(routeId, () {
+          return {
+            'route_id': routeId,
+            'number': routeName.isNotEmpty ? routeName : routeId,
+            'name': patternName.isNotEmpty
+                ? patternName
+                : (route['route_long_name']?.toString() ?? 'Transit route'),
+            'url': route['route_url']?.toString() ?? '',
+          };
+        });
+      }
+
+      final routes = routeMap.values.toList()
+        ..sort(
+          (a, b) => (a['number'] as String).compareTo(b['number'] as String),
+        );
+
+      if (!mounted) return;
+
+      setState(() {
+        _stopRecord = stop;
+        _allStopDepartures = allDepartures;
+        _todayDepartures = todayDepartures;
+        _upcomingDepartures = upcoming;
+        _servingRoutes = routes;
+        _isLoading = false;
+      });
+    } catch (error) {
+      if (!mounted) return;
+
+      setState(() {
+        _isLoading = false;
+        _loadError = 'Unable to load stop timetable data.';
+      });
+
+      debugPrint('Stop details loading error: $error');
+    }
+  }
+
+  String _formatTime(String rawTime) {
+    final parts = rawTime.split(':');
+
+    if (parts.length < 2) return rawTime;
+
+    final hour = int.tryParse(parts[0]);
+    final minute = int.tryParse(parts[1]);
+
+    if (hour == null || minute == null || hour < 0 || hour > 23) {
+      return rawTime;
+    }
+
+    final period = hour >= 12 ? 'PM' : 'AM';
+    final displayHour = hour % 12 == 0 ? 12 : hour % 12;
+
+    return '$displayHour:${minute.toString().padLeft(2, '0')} $period';
+  }
+
+  String _nextDepartureLabel() {
+    if (_isLoading) return 'Loading';
+
+    if (_upcomingDepartures.isEmpty) {
+      return 'None left';
+    }
+
+    final time = _upcomingDepartures.first['departure_time']?.toString() ?? '';
+
+    return _formatTime(time);
+  }
+
+  String get _displayStopName {
+    final name = _stopRecord?['stop_name']?.trim();
+
+    if (name != null && name.isNotEmpty) return name;
+
+    return widget.stopName;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -78,27 +219,22 @@ class _StopDetailsScreenState extends State<StopDetailsScreen> {
                   _buildQuickInfoRow(),
                   const SizedBox(height: 26),
                   _sectionTitle(
-                    'Upcoming Buses',
-                    'Live arrivals for this stop',
+                    'Scheduled Departures',
+                    'Timetable information, not live vehicle ETAs',
                   ),
                   const SizedBox(height: 14),
-                  ..._upcomingBuses.map(
-                        (bus) => Padding(
-                      padding: const EdgeInsets.only(bottom: 12),
-                      child: _buildBusArrivalCard(bus),
-                    ),
-                  ),
-                  const SizedBox(height: 14),
+                  _buildDeparturesSection(),
+                  const SizedBox(height: 24),
                   _sectionTitle(
                     'Stop Facilities',
-                    'Available services at this location',
+                    'Facility information is not available in this dataset',
                   ),
                   const SizedBox(height: 14),
                   _buildFacilitiesCard(),
                   const SizedBox(height: 24),
                   _sectionTitle(
                     'Route Information',
-                    'Routes serving this stop',
+                    'Routes with scheduled departures at this stop',
                   ),
                   const SizedBox(height: 14),
                   _buildRoutesCard(),
@@ -133,10 +269,7 @@ class _StopDetailsScreenState extends State<StopDetailsScreen> {
                 ),
               ],
             ),
-            child: const Icon(
-              Icons.arrow_back_rounded,
-              color: navy,
-            ),
+            child: const Icon(Icons.arrow_back_rounded, color: navy),
           ),
         ),
         const SizedBox(width: 12),
@@ -153,6 +286,9 @@ class _StopDetailsScreenState extends State<StopDetailsScreen> {
             child: Image.asset(
               'assets/branding/movira_icon.png',
               fit: BoxFit.cover,
+              errorBuilder: (context, error, stackTrace) {
+                return const Icon(Icons.directions_bus_rounded, color: teal);
+              },
             ),
           ),
         ),
@@ -172,7 +308,7 @@ class _StopDetailsScreenState extends State<StopDetailsScreen> {
               ),
               SizedBox(height: 2),
               Text(
-                'Live arrivals • facilities • routes',
+                'Schedules â€¢ facilities â€¢ routes',
                 style: TextStyle(
                   color: textMuted,
                   fontSize: 10.5,
@@ -189,10 +325,7 @@ class _StopDetailsScreenState extends State<StopDetailsScreen> {
             color: softCyan,
             borderRadius: BorderRadius.circular(14),
           ),
-          child: const Icon(
-            Icons.pin_drop_rounded,
-            color: teal,
-          ),
+          child: const Icon(Icons.pin_drop_rounded, color: teal),
         ),
       ],
     );
@@ -207,11 +340,7 @@ class _StopDetailsScreenState extends State<StopDetailsScreen> {
         gradient: const LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [
-            navy,
-            navySoft,
-            Color(0xFF15516A),
-          ],
+          colors: [navy, navySoft, Color(0xFF15516A)],
         ),
         boxShadow: const [
           BoxShadow(
@@ -228,9 +357,7 @@ class _StopDetailsScreenState extends State<StopDetailsScreen> {
             height: 66,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(20),
-              gradient: const LinearGradient(
-                colors: [teal, cyan],
-              ),
+              gradient: const LinearGradient(colors: [teal, cyan]),
             ),
             child: const Icon(
               Icons.directions_bus_rounded,
@@ -244,7 +371,7 @@ class _StopDetailsScreenState extends State<StopDetailsScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  widget.stopName,
+                  _displayStopName,
                   style: const TextStyle(
                     color: Colors.white,
                     fontSize: 19,
@@ -253,7 +380,7 @@ class _StopDetailsScreenState extends State<StopDetailsScreen> {
                 ),
                 const SizedBox(height: 6),
                 Text(
-                  '${widget.distance} • ${widget.walkingTime}',
+                  '${widget.distance} â€¢ ${widget.walkingTime}',
                   style: const TextStyle(
                     color: Color(0xFFC7E3EF),
                     fontSize: 11.5,
@@ -267,13 +394,15 @@ class _StopDetailsScreenState extends State<StopDetailsScreen> {
                     vertical: 5,
                   ),
                   decoration: BoxDecoration(
-                    color: const Color(0xFF22C55E).withOpacity(0.14),
+                    color: cyan.withValues(alpha: 0.14),
                     borderRadius: BorderRadius.circular(14),
                   ),
-                  child: const Text(
-                    'OPEN • ACTIVE STOP',
-                    style: TextStyle(
-                      color: Color(0xFF65E596),
+                  child: Text(
+                    widget.stopId.isEmpty
+                        ? 'STOP DETAILS'
+                        : 'GTFS STOP â€¢ ${widget.stopId}',
+                    style: const TextStyle(
+                      color: Color(0xFF8CE9F8),
                       fontSize: 9.5,
                       fontWeight: FontWeight.w900,
                     ),
@@ -282,11 +411,7 @@ class _StopDetailsScreenState extends State<StopDetailsScreen> {
               ],
             ),
           ),
-          const Icon(
-            Icons.chevron_right_rounded,
-            color: cyan,
-            size: 28,
-          ),
+          const Icon(Icons.chevron_right_rounded, color: cyan, size: 28),
         ],
       ),
     );
@@ -298,7 +423,7 @@ class _StopDetailsScreenState extends State<StopDetailsScreen> {
         Expanded(
           child: _quickInfo(
             icon: Icons.alt_route_rounded,
-            value: '3',
+            value: _isLoading ? '...' : '${_servingRoutes.length}',
             label: 'Routes',
             color: cyan,
           ),
@@ -307,17 +432,17 @@ class _StopDetailsScreenState extends State<StopDetailsScreen> {
         Expanded(
           child: _quickInfo(
             icon: Icons.schedule_rounded,
-            value: '2 min',
-            label: 'Next Bus',
+            value: _nextDepartureLabel(),
+            label: 'Next Departure',
             color: teal,
           ),
         ),
         const SizedBox(width: 10),
         Expanded(
           child: _quickInfo(
-            icon: Icons.accessible_rounded,
-            value: 'Yes',
-            label: 'Accessible',
+            icon: Icons.info_outline_rounded,
+            value: 'Unknown',
+            label: 'Facilities',
             color: const Color(0xFF8B5CF6),
           ),
         ),
@@ -332,14 +457,11 @@ class _StopDetailsScreenState extends State<StopDetailsScreen> {
     required Color color,
   }) {
     return Container(
-      padding: const EdgeInsets.symmetric(
-        vertical: 14,
-        horizontal: 8,
-      ),
+      padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 6),
       decoration: BoxDecoration(
         color: white,
         borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: color.withOpacity(0.18)),
+        border: Border.all(color: color.withValues(alpha: 0.18)),
       ),
       child: Column(
         children: [
@@ -347,19 +469,20 @@ class _StopDetailsScreenState extends State<StopDetailsScreen> {
           const SizedBox(height: 7),
           Text(
             value,
+            textAlign: TextAlign.center,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
             style: const TextStyle(
               color: textDark,
-              fontSize: 12.5,
+              fontSize: 11.5,
               fontWeight: FontWeight.w900,
             ),
           ),
           const SizedBox(height: 3),
           Text(
             label,
-            style: const TextStyle(
-              color: textMuted,
-              fontSize: 9.5,
-            ),
+            textAlign: TextAlign.center,
+            style: const TextStyle(color: textMuted, fontSize: 9),
           ),
         ],
       ),
@@ -381,17 +504,114 @@ class _StopDetailsScreenState extends State<StopDetailsScreen> {
         const SizedBox(height: 4),
         Text(
           subtitle,
-          style: const TextStyle(
-            color: textMuted,
-            fontSize: 11.5,
-          ),
+          style: const TextStyle(color: textMuted, fontSize: 11.5),
         ),
       ],
     );
   }
 
-  Widget _buildBusArrivalCard(Map<String, dynamic> bus) {
-    final Color statusColor = bus['statusColor'] as Color;
+  Widget _buildDeparturesSection() {
+    if (_isLoading) {
+      return _messageCard(
+        icon: Icons.hourglass_top_rounded,
+        title: 'Loading timetable',
+        message: 'Reading the scheduled departures for this stop.',
+      );
+    }
+
+    if (_loadError != null) {
+      return _messageCard(
+        icon: Icons.error_outline_rounded,
+        title: 'Timetable unavailable',
+        message: _loadError!,
+      );
+    }
+
+    if (_allStopDepartures.isEmpty) {
+      return _messageCard(
+        icon: Icons.directions_bus_outlined,
+        title: 'No timetable records found',
+        message:
+            'The current dataset has no scheduled departures linked '
+            'to this stop ID.',
+      );
+    }
+
+    if (_todayDepartures.isEmpty) {
+      return _messageCard(
+        icon: Icons.event_busy_rounded,
+        title: 'No departures listed for today',
+        message:
+            'The timetable contains departures for this stop, but '
+            'none are marked as operating today.',
+      );
+    }
+
+    if (_upcomingDepartures.isEmpty) {
+      return _messageCard(
+        icon: Icons.schedule_rounded,
+        title: 'No remaining departures today',
+        message:
+            'The timetable has no later departures for today. '
+            'Earlier scheduled times are not shown as upcoming.',
+      );
+    }
+
+    return Column(
+      children: [
+        ..._upcomingDepartures.take(10).map((departure) {
+          return Padding(
+            padding: const EdgeInsets.only(bottom: 12),
+            child: _buildDepartureCard(departure),
+          );
+        }),
+        if (_upcomingDepartures.length > 10)
+          Padding(
+            padding: const EdgeInsets.only(top: 2),
+            child: Text(
+              'Showing the next 10 of '
+              '${_upcomingDepartures.length} scheduled departures.',
+              style: const TextStyle(color: textMuted, fontSize: 11),
+            ),
+          ),
+        const SizedBox(height: 5),
+        _noticeRow(
+          Icons.info_outline_rounded,
+          'Times are from the timetable. Actual arrival times may differ.',
+        ),
+      ],
+    );
+  }
+
+  Widget _buildDepartureCard(Map<String, dynamic> departure) {
+    final rawTime = departure['departure_time']?.toString() ?? '--:--:--';
+
+    final routeValue = departure['route'];
+    final patternValue = departure['pattern'];
+
+    final route = routeValue is Map
+        ? Map<String, dynamic>.from(routeValue)
+        : <String, dynamic>{};
+
+    final pattern = patternValue is Map
+        ? Map<String, dynamic>.from(patternValue)
+        : <String, dynamic>{};
+
+    final routeNumber = route['route_short_name']?.toString().trim() ?? '';
+
+    final patternName = pattern['pattern_name']?.toString().trim() ?? '';
+
+    final routeName = route['route_long_name']?.toString().trim() ?? '';
+
+    final destination = patternName.isNotEmpty
+        ? patternName
+        : routeName.isNotEmpty
+        ? routeName
+        : 'Scheduled route';
+
+    final number = routeNumber.isNotEmpty
+        ? routeNumber
+        : (route['route_id']?.toString() ?? 'Route');
 
     return GestureDetector(
       onTap: () {
@@ -399,10 +619,10 @@ class _StopDetailsScreenState extends State<StopDetailsScreen> {
           context,
           MaterialPageRoute(
             builder: (context) => BusDetailsScreen(
-              busNumber: bus['bus'] as String,
-              destination: bus['destination'] as String,
-              eta: bus['eta'] as String,
-              status: bus['status'] as String,
+              busNumber: number,
+              destination: destination,
+              eta: _formatTime(rawTime),
+              status: 'Scheduled',
             ),
           ),
         );
@@ -429,17 +649,21 @@ class _StopDetailsScreenState extends State<StopDetailsScreen> {
               height: 52,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(16),
-                gradient: const LinearGradient(
-                  colors: [teal, cyan],
-                ),
+                gradient: const LinearGradient(colors: [teal, cyan]),
               ),
               child: Center(
-                child: Text(
-                  bus['bus'] as String,
-                  style: const TextStyle(
-                    color: navy,
-                    fontSize: 13,
-                    fontWeight: FontWeight.w900,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 3),
+                  child: Text(
+                    number,
+                    textAlign: TextAlign.center,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      color: navy,
+                      fontSize: 11,
+                      fontWeight: FontWeight.w900,
+                    ),
                   ),
                 ),
               ),
@@ -450,53 +674,53 @@ class _StopDetailsScreenState extends State<StopDetailsScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'To ${bus['destination']}',
+                    destination,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
                     style: const TextStyle(
                       color: textDark,
-                      fontSize: 13.5,
+                      fontSize: 12.5,
                       fontWeight: FontWeight.w900,
                     ),
                   ),
-                  const SizedBox(height: 5),
-                  Text(
-                    bus['platform'] as String,
-                    style: const TextStyle(
-                      color: textMuted,
-                      fontSize: 10.5,
-                    ),
+                  const SizedBox(height: 6),
+                  const Row(
+                    children: [
+                      Icon(
+                        Icons.event_available_rounded,
+                        color: teal,
+                        size: 13,
+                      ),
+                      SizedBox(width: 5),
+                      Text(
+                        'Scheduled departure',
+                        style: TextStyle(color: textMuted, fontSize: 10),
+                      ),
+                    ],
                   ),
                 ],
               ),
             ),
+            const SizedBox(width: 8),
             Column(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 Text(
-                  bus['eta'] as String,
+                  _formatTime(rawTime),
                   style: const TextStyle(
                     color: navy,
-                    fontSize: 15,
+                    fontSize: 14,
                     fontWeight: FontWeight.w900,
                   ),
                 ),
                 const SizedBox(height: 5),
-                Row(
-                  children: [
-                    Icon(
-                      Icons.circle,
-                      color: statusColor,
-                      size: 7,
-                    ),
-                    const SizedBox(width: 5),
-                    Text(
-                      bus['status'] as String,
-                      style: TextStyle(
-                        color: statusColor,
-                        fontSize: 9.5,
-                        fontWeight: FontWeight.w900,
-                      ),
-                    ),
-                  ],
+                const Text(
+                  'Timetable',
+                  style: TextStyle(
+                    color: teal,
+                    fontSize: 9.5,
+                    fontWeight: FontWeight.w800,
+                  ),
                 ),
               ],
             ),
@@ -507,89 +731,58 @@ class _StopDetailsScreenState extends State<StopDetailsScreen> {
   }
 
   Widget _buildFacilitiesCard() {
-    final facilities = <Map<String, dynamic>>[
-      {
-        'icon': Icons.chair_alt_rounded,
-        'label': 'Seating',
-        'color': teal,
-      },
-      {
-        'icon': Icons.light_rounded,
-        'label': 'Lighting',
-        'color': cyan,
-      },
-      {
-        'icon': Icons.accessible_rounded,
-        'label': 'Accessible',
-        'color': const Color(0xFF8B5CF6),
-      },
-      {
-        'icon': Icons.security_rounded,
-        'label': 'CCTV',
-        'color': const Color(0xFF22C55E),
-      },
-    ];
-
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
         color: white,
         borderRadius: BorderRadius.circular(22),
         border: Border.all(color: lightBorder),
       ),
-      child: GridView.builder(
-        shrinkWrap: true,
-        physics: const NeverScrollableScrollPhysics(),
-        itemCount: facilities.length,
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 2,
-          crossAxisSpacing: 12,
-          mainAxisSpacing: 12,
-          childAspectRatio: 2.6,
-        ),
-        itemBuilder: (context, index) {
-          final item = facilities[index];
-          final Color color = item['color'] as Color;
-
-          return Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12),
-            decoration: BoxDecoration(
-              color: color.withOpacity(0.08),
-              borderRadius: BorderRadius.circular(15),
+      child: const Column(
+        children: [
+          Icon(Icons.info_outline_rounded, color: teal, size: 32),
+          SizedBox(height: 10),
+          Text(
+            'Facility information unavailable',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              color: textDark,
+              fontSize: 13,
+              fontWeight: FontWeight.w900,
             ),
-            child: Row(
-              children: [
-                Icon(
-                  item['icon'] as IconData,
-                  color: color,
-                  size: 20,
-                ),
-                const SizedBox(width: 9),
-                Expanded(
-                  child: Text(
-                    item['label'] as String,
-                    style: const TextStyle(
-                      color: textDark,
-                      fontSize: 11.5,
-                      fontWeight: FontWeight.w800,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          );
-        },
+          ),
+          SizedBox(height: 7),
+          Text(
+            'The current GTFS files identify stops and timetables, '
+            'but do not confirm seating, lighting, CCTV, or '
+            'accessibility facilities at this location.',
+            textAlign: TextAlign.center,
+            style: TextStyle(color: textMuted, fontSize: 11.5, height: 1.5),
+          ),
+        ],
       ),
     );
   }
 
   Widget _buildRoutesCard() {
-    final routes = [
-      ['M-12', 'City Mall', 'Every 10 min'],
-      ['M-03', 'University', 'Every 15 min'],
-      ['M-08', 'Airport', 'Every 20 min'],
-    ];
+    if (_isLoading) {
+      return _messageCard(
+        icon: Icons.hourglass_top_rounded,
+        title: 'Loading routes',
+        message: 'Finding routes linked to this stop.',
+      );
+    }
+
+    if (_servingRoutes.isEmpty) {
+      return _messageCard(
+        icon: Icons.alt_route_rounded,
+        title: 'No route records found',
+        message:
+            'No route could be identified from the scheduled '
+            'departures associated with this stop.',
+      );
+    }
 
     return Container(
       width: double.infinity,
@@ -600,9 +793,12 @@ class _StopDetailsScreenState extends State<StopDetailsScreen> {
         border: Border.all(color: lightBorder),
       ),
       child: Column(
-        children: routes.asMap().entries.map((entry) {
-          final int index = entry.key;
-          final List<String> route = entry.value;
+        children: _servingRoutes.asMap().entries.map((entry) {
+          final index = entry.key;
+          final route = entry.value;
+
+          final number = route['number']?.toString() ?? 'Route';
+          final name = route['name']?.toString() ?? 'Transit route';
 
           return Column(
             children: [
@@ -616,12 +812,18 @@ class _StopDetailsScreenState extends State<StopDetailsScreen> {
                       borderRadius: BorderRadius.circular(14),
                     ),
                     child: Center(
-                      child: Text(
-                        route[0],
-                        style: const TextStyle(
-                          color: teal,
-                          fontSize: 11,
-                          fontWeight: FontWeight.w900,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 3),
+                        child: Text(
+                          number,
+                          textAlign: TextAlign.center,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                            color: teal,
+                            fontSize: 10.5,
+                            fontWeight: FontWeight.w900,
+                          ),
                         ),
                       ),
                     ),
@@ -632,7 +834,7 @@ class _StopDetailsScreenState extends State<StopDetailsScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          route[1],
+                          number,
                           style: const TextStyle(
                             color: textDark,
                             fontSize: 12.5,
@@ -641,7 +843,9 @@ class _StopDetailsScreenState extends State<StopDetailsScreen> {
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          route[2],
+                          name,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
                           style: const TextStyle(
                             color: textMuted,
                             fontSize: 10.5,
@@ -651,19 +855,85 @@ class _StopDetailsScreenState extends State<StopDetailsScreen> {
                     ),
                   ),
                   const Icon(
-                    Icons.chevron_right_rounded,
-                    color: textMuted,
+                    Icons.check_circle_outline_rounded,
+                    color: teal,
+                    size: 20,
                   ),
                 ],
               ),
-              if (index != routes.length - 1)
-                const Divider(
-                  height: 22,
-                  color: Color(0xFFE7EEF1),
-                ),
+              if (index != _servingRoutes.length - 1)
+                const Divider(height: 22, color: Color(0xFFE7EEF1)),
             ],
           );
         }).toList(),
+      ),
+    );
+  }
+
+  Widget _messageCard({
+    required IconData icon,
+    required String title,
+    required String message,
+  }) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: white,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: lightBorder),
+      ),
+      child: Column(
+        children: [
+          Icon(icon, color: teal, size: 30),
+          const SizedBox(height: 10),
+          Text(
+            title,
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+              color: textDark,
+              fontSize: 13,
+              fontWeight: FontWeight.w900,
+            ),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            message,
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+              color: textMuted,
+              fontSize: 11.5,
+              height: 1.5,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _noticeRow(IconData icon, String message) {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: softCyan.withValues(alpha: 0.65),
+        borderRadius: BorderRadius.circular(14),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(icon, color: teal, size: 18),
+          const SizedBox(width: 9),
+          Expanded(
+            child: Text(
+              message,
+              style: const TextStyle(
+                color: textDark,
+                fontSize: 10.5,
+                height: 1.45,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -674,9 +944,7 @@ class _StopDetailsScreenState extends State<StopDetailsScreen> {
       height: 58,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20),
-        gradient: const LinearGradient(
-          colors: [teal, cyan],
-        ),
+        gradient: const LinearGradient(colors: [teal, cyan]),
         boxShadow: const [
           BoxShadow(
             color: Color(0x3000C7B7),
@@ -692,20 +960,14 @@ class _StopDetailsScreenState extends State<StopDetailsScreen> {
           onTap: () {
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(
-                content: Text(
-                  'Walking directions will be connected with Google Maps later.',
-                ),
+                content: Text('Walking directions are not connected yet.'),
               ),
             );
           },
           child: const Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(
-                Icons.directions_walk_rounded,
-                color: navy,
-                size: 21,
-              ),
+              Icon(Icons.directions_walk_rounded, color: navy, size: 21),
               SizedBox(width: 10),
               Text(
                 'Get Directions to Stop',
@@ -716,10 +978,7 @@ class _StopDetailsScreenState extends State<StopDetailsScreen> {
                 ),
               ),
               SizedBox(width: 8),
-              Icon(
-                Icons.arrow_forward_rounded,
-                color: navy,
-              ),
+              Icon(Icons.arrow_forward_rounded, color: navy),
             ],
           ),
         ),
@@ -740,11 +999,7 @@ class _StopDetailsBackground extends StatelessWidget {
             gradient: LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
-              colors: [
-                Color(0xFFF9FDFF),
-                Color(0xFFF0FAFD),
-                Color(0xFFF7FCFD),
-              ],
+              colors: [Color(0xFFF9FDFF), Color(0xFFF0FAFD), Color(0xFFF7FCFD)],
             ),
           ),
         ),
@@ -756,7 +1011,7 @@ class _StopDetailsBackground extends StatelessWidget {
             height: 260,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: const Color(0xFF21D4FD).withOpacity(0.09),
+              color: const Color(0xFF21D4FD).withValues(alpha: 0.09),
             ),
           ),
         ),
@@ -768,7 +1023,7 @@ class _StopDetailsBackground extends StatelessWidget {
             height: 300,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: const Color(0xFF00C7B7).withOpacity(0.07),
+              color: const Color(0xFF00C7B7).withValues(alpha: 0.07),
             ),
           ),
         ),

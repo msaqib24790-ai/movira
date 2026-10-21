@@ -1,4 +1,3 @@
-
 import 'package:csv/csv.dart';
 import 'package:flutter/services.dart';
 
@@ -23,15 +22,11 @@ class GtfsService {
     try {
       _routes = await _loadCsv('assets/gtfs/routes.txt');
       _stops = await _loadCsv('assets/gtfs/stops.txt');
-      _patterns =
-      await _loadCsv('assets/gtfs/pakbus_patterns.txt');
-      _patternStops =
-      await _loadCsv('assets/gtfs/pakbus_pattern_stops.txt');
-      _departures =
-      await _loadCsv('assets/gtfs/pakbus_departures.txt');
+      _patterns = await _loadCsv('assets/gtfs/pakbus_patterns.txt');
+      _patternStops = await _loadCsv('assets/gtfs/pakbus_pattern_stops.txt');
+      _departures = await _loadCsv('assets/gtfs/pakbus_departures.txt');
       _networks = await _loadCsv('assets/gtfs/networks.txt');
-      _routeNetworks =
-      await _loadCsv('assets/gtfs/route_networks.txt');
+      _routeNetworks = await _loadCsv('assets/gtfs/route_networks.txt');
 
       _isLoaded = true;
     } catch (error) {
@@ -39,9 +34,7 @@ class GtfsService {
     }
   }
 
-  Future<List<Map<String, String>>> _loadCsv(
-      String assetPath,
-      ) async {
+  Future<List<Map<String, String>>> _loadCsv(String assetPath) async {
     final content = await rootBundle.loadString(assetPath);
 
     final rows = const CsvToListConverter(
@@ -51,30 +44,26 @@ class GtfsService {
 
     if (rows.isEmpty) return [];
 
-    final headers = rows.first
-        .map((value) => value.toString().trim())
+    final headers = rows.first.map((value) => value.toString().trim()).toList();
+
+    return rows
+        .skip(1)
+        .where((row) => row.any((value) => value.toString().trim().isNotEmpty))
+        .map((row) {
+          final record = <String, String>{};
+
+          for (var i = 0; i < headers.length; i++) {
+            record[headers[i]] = i < row.length ? row[i].toString().trim() : '';
+          }
+
+          return record;
+        })
         .toList();
-
-    return rows.skip(1).where((row) {
-      return row.any((value) => value.toString().trim().isNotEmpty);
-    }).map((row) {
-      final record = <String, String>{};
-
-      for (var i = 0; i < headers.length; i++) {
-        record[headers[i]] = i < row.length
-            ? row[i].toString().trim()
-            : '';
-      }
-
-      return record;
-    }).toList();
   }
 
   void _ensureLoaded() {
     if (!_isLoaded) {
-      throw StateError(
-        'GTFS data is not loaded. Call loadData() first.',
-      );
+      throw StateError('GTFS data is not loaded. Call loadData() first.');
     }
   }
 
@@ -82,26 +71,30 @@ class GtfsService {
     return value.trim().toLowerCase();
   }
 
-  // Return matching stop names for a search field.
-  List<Map<String, String>> searchStops(
-      String query, {
-        int limit = 15,
-      }) {
+  /// Returns stops whose names contain the search query.
+  List<Map<String, String>> searchStops(String query, {int limit = 15}) {
     _ensureLoaded();
 
     final search = _normalise(query);
 
-    if (search.isEmpty) return [];
+    if (search.isEmpty || limit <= 0) return [];
 
-    final matches = _stops.where((stop) {
-      final name = _normalise(stop['stop_name'] ?? '');
-      return name.contains(search);
-    }).take(limit);
-
-    return matches.toList();
+    return _stops
+        .where((stop) {
+          final name = _normalise(stop['stop_name'] ?? '');
+          return name.contains(search);
+        })
+        .take(limit)
+        .toList();
   }
 
-  // Get a stop by its GTFS stop ID.
+  /// Returns all loaded stops for map and nearby-stop features.
+  List<Map<String, String>> get allStops {
+    _ensureLoaded();
+    return List.unmodifiable(_stops);
+  }
+
+  /// Gets a stop using its GTFS stop ID.
   Map<String, String>? getStopById(String stopId) {
     _ensureLoaded();
 
@@ -114,7 +107,7 @@ class GtfsService {
     return null;
   }
 
-  // Get route details by its GTFS route ID.
+  /// Gets a route using its GTFS route ID.
   Map<String, String>? getRouteById(String routeId) {
     _ensureLoaded();
 
@@ -127,8 +120,98 @@ class GtfsService {
     return null;
   }
 
-  // Find routes travelling from the origin to the destination
-  // in the correct direction.
+  /// Returns timetable departures joined with their route, pattern,
+  /// and departure stop.
+  ///
+  /// Each result contains:
+  /// pattern_id, stop_id, departure_time, days, checked_on,
+  /// pattern, route, and stop.
+  ///
+  /// These are scheduled departures, not live vehicle predictions.
+  List<Map<String, dynamic>> get scheduledDepartures {
+    _ensureLoaded();
+
+    final patternsById = <String, Map<String, String>>{};
+    final routesById = <String, Map<String, String>>{};
+    final stopsById = <String, Map<String, String>>{};
+
+    for (final pattern in _patterns) {
+      final id = pattern['pattern_id'] ?? '';
+      if (id.isNotEmpty) {
+        patternsById[id] = pattern;
+      }
+    }
+
+    for (final route in _routes) {
+      final id = route['route_id'] ?? '';
+      if (id.isNotEmpty) {
+        routesById[id] = route;
+      }
+    }
+
+    for (final stop in _stops) {
+      final id = stop['stop_id'] ?? '';
+      if (id.isNotEmpty) {
+        stopsById[id] = stop;
+      }
+    }
+
+    final results = <Map<String, dynamic>>[];
+
+    for (final departure in _departures) {
+      final patternId = departure['pattern_id'] ?? '';
+      final stopId = departure['stop_id'] ?? '';
+
+      final pattern = patternsById[patternId];
+      final stop = stopsById[stopId];
+
+      if (pattern == null || stop == null) continue;
+
+      final routeId = pattern['route_id'] ?? '';
+      final route = routesById[routeId];
+
+      if (route == null) continue;
+
+      final departureTime = departure['departure_time'] ?? '';
+
+      // Only include records with a valid HH:mm:ss time.
+      if (!_isValidTime(departureTime)) continue;
+
+      results.add({
+        'pattern_id': patternId,
+        'stop_id': stopId,
+        'departure_time': departureTime,
+        'days': departure['days'] ?? '',
+        'checked_on': departure['checked_on'] ?? '',
+        'pattern': pattern,
+        'route': route,
+        'stop': stop,
+      });
+    }
+
+    results.sort((a, b) {
+      final timeA = a['departure_time'] as String;
+      final timeB = b['departure_time'] as String;
+      return timeA.compareTo(timeB);
+    });
+
+    return List.unmodifiable(results);
+  }
+
+  bool _isValidTime(String value) {
+    final match = RegExp(r'^(\d{2}):(\d{2}):(\d{2})$').firstMatch(value);
+
+    if (match == null) return false;
+
+    final hour = int.parse(match.group(1)!);
+    final minute = int.parse(match.group(2)!);
+    final second = int.parse(match.group(3)!);
+
+    return hour <= 23 && minute <= 59 && second <= 59;
+  }
+
+  /// Finds direct routes from origin to destination in the correct
+  /// stop sequence. This does not calculate transfers.
   List<Map<String, dynamic>> searchRoutes({
     required String from,
     required String to,
@@ -138,9 +221,9 @@ class GtfsService {
     final origin = _normalise(from);
     final destination = _normalise(to);
 
-    if (origin.isEmpty || destination.isEmpty) return [];
-
-    if (origin == destination) return [];
+    if (origin.isEmpty || destination.isEmpty || origin == destination) {
+      return [];
+    }
 
     final originStops = _stops.where((stop) {
       return _normalise(stop['stop_name'] ?? '') == origin;
@@ -154,11 +237,11 @@ class GtfsService {
       return [];
     }
 
-    final originIds =
-    originStops.map((stop) => stop['stop_id']!).toSet();
+    final originIds = originStops.map((stop) => stop['stop_id']!).toSet();
 
-    final destinationIds =
-    destinationStops.map((stop) => stop['stop_id']!).toSet();
+    final destinationIds = destinationStops
+        .map((stop) => stop['stop_id']!)
+        .toSet();
 
     final results = <Map<String, dynamic>>[];
 
@@ -168,29 +251,26 @@ class GtfsService {
 
       if (patternId.isEmpty || routeId.isEmpty) continue;
 
-      final orderedStops = _patternStops
-          .where((item) => item['pattern_id'] == patternId)
-          .toList()
-        ..sort((a, b) {
-          final aSequence =
-              int.tryParse(a['stop_sequence'] ?? '') ?? 0;
-          final bSequence =
-              int.tryParse(b['stop_sequence'] ?? '') ?? 0;
+      final orderedStops =
+          _patternStops
+              .where((item) => item['pattern_id'] == patternId)
+              .toList()
+            ..sort((a, b) {
+              final aSequence = int.tryParse(a['stop_sequence'] ?? '') ?? 0;
+              final bSequence = int.tryParse(b['stop_sequence'] ?? '') ?? 0;
 
-          return aSequence.compareTo(bSequence);
-        });
+              return aSequence.compareTo(bSequence);
+            });
 
-      final startIndex = orderedStops.indexWhere((item) {
-        return originIds.contains(item['stop_id']);
-      });
+      final startIndex = orderedStops.indexWhere(
+        (item) => originIds.contains(item['stop_id']),
+      );
 
-      final endIndex = orderedStops.indexWhere((item) {
-        return destinationIds.contains(item['stop_id']);
-      });
+      final endIndex = orderedStops.indexWhere(
+        (item) => destinationIds.contains(item['stop_id']),
+      );
 
-      if (startIndex < 0 ||
-          endIndex < 0 ||
-          startIndex >= endIndex) {
+      if (startIndex < 0 || endIndex < 0 || startIndex >= endIndex) {
         continue;
       }
 
@@ -204,19 +284,20 @@ class GtfsService {
           .whereType<Map<String, String>>()
           .toList();
 
-      final originStopId =
-          orderedStops[startIndex]['stop_id'] ?? '';
+      final originStopId = orderedStops[startIndex]['stop_id'] ?? '';
 
       final departureTimes = _departures
           .where((item) {
-        return item['pattern_id'] == patternId &&
-            item['stop_id'] == originStopId;
-      })
-          .map((item) => {
-        'departure_time': item['departure_time'] ?? '',
-        'days': item['days'] ?? '',
-        'checked_on': item['checked_on'] ?? '',
-      })
+            return item['pattern_id'] == patternId &&
+                item['stop_id'] == originStopId;
+          })
+          .map(
+            (item) => {
+              'departure_time': item['departure_time'] ?? '',
+              'days': item['days'] ?? '',
+              'checked_on': item['checked_on'] ?? '',
+            },
+          )
           .toList();
 
       final networkIds = _routeNetworks
@@ -244,7 +325,7 @@ class GtfsService {
     return results;
   }
 
-  // Useful for checking that the data loaded correctly.
+  /// Returns record counts for diagnostics and tests.
   Map<String, int> get dataCounts {
     _ensureLoaded();
 
