@@ -7,6 +7,7 @@ import '../trips/favorites_recent_trips_screen.dart';
 import '../alerts/service_alerts_notifications_screen.dart';
 import '../support center/support_center_screen.dart';
 import '../tracking/live_bus_tracking_screen.dart';
+import '../tracking/driver_gps_sharing_screen.dart';
 import '../profile/profile_travel_preferences_screen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -102,6 +103,14 @@ class _HomeScreenState extends State<HomeScreen> {
       context,
       MaterialPageRoute(
         builder: (context) => const LiveBusTrackingScreen(),
+      ),
+    );
+  }
+  void _openDriverGpsSharing() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const DriverGpsSharingScreen(),
       ),
     );
   }
@@ -512,6 +521,13 @@ class _HomeScreenState extends State<HomeScreen> {
           accent: const Color(0xFFF59E0B),
           secondaryAccent: const Color(0xFFFCD34D),
           onTap: _openSchedules,
+        ),
+        _AdvancedQuickActionCard(
+          icon: Icons.gps_fixed_rounded,
+          title: 'Driver GPS',
+          accent: teal,
+          secondaryAccent: const Color(0xFF6FFFE8),
+          onTap: _openDriverGpsSharing,
         ),
       ],
     );
