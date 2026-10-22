@@ -1,5 +1,6 @@
-
 import 'package:flutter/material.dart';
+import 'package:flutter_map/flutter_map.dart';
+import 'package:latlong2/latlong.dart';
 
 class LiveBusTrackingScreen extends StatefulWidget {
   final String busNumber;
@@ -16,8 +17,7 @@ class LiveBusTrackingScreen extends StatefulWidget {
   });
 
   @override
-  State<LiveBusTrackingScreen> createState() =>
-      _LiveBusTrackingScreenState();
+  State<LiveBusTrackingScreen> createState() => _LiveBusTrackingScreenState();
 }
 
 class _LiveBusTrackingScreenState extends State<LiveBusTrackingScreen> {
@@ -37,13 +37,14 @@ class _LiveBusTrackingScreenState extends State<LiveBusTrackingScreen> {
   List<String> get _routeStopNames {
     return widget.routeStops
         .map((stop) {
-      final value = stop['stop_name'] ??
-          stop['name'] ??
-          stop['stopName'] ??
-          stop['stop_id'];
+          final value =
+              stop['stop_name'] ??
+              stop['name'] ??
+              stop['stopName'] ??
+              stop['stop_id'];
 
-      return value?.toString().trim() ?? '';
-    })
+          return value?.toString().trim() ?? '';
+        })
         .where((name) => name.isNotEmpty)
         .toList();
   }
@@ -79,7 +80,7 @@ class _LiveBusTrackingScreenState extends State<LiveBusTrackingScreen> {
     }
 
     final originIndex = stops.indexWhere(
-          (stop) => stop.toLowerCase() == widget.from.trim().toLowerCase(),
+      (stop) => stop.toLowerCase() == widget.from.trim().toLowerCase(),
     );
 
     if (originIndex >= 0 && originIndex + 1 < stops.length) {
@@ -90,6 +91,42 @@ class _LiveBusTrackingScreenState extends State<LiveBusTrackingScreen> {
   }
 
   int get _routeStopCount => _routeStopNames.length;
+
+  /// Valid geographic stops from the selected GTFS journey.
+  List<MapEntry<String, LatLng>> get _routeMapStops {
+    return widget.routeStops
+        .map((stop) {
+          final latitude = double.tryParse((stop['stop_lat'] ?? '').toString());
+          final longitude = double.tryParse(
+            (stop['stop_lon'] ?? '').toString(),
+          );
+
+          final name =
+              (stop['stop_name'] ??
+                      stop['name'] ??
+                      stop['stop_id'] ??
+                      'Route stop')
+                  .toString()
+                  .trim();
+
+          if (latitude == null ||
+              longitude == null ||
+              latitude < -90 ||
+              latitude > 90 ||
+              longitude < -180 ||
+              longitude > 180 ||
+              (latitude == 0 && longitude == 0)) {
+            return null;
+          }
+
+          return MapEntry(
+            name.isEmpty ? 'Route stop' : name,
+            LatLng(latitude, longitude),
+          );
+        })
+        .whereType<MapEntry<String, LatLng>>()
+        .toList();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -176,10 +213,7 @@ class _LiveBusTrackingScreenState extends State<LiveBusTrackingScreen> {
               'assets/branding/movira_icon.png',
               fit: BoxFit.cover,
               errorBuilder: (context, error, stackTrace) {
-                return const Icon(
-                  Icons.directions_bus_rounded,
-                  color: teal,
-                );
+                return const Icon(Icons.directions_bus_rounded, color: teal);
               },
             ),
           ),
@@ -282,11 +316,7 @@ class _LiveBusTrackingScreenState extends State<LiveBusTrackingScreen> {
                 const SizedBox(height: 8),
                 const Row(
                   children: [
-                    Icon(
-                      Icons.info_outline_rounded,
-                      color: cyan,
-                      size: 15,
-                    ),
+                    Icon(Icons.info_outline_rounded, color: cyan, size: 15),
                     SizedBox(width: 5),
                     Expanded(
                       child: Text(
@@ -309,6 +339,11 @@ class _LiveBusTrackingScreenState extends State<LiveBusTrackingScreen> {
   }
 
   Widget _buildTrackingMap() {
+    final routeStops = _routeMapStops;
+    final coordinates = routeStops.map((stop) => stop.value).toList();
+    final hasCoordinates = coordinates.isNotEmpty;
+    final hasRouteLine = coordinates.length > 1;
+
     return Container(
       width: double.infinity,
       height: 330,
@@ -328,40 +363,95 @@ class _LiveBusTrackingScreenState extends State<LiveBusTrackingScreen> {
         borderRadius: BorderRadius.circular(28),
         child: Stack(
           children: [
-            const Positioned.fill(
-              child: CustomPaint(
-                painter: _TrackingMapPainter(),
+            FlutterMap(
+              options: MapOptions(
+                initialCenter: hasCoordinates
+                    ? coordinates.first
+                    : const LatLng(30.3753, 69.3451),
+                initialZoom: hasRouteLine ? 7 : 5,
+                initialCameraFit: hasRouteLine
+                    ? CameraFit.bounds(
+                        bounds: LatLngBounds.fromPoints(coordinates),
+                        padding: const EdgeInsets.fromLTRB(44, 65, 44, 90),
+                      )
+                    : null,
               ),
+              children: [
+                TileLayer(
+                  urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                ),
+                if (hasRouteLine)
+                  PolylineLayer(
+                    polylines: [
+                      Polyline(
+                        points: coordinates,
+                        color: teal,
+                        strokeWidth: 5,
+                      ),
+                    ],
+                  ),
+                if (hasCoordinates)
+                  MarkerLayer(
+                    markers: routeStops.asMap().entries.map((item) {
+                      final index = item.key;
+                      final stop = item.value;
+                      final isStart = index == 0;
+                      final isEnd = index == routeStops.length - 1;
+
+                      return Marker(
+                        point: stop.value,
+                        width: 34,
+                        height: 42,
+                        child: Tooltip(
+                          message: stop.key,
+                          child: Icon(
+                            isStart
+                                ? Icons.trip_origin_rounded
+                                : isEnd
+                                ? Icons.flag_rounded
+                                : Icons.location_on_rounded,
+                            color: isStart || isEnd ? navy : teal,
+                            size: isStart || isEnd ? 30 : 25,
+                          ),
+                        ),
+                      );
+                    }).toList(),
+                  ),
+                const RichAttributionWidget(
+                  attributions: [
+                    TextSourceAttribution('OpenStreetMap contributors'),
+                  ],
+                ),
+              ],
             ),
             Positioned(
-              top: 16,
-              left: 16,
+              top: 14,
+              left: 14,
               child: Container(
                 padding: const EdgeInsets.symmetric(
                   horizontal: 11,
-                  vertical: 7,
+                  vertical: 8,
                 ),
                 decoration: BoxDecoration(
                   color: white,
-                  borderRadius: BorderRadius.circular(18),
+                  borderRadius: BorderRadius.circular(16),
                   border: Border.all(color: lightBorder),
                 ),
-                child: const Row(
+                child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(
-                      Icons.route_rounded,
-                      color: teal,
-                      size: 14,
-                    ),
-                    SizedBox(width: 6),
+                    const Icon(Icons.route_rounded, color: teal, size: 16),
+                    const SizedBox(width: 6),
                     Text(
-                      'ILLUSTRATIVE PREVIEW',
-                      style: TextStyle(
+                      hasRouteLine
+                          ? 'GTFS ROUTE MAP'
+                          : hasCoordinates
+                          ? 'ONE STOP LOCATION'
+                          : 'ROUTE MAP',
+                      style: const TextStyle(
                         color: navy,
-                        fontSize: 9.5,
+                        fontSize: 10,
                         fontWeight: FontWeight.w900,
-                        letterSpacing: 0.3,
                       ),
                     ),
                   ],
@@ -369,92 +459,64 @@ class _LiveBusTrackingScreenState extends State<LiveBusTrackingScreen> {
               ),
             ),
             Positioned(
-              top: 16,
-              right: 16,
+              top: 14,
+              right: 14,
               child: Container(
-                padding: const EdgeInsets.all(10),
+                padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 8),
                 decoration: BoxDecoration(
                   color: navy,
-                  borderRadius: BorderRadius.circular(14),
+                  borderRadius: BorderRadius.circular(15),
                 ),
-                child: const Icon(
-                  Icons.location_off_outlined,
-                  color: cyan,
-                  size: 21,
-                ),
-              ),
-            ),
-            Align(
-              alignment: const Alignment(0.05, -0.05),
-              child: Container(
-                width: 82,
-                height: 82,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: cyan.withOpacity(0.16),
-                ),
-                child: Center(
-                  child: Container(
-                    width: 56,
-                    height: 56,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      gradient: const LinearGradient(
-                        colors: [teal, cyan],
+                child: const Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.location_off_outlined, color: cyan, size: 15),
+                    SizedBox(width: 5),
+                    Text(
+                      'GPS UNAVAILABLE',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 9,
+                        fontWeight: FontWeight.w900,
                       ),
-                      boxShadow: const [
-                        BoxShadow(
-                          color: Color(0x3300C7B7),
-                          blurRadius: 18,
-                        ),
-                      ],
                     ),
-                    child: const Icon(
-                      Icons.route_rounded,
-                      color: navy,
-                      size: 30,
-                    ),
-                  ),
+                  ],
                 ),
               ),
             ),
             Positioned(
-              left: 18,
-              right: 18,
-              bottom: 16,
+              left: 12,
+              right: 12,
+              bottom: 12,
               child: Container(
                 padding: const EdgeInsets.symmetric(
-                  horizontal: 14,
-                  vertical: 12,
+                  horizontal: 13,
+                  vertical: 11,
                 ),
                 decoration: BoxDecoration(
-                  color: navy.withOpacity(0.94),
-                  borderRadius: BorderRadius.circular(18),
+                  color: navy.withValues(alpha: 0.95),
+                  borderRadius: BorderRadius.circular(17),
                 ),
-                child: const Row(
+                child: Row(
                   children: [
                     Icon(
-                      Icons.info_outline_rounded,
-                      color: teal,
+                      hasCoordinates
+                          ? Icons.info_outline_rounded
+                          : Icons.warning_amber_rounded,
+                      color: cyan,
                       size: 20,
                     ),
-                    SizedBox(width: 10),
+                    const SizedBox(width: 9),
                     Expanded(
                       child: Text(
-                        'Actual vehicle position is unavailable',
-                        style: TextStyle(
+                        hasCoordinates
+                            ? 'Route stops shown. Live bus position is unavailable.'
+                            : 'No valid coordinates are available for this journey.',
+                        style: const TextStyle(
                           color: Colors.white,
-                          fontSize: 11,
-                          fontWeight: FontWeight.w800,
+                          fontSize: 10.5,
+                          fontWeight: FontWeight.w700,
                         ),
-                      ),
-                    ),
-                    Text(
-                      'N/A',
-                      style: TextStyle(
-                        color: cyan,
-                        fontSize: 11.5,
-                        fontWeight: FontWeight.w900,
                       ),
                     ),
                   ],
@@ -485,10 +547,7 @@ class _LiveBusTrackingScreenState extends State<LiveBusTrackingScreen> {
               color: softCyan,
               borderRadius: BorderRadius.circular(15),
             ),
-            child: const Icon(
-              Icons.location_on_rounded,
-              color: teal,
-            ),
+            child: const Icon(Icons.location_on_rounded, color: teal),
           ),
           const SizedBox(width: 13),
           Expanded(
@@ -517,20 +576,14 @@ class _LiveBusTrackingScreenState extends State<LiveBusTrackingScreen> {
                 const SizedBox(height: 3),
                 const Text(
                   'Route sequence only, not live tracking',
-                  style: TextStyle(
-                    color: textMuted,
-                    fontSize: 10,
-                  ),
+                  style: TextStyle(color: textMuted, fontSize: 10),
                 ),
               ],
             ),
           ),
           const SizedBox(width: 8),
           Container(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 10,
-              vertical: 8,
-            ),
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
             decoration: BoxDecoration(
               color: const Color(0xFFFFF4DF),
               borderRadius: BorderRadius.circular(14),
@@ -589,10 +642,7 @@ class _LiveBusTrackingScreenState extends State<LiveBusTrackingScreen> {
     required Color color,
   }) {
     return Container(
-      padding: const EdgeInsets.symmetric(
-        vertical: 14,
-        horizontal: 8,
-      ),
+      padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 8),
       decoration: BoxDecoration(
         color: white,
         borderRadius: BorderRadius.circular(18),
@@ -615,10 +665,7 @@ class _LiveBusTrackingScreenState extends State<LiveBusTrackingScreen> {
           Text(
             label,
             textAlign: TextAlign.center,
-            style: const TextStyle(
-              color: textMuted,
-              fontSize: 9.5,
-            ),
+            style: const TextStyle(color: textMuted, fontSize: 9.5),
           ),
         ],
       ),
@@ -640,10 +687,7 @@ class _LiveBusTrackingScreenState extends State<LiveBusTrackingScreen> {
         const SizedBox(height: 4),
         Text(
           subtitle,
-          style: const TextStyle(
-            color: textMuted,
-            fontSize: 11.5,
-          ),
+          style: const TextStyle(color: textMuted, fontSize: 11.5),
         ),
       ],
     );
@@ -688,19 +732,15 @@ class _LiveBusTrackingScreenState extends State<LiveBusTrackingScreen> {
           const SizedBox(height: 16),
           Row(
             children: [
-              const Icon(
-                Icons.info_outline_rounded,
-                color: warning,
-                size: 16,
-              ),
+              const Icon(Icons.info_outline_rounded, color: warning, size: 16),
               const SizedBox(width: 8),
               Expanded(
                 child: Text(
                   _routeStopCount > 0
                       ? '$_routeStopCount stops found in the selected route. '
-                      'Actual vehicle progress is unavailable.'
+                            'Actual vehicle progress is unavailable.'
                       : 'Route stop details are unavailable. '
-                      'Vehicle progress is not being reported.',
+                            'Vehicle progress is not being reported.',
                   style: const TextStyle(
                     color: textMuted,
                     fontSize: 10.5,
@@ -838,9 +878,9 @@ class _LiveBusTrackingScreenState extends State<LiveBusTrackingScreen> {
     final stops = routeStops.isNotEmpty
         ? routeStops
         : <String>[
-      if (widget.from.trim().isNotEmpty) widget.from.trim(),
-      if (widget.to.trim().isNotEmpty) widget.to.trim(),
-    ];
+            if (widget.from.trim().isNotEmpty) widget.from.trim(),
+            if (widget.to.trim().isNotEmpty) widget.to.trim(),
+          ];
 
     showModalBottomSheet<void>(
       context: context,
@@ -872,99 +912,89 @@ class _LiveBusTrackingScreenState extends State<LiveBusTrackingScreen> {
                   const SizedBox(height: 5),
                   Text(
                     'Bus ${widget.busNumber} • '
-                        '${widget.from} → ${widget.to}',
+                    '${widget.from} → ${widget.to}',
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
-                      color: textMuted,
-                      fontSize: 11,
-                    ),
+                    style: const TextStyle(color: textMuted, fontSize: 11),
                   ),
                   const SizedBox(height: 6),
                   const Text(
                     'Stops shown in the GTFS route sequence. '
-                        'This is not live vehicle tracking.',
-                    style: TextStyle(
-                      color: textMuted,
-                      fontSize: 10.5,
-                    ),
+                    'This is not live vehicle tracking.',
+                    style: TextStyle(color: textMuted, fontSize: 10.5),
                   ),
                   const SizedBox(height: 18),
                   Expanded(
                     child: stops.isEmpty
                         ? const Center(
-                      child: Text(
-                        'No route stops are available.',
-                        style: TextStyle(
-                          color: textMuted,
-                          fontSize: 13,
-                        ),
-                      ),
-                    )
+                            child: Text(
+                              'No route stops are available.',
+                              style: TextStyle(color: textMuted, fontSize: 13),
+                            ),
+                          )
                         : ListView.builder(
-                      itemCount: stops.length,
-                      itemBuilder: (context, index) {
-                        final isFirst = index == 0;
-                        final isLast = index == stops.length - 1;
+                            itemCount: stops.length,
+                            itemBuilder: (context, index) {
+                              final isFirst = index == 0;
+                              final isLast = index == stops.length - 1;
 
-                        return Row(
-                          crossAxisAlignment:
-                          CrossAxisAlignment.start,
-                          children: [
-                            Column(
-                              children: [
-                                Container(
-                                  width: 14,
-                                  height: 14,
-                                  decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    color: isFirst
-                                        ? teal
-                                        : isLast
-                                        ? cyan
-                                        : navySoft,
+                              return Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Column(
+                                    children: [
+                                      Container(
+                                        width: 14,
+                                        height: 14,
+                                        decoration: BoxDecoration(
+                                          shape: BoxShape.circle,
+                                          color: isFirst
+                                              ? teal
+                                              : isLast
+                                              ? cyan
+                                              : navySoft,
+                                        ),
+                                      ),
+                                      if (!isLast)
+                                        Container(
+                                          width: 2,
+                                          height: 30,
+                                          color: lightBorder,
+                                        ),
+                                    ],
                                   ),
-                                ),
-                                if (!isLast)
-                                  Container(
-                                    width: 2,
-                                    height: 30,
-                                    color: lightBorder,
+                                  const SizedBox(width: 12),
+                                  Expanded(
+                                    child: Padding(
+                                      padding: const EdgeInsets.only(
+                                        bottom: 14,
+                                      ),
+                                      child: Text(
+                                        stops[index],
+                                        style: const TextStyle(
+                                          color: textDark,
+                                          fontSize: 12.5,
+                                          fontWeight: FontWeight.w800,
+                                        ),
+                                      ),
+                                    ),
                                   ),
-                              ],
-                            ),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: Padding(
-                                padding:
-                                const EdgeInsets.only(bottom: 14),
-                                child: Text(
-                                  stops[index],
-                                  style: const TextStyle(
-                                    color: textDark,
-                                    fontSize: 12.5,
-                                    fontWeight: FontWeight.w800,
-                                  ),
-                                ),
-                              ),
-                            ),
-                            if (isFirst || isLast)
-                              Padding(
-                                padding:
-                                const EdgeInsets.only(left: 8),
-                                child: Text(
-                                  isFirst ? 'START' : 'END',
-                                  style: const TextStyle(
-                                    color: textMuted,
-                                    fontSize: 9,
-                                    fontWeight: FontWeight.w900,
-                                  ),
-                                ),
-                              ),
-                          ],
-                        );
-                      },
-                    ),
+                                  if (isFirst || isLast)
+                                    Padding(
+                                      padding: const EdgeInsets.only(left: 8),
+                                      child: Text(
+                                        isFirst ? 'START' : 'END',
+                                        style: const TextStyle(
+                                          color: textMuted,
+                                          fontSize: 9,
+                                          fontWeight: FontWeight.w900,
+                                        ),
+                                      ),
+                                    ),
+                                ],
+                              );
+                            },
+                          ),
                   ),
                 ],
               ),
@@ -1030,11 +1060,7 @@ class _TrackingBackground extends StatelessWidget {
             gradient: LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
-              colors: [
-                Color(0xFFF9FDFF),
-                Color(0xFFF0FAFD),
-                Color(0xFFF7FCFD),
-              ],
+              colors: [Color(0xFFF9FDFF), Color(0xFFF0FAFD), Color(0xFFF7FCFD)],
             ),
           ),
         ),
@@ -1065,88 +1091,4 @@ class _TrackingBackground extends StatelessWidget {
       ],
     );
   }
-}
-
-class _TrackingMapPainter extends CustomPainter {
-  const _TrackingMapPainter();
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final gridPaint = Paint()
-      ..color = const Color(0xFFE7F0F3)
-      ..strokeWidth = 1;
-
-    const spacing = 36.0;
-
-    for (double x = 0; x <= size.width; x += spacing) {
-      canvas.drawLine(Offset(x, 0), Offset(x, size.height), gridPaint);
-    }
-
-    for (double y = 0; y <= size.height; y += spacing) {
-      canvas.drawLine(Offset(0, y), Offset(size.width, y), gridPaint);
-    }
-
-    final routeShadow = Paint()
-      ..color = const Color(0xFFB7F2EF)
-      ..strokeWidth = 14
-      ..style = PaintingStyle.stroke
-      ..strokeCap = StrokeCap.round;
-
-    final routePaint = Paint()
-      ..shader = const LinearGradient(
-        colors: [
-          Color(0xFF00C7B7),
-          Color(0xFF21D4FD),
-        ],
-      ).createShader(
-        Rect.fromLTWH(0, 0, size.width, size.height),
-      )
-      ..strokeWidth = 5
-      ..style = PaintingStyle.stroke
-      ..strokeCap = StrokeCap.round;
-
-    final path = Path()
-      ..moveTo(-20, size.height * 0.70)
-      ..cubicTo(
-        size.width * 0.18,
-        size.height * 0.54,
-        size.width * 0.32,
-        size.height * 0.76,
-        size.width * 0.50,
-        size.height * 0.52,
-      )
-      ..cubicTo(
-        size.width * 0.66,
-        size.height * 0.30,
-        size.width * 0.78,
-        size.height * 0.55,
-        size.width + 20,
-        size.height * 0.27,
-      );
-
-    canvas.drawPath(path, routeShadow);
-    canvas.drawPath(path, routePaint);
-
-    final stopPaint = Paint()..color = const Color(0xFF00C7B7);
-    final stopPaint2 = Paint()..color = const Color(0xFF21D4FD);
-
-    canvas.drawCircle(
-      Offset(size.width * 0.15, size.height * 0.66),
-      6,
-      stopPaint,
-    );
-    canvas.drawCircle(
-      Offset(size.width * 0.49, size.height * 0.53),
-      6,
-      stopPaint,
-    );
-    canvas.drawCircle(
-      Offset(size.width * 0.82, size.height * 0.41),
-      6,
-      stopPaint2,
-    );
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
