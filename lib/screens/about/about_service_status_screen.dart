@@ -244,33 +244,33 @@ class _AboutServiceStatusScreenState extends State<AboutServiceStatusScreen> {
         _statusRow(
           icon: Icons.cloud_done_rounded,
           title: 'Core Services',
-          subtitle: 'Main MOVIRA services',
-          status: 'Operational',
+          subtitle: 'App interface and local features',
+          status: 'App loaded',
           color: success,
         ),
         const Divider(height: 24, color: Color(0xFFE7EEF1)),
         _statusRow(
           icon: Icons.location_on_rounded,
           title: 'Location Services',
-          subtitle: 'Maps and location access',
-          status: 'Operational',
-          color: success,
+          subtitle: 'Depends on device permissions',
+          status: 'Permission-based',
+          color: warning,
         ),
         const Divider(height: 24, color: Color(0xFFE7EEF1)),
         _statusRow(
           icon: Icons.directions_bus_rounded,
           title: 'Transit Data',
-          subtitle: 'Routes, schedules and bus status',
-          status: 'Limited Demo',
-          color: warning,
+          subtitle: 'Local routes and scheduled departures',
+          status: 'Local data',
+          color: success,
         ),
         const Divider(height: 24, color: Color(0xFFE7EEF1)),
         _statusRow(
           icon: Icons.notifications_rounded,
           title: 'Notifications',
-          subtitle: 'Alerts and trip reminders',
-          status: 'Operational',
-          color: success,
+          subtitle: 'Push alerts and trip reminders',
+          status: 'Not configured',
+          color: warning,
         ),
       ],
     );
@@ -307,10 +307,10 @@ class _AboutServiceStatusScreenState extends State<AboutServiceStatusScreen> {
         const Divider(height: 24, color: Color(0xFFE7EEF1)),
         _actionRow(
           Icons.refresh_rounded,
-          'Retry Services',
-          'Reconnect to MOVIRA services',
+          'Transit Data Info',
+          'View available transit data information',
           cyan,
-              () => _message('Service retry started.'),
+              () => _message('Transit schedules use local GTFS data. This action does not reconnect external services.'),
         ),
       ],
     );
@@ -350,7 +350,7 @@ class _AboutServiceStatusScreenState extends State<AboutServiceStatusScreen> {
                   ? 'A simulated service error is active. Retry actions remain available.'
                   : _offlineMode
                   ? 'Offline mode is active. Saved routes and cached information remain available.'
-                  : 'All available MOVIRA services are currently ready.',
+                  : 'Local routes and scheduled departures are available. External live transit feeds and push notifications are not configured.',
               style: TextStyle(
                 color: problem
                     ? const Color(0xFF8A5A12)
