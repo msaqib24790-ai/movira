@@ -1,12 +1,18 @@
+import 'dart:async';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
+
+import '../../services/live_location_service.dart';
 
 class LiveBusTrackingScreen extends StatefulWidget {
   final String busNumber;
   final String from;
   final String to;
   final List<Map<String, dynamic>> routeStops;
+  final String? tripId;
 
   const LiveBusTrackingScreen({
     super.key,
@@ -14,6 +20,7 @@ class LiveBusTrackingScreen extends StatefulWidget {
     this.from = 'Central Station',
     this.to = 'City Mall',
     this.routeStops = const [],
+    this.tripId,
   });
 
   @override
@@ -33,6 +40,200 @@ class _LiveBusTrackingScreenState extends State<LiveBusTrackingScreen> {
   static const Color lightBorder = Color(0xFFE1EDF1);
   static const Color warning = Color(0xFFB7791F);
 
+  final LiveLocationService _liveLocationService = LiveLocationService();
+
+  StreamSubscription<Map<String, dynamic>?>? _locationSubscription;
+  Timer? _freshnessTimer;
+
+  LatLng? _liveBusPosition;
+  DateTime? _locationUpdatedAt;
+
+  String _liveFeedStatus = 'Offline';
+  String _liveFeedMessage = 'No active trip selected';
+
+  Color get _liveFeedColor {
+    switch (_liveFeedStatus) {
+      case 'Live':
+        return teal;
+      case 'Stale':
+        return warning;
+      default:
+        return warning;
+    }
+  }
+
+  IconData get _liveFeedIcon {
+    switch (_liveFeedStatus) {
+      case 'Live':
+        return Icons.gps_fixed_rounded;
+      case 'Stale':
+        return Icons.gps_not_fixed_rounded;
+      default:
+        return Icons.location_off_outlined;
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    _listenForTripLocation();
+
+    _freshnessTimer = Timer.periodic(
+      const Duration(seconds: 15),
+      (_) => _refreshLocationFreshness(),
+    );
+  }
+
+  @override
+  void didUpdateWidget(covariant LiveBusTrackingScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    if (oldWidget.tripId != widget.tripId) {
+      _locationSubscription?.cancel();
+      _locationSubscription = null;
+
+      _liveBusPosition = null;
+      _locationUpdatedAt = null;
+      _liveFeedStatus = 'Offline';
+      _liveFeedMessage = 'Waiting for selected trip';
+
+      _listenForTripLocation();
+    }
+  }
+
+  void _listenForTripLocation() {
+    final tripId = widget.tripId?.trim();
+
+    if (tripId == null || tripId.isEmpty) {
+      _liveFeedStatus = 'Offline';
+      _liveFeedMessage = 'No active trip selected';
+      return;
+    }
+
+    _locationSubscription = _liveLocationService
+        .watchLiveLocation(tripId)
+        .listen(
+          _handleLocationUpdate,
+          onError: (Object error) {
+            if (!mounted) return;
+
+            setState(() {
+              _liveBusPosition = null;
+              _locationUpdatedAt = null;
+              _liveFeedStatus = 'Offline';
+              _liveFeedMessage = 'Unable to read live location';
+            });
+          },
+        );
+  }
+
+  double? _readCoordinate(dynamic value) {
+    if (value is num) {
+      return value.toDouble();
+    }
+
+    if (value is String) {
+      return double.tryParse(value);
+    }
+
+    return null;
+  }
+
+  DateTime? _readTimestamp(dynamic value) {
+    if (value is Timestamp) {
+      return value.toDate();
+    }
+
+    if (value is DateTime) {
+      return value;
+    }
+
+    return null;
+  }
+
+  void _handleLocationUpdate(Map<String, dynamic>? data) {
+    if (!mounted) return;
+
+    if (data == null) {
+      setState(() {
+        _liveBusPosition = null;
+        _locationUpdatedAt = null;
+        _liveFeedStatus = 'Offline';
+        _liveFeedMessage = 'No location received for this trip';
+      });
+      return;
+    }
+
+    final latitude = _readCoordinate(data['latitude']);
+    final longitude = _readCoordinate(data['longitude']);
+    final updatedAt = _readTimestamp(data['updatedAt']);
+
+    final validCoordinates =
+        latitude != null &&
+        longitude != null &&
+        latitude >= -90 &&
+        latitude <= 90 &&
+        longitude >= -180 &&
+        longitude <= 180 &&
+        !(latitude == 0 && longitude == 0);
+
+    final now = DateTime.now();
+    final age = updatedAt == null ? null : now.difference(updatedAt);
+
+    final validTimestamp =
+        age != null &&
+        age >= const Duration(seconds: -30) &&
+        age <= const Duration(minutes: 2);
+
+    setState(() {
+      _locationUpdatedAt = updatedAt;
+
+      if (!validCoordinates || !validTimestamp) {
+        _liveBusPosition = null;
+
+        if (updatedAt == null ||
+            (age != null && age < const Duration(seconds: -30))) {
+          _liveFeedStatus = 'Offline';
+        } else {
+          _liveFeedStatus = 'Stale';
+        }
+
+        _liveFeedMessage = updatedAt == null
+            ? 'Location timestamp is unavailable'
+            : 'Location is invalid or outdated';
+
+        return;
+      }
+
+      _liveBusPosition = LatLng(latitude, longitude);
+      _liveFeedStatus = 'Live';
+      _liveFeedMessage = 'Recent driver location received';
+    });
+  }
+
+  void _refreshLocationFreshness() {
+    if (!mounted || _locationUpdatedAt == null) return;
+
+    final age = DateTime.now().difference(_locationUpdatedAt!);
+
+    if (age > const Duration(minutes: 2) ||
+        age < const Duration(seconds: -30)) {
+      setState(() {
+        _liveBusPosition = null;
+        _liveFeedStatus = age.isNegative ? 'Offline' : 'Stale';
+        _liveFeedMessage = 'Waiting for a recent driver location';
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    _freshnessTimer?.cancel();
+    _locationSubscription?.cancel();
+    super.dispose();
+  }
+
   /// Extract readable names from the selected GTFS route stops.
   List<String> get _routeStopNames {
     return widget.routeStops
@@ -49,7 +250,6 @@ class _LiveBusTrackingScreenState extends State<LiveBusTrackingScreen> {
         .toList();
   }
 
-  /// Use actual route endpoints when available.
   String get _routeStart {
     final stops = _routeStopNames;
 
@@ -70,8 +270,7 @@ class _LiveBusTrackingScreenState extends State<LiveBusTrackingScreen> {
     return widget.to.trim().isNotEmpty ? widget.to : 'Not available';
   }
 
-  /// This is the next stop in the route sequence, not the bus's
-  /// actual current next stop.
+  /// This is the next stop in the route sequence, not a live prediction.
   String get _nextRouteStop {
     final stops = _routeStopNames;
 
@@ -97,6 +296,7 @@ class _LiveBusTrackingScreenState extends State<LiveBusTrackingScreen> {
     return widget.routeStops
         .map((stop) {
           final latitude = double.tryParse((stop['stop_lat'] ?? '').toString());
+
           final longitude = double.tryParse(
             (stop['stop_lon'] ?? '').toString(),
           );
@@ -160,7 +360,9 @@ class _LiveBusTrackingScreenState extends State<LiveBusTrackingScreen> {
                   const SizedBox(height: 26),
                   _buildSectionTitle(
                     'Route Information',
-                    'Live vehicle information is not available',
+                    _liveFeedStatus == 'Live'
+                        ? 'Recent location received for the selected trip'
+                        : 'Live vehicle information: $_liveFeedStatus',
                   ),
                   const SizedBox(height: 14),
                   _buildBusInfoCard(),
@@ -314,15 +516,17 @@ class _LiveBusTrackingScreenState extends State<LiveBusTrackingScreen> {
                   ),
                 ),
                 const SizedBox(height: 8),
-                const Row(
+                Row(
                   children: [
-                    Icon(Icons.info_outline_rounded, color: cyan, size: 15),
-                    SizedBox(width: 5),
+                    Icon(_liveFeedIcon, color: _liveFeedColor, size: 15),
+                    const SizedBox(width: 5),
                     Expanded(
                       child: Text(
-                        'No live vehicle feed connected',
+                        _liveFeedMessage,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
                         style: TextStyle(
-                          color: cyan,
+                          color: _liveFeedColor,
                           fontSize: 10.5,
                           fontWeight: FontWeight.w800,
                         ),
@@ -417,6 +621,38 @@ class _LiveBusTrackingScreenState extends State<LiveBusTrackingScreen> {
                       );
                     }).toList(),
                   ),
+                if (_liveBusPosition != null)
+                  MarkerLayer(
+                    markers: [
+                      Marker(
+                        point: _liveBusPosition!,
+                        width: 54,
+                        height: 54,
+                        child: Tooltip(
+                          message: 'Bus ${widget.busNumber} · Live',
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: teal,
+                              shape: BoxShape.circle,
+                              border: Border.all(color: Colors.white, width: 3),
+                              boxShadow: const [
+                                BoxShadow(
+                                  color: Color(0x40071B2C),
+                                  blurRadius: 12,
+                                  offset: Offset(0, 4),
+                                ),
+                              ],
+                            ),
+                            child: const Icon(
+                              Icons.directions_bus_filled_rounded,
+                              color: navy,
+                              size: 27,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 const RichAttributionWidget(
                   attributions: [
                     TextSourceAttribution('OpenStreetMap contributors'),
@@ -467,14 +703,14 @@ class _LiveBusTrackingScreenState extends State<LiveBusTrackingScreen> {
                   color: navy,
                   borderRadius: BorderRadius.circular(15),
                 ),
-                child: const Row(
+                child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(Icons.location_off_outlined, color: cyan, size: 15),
-                    SizedBox(width: 5),
+                    Icon(_liveFeedIcon, color: _liveFeedColor, size: 15),
+                    const SizedBox(width: 5),
                     Text(
-                      'GPS UNAVAILABLE',
-                      style: TextStyle(
+                      _liveFeedStatus.toUpperCase(),
+                      style: const TextStyle(
                         color: Colors.white,
                         fontSize: 9,
                         fontWeight: FontWeight.w900,
@@ -500,7 +736,9 @@ class _LiveBusTrackingScreenState extends State<LiveBusTrackingScreen> {
                 child: Row(
                   children: [
                     Icon(
-                      hasCoordinates
+                      _liveBusPosition != null
+                          ? Icons.gps_fixed_rounded
+                          : hasCoordinates
                           ? Icons.info_outline_rounded
                           : Icons.warning_amber_rounded,
                       color: cyan,
@@ -509,8 +747,10 @@ class _LiveBusTrackingScreenState extends State<LiveBusTrackingScreen> {
                     const SizedBox(width: 9),
                     Expanded(
                       child: Text(
-                        hasCoordinates
-                            ? 'Route stops shown. Live bus position is unavailable.'
+                        _liveBusPosition != null
+                            ? 'Live bus position received from the selected trip.'
+                            : hasCoordinates
+                            ? 'GTFS route stops shown. $_liveFeedMessage.'
                             : 'No valid coordinates are available for this journey.',
                         style: const TextStyle(
                           color: Colors.white,
@@ -625,10 +865,10 @@ class _LiveBusTrackingScreenState extends State<LiveBusTrackingScreen> {
         const SizedBox(width: 10),
         Expanded(
           child: _statCard(
-            icon: Icons.sensors_off_rounded,
-            value: 'Offline',
+            icon: _liveFeedIcon,
+            value: _liveFeedStatus,
             label: 'Live Feed',
-            color: warning,
+            color: _liveFeedColor,
           ),
         ),
       ],
@@ -875,6 +1115,7 @@ class _LiveBusTrackingScreenState extends State<LiveBusTrackingScreen> {
 
   void _showRoutePreview() {
     final routeStops = _routeStopNames;
+
     final stops = routeStops.isNotEmpty
         ? routeStops
         : <String>[
