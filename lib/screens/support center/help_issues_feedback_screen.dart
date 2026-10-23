@@ -1,4 +1,5 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
+import 'package:movira/services/support_service.dart';
 
 class HelpIssuesFeedbackScreen extends StatefulWidget {
   const HelpIssuesFeedbackScreen({super.key});
@@ -20,17 +21,17 @@ class _HelpIssuesFeedbackScreenState extends State<HelpIssuesFeedbackScreen> {
   static const Color textMuted = Color(0xFF6B7C88);
   static const Color lightBorder = Color(0xFFE1EDF1);
   static const Color warning = Color(0xFFF59E0B);
-  static const Color error = Color(0xFFEF4444);
 
   int _selectedTab = 0;
   int _rating = 0;
+  bool _isSubmitting = false;
+  final Map<String, TextEditingController> _fieldControllers = {};
 
-  final List<String> _tabs = [
-    'FAQ',
-    'Report Issue',
-    'Lost Item',
-    'Feedback',
-  ];
+  TextEditingController _controllerFor(String hint) {
+    return _fieldControllers.putIfAbsent(hint, () => TextEditingController());
+  }
+
+  final List<String> _tabs = ['FAQ', 'Report Issue', 'Lost Item', 'Feedback'];
 
   final List<Map<String, String>> _faqs = [
     {
@@ -236,10 +237,7 @@ class _HelpIssuesFeedbackScreenState extends State<HelpIssuesFeedbackScreen> {
             onTap: () => setState(() => _selectedTab = index),
             child: AnimatedContainer(
               duration: const Duration(milliseconds: 180),
-              padding: const EdgeInsets.symmetric(
-                horizontal: 13,
-                vertical: 11,
-              ),
+              padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 11),
               decoration: BoxDecoration(
                 color: selected ? navy : Colors.transparent,
                 borderRadius: BorderRadius.circular(13),
@@ -264,7 +262,10 @@ class _HelpIssuesFeedbackScreenState extends State<HelpIssuesFeedbackScreen> {
       key: const ValueKey('faq'),
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _sectionTitle('Frequently Asked Questions', 'Quick answers to common questions'),
+        _sectionTitle(
+          'Frequently Asked Questions',
+          'Quick answers to common questions',
+        ),
         const SizedBox(height: 14),
         ..._faqs.map((faq) => _faqTile(faq)),
       ],
@@ -294,11 +295,7 @@ class _HelpIssuesFeedbackScreenState extends State<HelpIssuesFeedbackScreen> {
             color: softCyan,
             borderRadius: BorderRadius.circular(12),
           ),
-          child: const Icon(
-            Icons.question_mark_rounded,
-            color: teal,
-            size: 18,
-          ),
+          child: const Icon(Icons.question_mark_rounded, color: teal, size: 18),
         ),
         title: Text(
           faq['q']!,
@@ -335,12 +332,16 @@ class _HelpIssuesFeedbackScreenState extends State<HelpIssuesFeedbackScreen> {
             const SizedBox(height: 12),
             _inputField('Bus number or route', Icons.directions_bus_rounded),
             const SizedBox(height: 12),
-            _inputField('Describe the problem', Icons.description_rounded, maxLines: 4),
+            _inputField(
+              'Describe the problem',
+              Icons.description_rounded,
+              maxLines: 4,
+            ),
             const SizedBox(height: 14),
             _submitButton(
               'Submit Issue Report',
               Icons.report_problem_rounded,
-                  () => _showMessage('Issue report submitted for backend processing later.'),
+              () => _submitIssueReport(),
             ),
           ],
         ),
@@ -363,12 +364,16 @@ class _HelpIssuesFeedbackScreenState extends State<HelpIssuesFeedbackScreen> {
             const SizedBox(height: 12),
             _inputField('Date and approximate time', Icons.schedule_rounded),
             const SizedBox(height: 12),
-            _inputField('Describe the item', Icons.edit_note_rounded, maxLines: 4),
+            _inputField(
+              'Describe the item',
+              Icons.edit_note_rounded,
+              maxLines: 4,
+            ),
             const SizedBox(height: 14),
             _submitButton(
               'Submit Lost Item Report',
               Icons.search_rounded,
-                  () => _showMessage('Lost-item report submitted for backend processing later.'),
+              () => _submitLostItemReport(),
             ),
           ],
         ),
@@ -408,12 +413,16 @@ class _HelpIssuesFeedbackScreenState extends State<HelpIssuesFeedbackScreen> {
               }),
             ),
             const SizedBox(height: 8),
-            _inputField('Write your feedback', Icons.rate_review_rounded, maxLines: 4),
+            _inputField(
+              'Write your feedback',
+              Icons.rate_review_rounded,
+              maxLines: 4,
+            ),
             const SizedBox(height: 14),
             _submitButton(
               'Submit Feedback',
               Icons.send_rounded,
-                  () => _showMessage('Feedback saved for backend submission later.'),
+              () => _submitFeedback(),
             ),
           ],
         ),
@@ -434,19 +443,13 @@ class _HelpIssuesFeedbackScreenState extends State<HelpIssuesFeedbackScreen> {
     );
   }
 
-  Widget _inputField(
-      String hint,
-      IconData icon, {
-        int maxLines = 1,
-      }) {
+  Widget _inputField(String hint, IconData icon, {int maxLines = 1}) {
     return TextField(
+      controller: _controllerFor(hint),
       maxLines: maxLines,
       decoration: InputDecoration(
         hintText: hint,
-        hintStyle: const TextStyle(
-          color: textMuted,
-          fontSize: 11.5,
-        ),
+        hintStyle: const TextStyle(color: textMuted, fontSize: 11.5),
         prefixIcon: Icon(icon, color: teal),
         filled: true,
         fillColor: const Color(0xFFF7FBFC),
@@ -462,15 +465,11 @@ class _HelpIssuesFeedbackScreenState extends State<HelpIssuesFeedbackScreen> {
     );
   }
 
-  Widget _submitButton(
-      String text,
-      IconData icon,
-      VoidCallback onTap,
-      ) {
+  Widget _submitButton(String text, IconData icon, VoidCallback onTap) {
     return SizedBox(
       width: double.infinity,
       child: ElevatedButton.icon(
-        onPressed: onTap,
+        onPressed: _isSubmitting ? null : onTap,
         icon: Icon(icon),
         label: Text(text),
         style: ElevatedButton.styleFrom(
@@ -501,19 +500,123 @@ class _HelpIssuesFeedbackScreenState extends State<HelpIssuesFeedbackScreen> {
         const SizedBox(height: 4),
         Text(
           subtitle,
-          style: const TextStyle(
-            color: textMuted,
-            fontSize: 11.5,
-          ),
+          style: const TextStyle(color: textMuted, fontSize: 11.5),
         ),
       ],
     );
   }
 
-  void _showMessage(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(message)),
+  Future<void> _submitIssueReport() async {
+    final category = _controllerFor('Issue category').text.trim();
+    final route = _controllerFor('Bus number or route').text.trim();
+    final description = _controllerFor('Describe the problem').text.trim();
+
+    if (category.isEmpty || description.isEmpty) {
+      _showMessage('Enter an issue category and describe the problem.');
+      return;
+    }
+
+    await _submitSupportRequest(
+      type: 'issue',
+      title: 'Issue: $category',
+      description: description,
+      details: <String, dynamic>{'category': category, 'route': route},
     );
+  }
+
+  Future<void> _submitLostItemReport() async {
+    final itemName = _controllerFor('Item name').text.trim();
+    final route = _controllerFor('Bus / route').text.trim();
+    final dateTime = _controllerFor('Date and approximate time').text.trim();
+    final description = _controllerFor('Describe the item').text.trim();
+
+    if (itemName.isEmpty || description.isEmpty) {
+      _showMessage('Enter the item name and describe the lost item.');
+      return;
+    }
+
+    await _submitSupportRequest(
+      type: 'lost_item',
+      title: 'Lost item: $itemName',
+      description: description,
+      details: <String, dynamic>{
+        'itemName': itemName,
+        'route': route,
+        'dateTime': dateTime,
+      },
+    );
+  }
+
+  Future<void> _submitFeedback() async {
+    final feedback = _controllerFor('Write your feedback').text.trim();
+
+    if (feedback.isEmpty) {
+      _showMessage('Please write your feedback before submitting.');
+      return;
+    }
+
+    await _submitSupportRequest(
+      type: 'feedback',
+      title: 'User feedback',
+      description: feedback,
+      details: const <String, dynamic>{'source': 'Help and Feedback'},
+      rating: _rating > 0 ? _rating : null,
+    );
+  }
+
+  Future<void> _submitSupportRequest({
+    required String type,
+    required String title,
+    required String description,
+    required Map<String, dynamic> details,
+    int? rating,
+  }) async {
+    if (_isSubmitting) return;
+
+    setState(() => _isSubmitting = true);
+
+    try {
+      final requestId = await SupportService().submitRequest(
+        type: type,
+        title: title,
+        description: description,
+        details: details,
+        rating: rating,
+      );
+
+      if (mounted) {
+        _showMessage('Submitted successfully. Reference: $requestId');
+        setState(() {
+          for (final controller in _fieldControllers.values) {
+            controller.clear();
+          }
+          if (type == 'feedback') _rating = 0;
+        });
+      }
+    } on StateError catch (error) {
+      if (mounted) _showMessage(error.message.toString());
+    } catch (_) {
+      if (mounted) {
+        _showMessage(
+          'Submission failed. Check your connection and sign-in, then try again.',
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _isSubmitting = false);
+    }
+  }
+
+  @override
+  void dispose() {
+    for (final controller in _fieldControllers.values) {
+      controller.dispose();
+    }
+    super.dispose();
+  }
+
+  void _showMessage(String message) {
+    ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(content: Text(message)));
   }
 }
 
@@ -529,11 +632,7 @@ class _HelpBackground extends StatelessWidget {
             gradient: LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
-              colors: [
-                Color(0xFFF9FDFF),
-                Color(0xFFF0FAFD),
-                Color(0xFFF7FCFD),
-              ],
+              colors: [Color(0xFFF9FDFF), Color(0xFFF0FAFD), Color(0xFFF7FCFD)],
             ),
           ),
         ),
@@ -545,7 +644,7 @@ class _HelpBackground extends StatelessWidget {
             height: 280,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: const Color(0xFF21D4FD).withOpacity(0.09),
+              color: const Color(0xFF21D4FD).withValues(alpha: 0.09),
             ),
           ),
         ),
@@ -557,7 +656,7 @@ class _HelpBackground extends StatelessWidget {
             height: 320,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: const Color(0xFF00C7B7).withOpacity(0.07),
+              color: const Color(0xFF00C7B7).withValues(alpha: 0.07),
             ),
           ),
         ),

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:movira/services/support_service.dart';
+
 import 'help_issues_feedback_screen.dart';
 
 class SupportCenterScreen extends StatefulWidget {
@@ -23,27 +25,12 @@ class _SupportCenterScreenState extends State<SupportCenterScreen> {
   static const Color warning = Color(0xFFF59E0B);
 
   int _selectedSection = 0;
+  bool _isCreatingTicket = false;
+  final SupportService _supportService = SupportService();
+  final TextEditingController _ticketDescriptionController =
+      TextEditingController();
 
-  final List<String> _sections = [
-    'Support',
-    'Live Chat',
-    'Tickets',
-  ];
-
-  final List<Map<String, String>> _tickets = [
-    {
-      'id': '#MV-1024',
-      'title': 'Bus M-12 tracking issue',
-      'status': 'Open',
-      'updated': '10 min ago',
-    },
-    {
-      'id': '#MV-1018',
-      'title': 'Fare charged incorrectly',
-      'status': 'Resolved',
-      'updated': 'Yesterday',
-    },
-  ];
+  final List<String> _sections = ['Support', 'Live Chat', 'Tickets'];
 
   @override
   Widget build(BuildContext context) {
@@ -96,10 +83,7 @@ class _SupportCenterScreenState extends State<SupportCenterScreen> {
               borderRadius: BorderRadius.circular(14),
               border: Border.all(color: lightBorder),
             ),
-            child: const Icon(
-              Icons.arrow_back_rounded,
-              color: navy,
-            ),
+            child: const Icon(Icons.arrow_back_rounded, color: navy),
           ),
         ),
         const SizedBox(width: 12),
@@ -152,10 +136,7 @@ class _SupportCenterScreenState extends State<SupportCenterScreen> {
             color: softCyan,
             borderRadius: BorderRadius.circular(14),
           ),
-          child: const Icon(
-            Icons.support_agent_rounded,
-            color: teal,
-          ),
+          child: const Icon(Icons.support_agent_rounded, color: teal),
         ),
       ],
     );
@@ -187,15 +168,9 @@ class _SupportCenterScreenState extends State<SupportCenterScreen> {
             height: 64,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(20),
-              gradient: const LinearGradient(
-                colors: [teal, cyan],
-              ),
+              gradient: const LinearGradient(colors: [teal, cyan]),
             ),
-            child: const Icon(
-              Icons.headset_mic_rounded,
-              color: navy,
-              size: 31,
-            ),
+            child: const Icon(Icons.headset_mic_rounded, color: navy, size: 31),
           ),
           const SizedBox(width: 15),
           const Expanded(
@@ -239,15 +214,9 @@ class _SupportCenterScreenState extends State<SupportCenterScreen> {
       child: const TextField(
         decoration: InputDecoration(
           border: InputBorder.none,
-          prefixIcon: Icon(
-            Icons.search_rounded,
-            color: teal,
-          ),
+          prefixIcon: Icon(Icons.search_rounded, color: teal),
           hintText: 'Search support topics',
-          hintStyle: TextStyle(
-            color: textMuted,
-            fontSize: 12,
-          ),
+          hintStyle: TextStyle(color: textMuted, fontSize: 12),
         ),
       ),
     );
@@ -297,10 +266,7 @@ class _SupportCenterScreenState extends State<SupportCenterScreen> {
       key: const ValueKey('support'),
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _sectionTitle(
-          'Contact Support',
-          'Choose the fastest way to reach us',
-        ),
+        _sectionTitle('Contact Support', 'Choose the fastest way to reach us'),
         const SizedBox(height: 14),
         _supportAction(
           icon: Icons.call_rounded,
@@ -338,9 +304,7 @@ class _SupportCenterScreenState extends State<SupportCenterScreen> {
             decoration: BoxDecoration(
               color: const Color(0xFFF7FCFD),
               borderRadius: BorderRadius.circular(20),
-              border: Border.all(
-                color: teal.withOpacity(0.18),
-              ),
+              border: Border.all(color: teal.withValues(alpha: 0.18)),
             ),
             child: const Row(
               children: [
@@ -350,14 +314,9 @@ class _SupportCenterScreenState extends State<SupportCenterScreen> {
                   child: DecoratedBox(
                     decoration: BoxDecoration(
                       color: softCyan,
-                      borderRadius: BorderRadius.all(
-                        Radius.circular(15),
-                      ),
+                      borderRadius: BorderRadius.all(Radius.circular(15)),
                     ),
-                    child: Icon(
-                      Icons.help_center_rounded,
-                      color: teal,
-                    ),
+                    child: Icon(Icons.help_center_rounded, color: teal),
                   ),
                 ),
                 SizedBox(width: 12),
@@ -376,28 +335,18 @@ class _SupportCenterScreenState extends State<SupportCenterScreen> {
                       SizedBox(height: 4),
                       Text(
                         'FAQs, report issues, lost items and ratings.',
-                        style: TextStyle(
-                          color: textMuted,
-                          fontSize: 10.5,
-                        ),
+                        style: TextStyle(color: textMuted, fontSize: 10.5),
                       ),
                     ],
                   ),
                 ),
-                Icon(
-                  Icons.arrow_forward_rounded,
-                  color: teal,
-                  size: 20,
-                ),
+                Icon(Icons.arrow_forward_rounded, color: teal, size: 20),
               ],
             ),
           ),
         ),
         const SizedBox(height: 24),
-        _sectionTitle(
-          'Urgent Help',
-          'For immediate travel-related problems',
-        ),
+        _sectionTitle('Urgent Help', 'For immediate travel-related problems'),
         const SizedBox(height: 14),
         Container(
           width: double.infinity,
@@ -405,17 +354,11 @@ class _SupportCenterScreenState extends State<SupportCenterScreen> {
           decoration: BoxDecoration(
             color: const Color(0xFFFFF7E8),
             borderRadius: BorderRadius.circular(22),
-            border: Border.all(
-              color: warning.withOpacity(0.24),
-            ),
+            border: Border.all(color: warning.withValues(alpha: 0.24)),
           ),
           child: const Row(
             children: [
-              Icon(
-                Icons.warning_amber_rounded,
-                color: warning,
-                size: 25,
-              ),
+              Icon(Icons.warning_amber_rounded, color: warning, size: 25),
               SizedBox(width: 12),
               Expanded(
                 child: Text(
@@ -440,10 +383,7 @@ class _SupportCenterScreenState extends State<SupportCenterScreen> {
       key: const ValueKey('chat'),
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _sectionTitle(
-          'Live Chat',
-          'Chat with MOVIRA customer support',
-        ),
+        _sectionTitle('Live Chat', 'Chat with MOVIRA customer support'),
         const SizedBox(height: 14),
         Container(
           width: double.infinity,
@@ -464,10 +404,7 @@ class _SupportCenterScreenState extends State<SupportCenterScreen> {
                       color: softCyan,
                       borderRadius: BorderRadius.circular(15),
                     ),
-                    child: const Icon(
-                      Icons.support_agent_rounded,
-                      color: teal,
-                    ),
+                    child: const Icon(Icons.support_agent_rounded, color: teal),
                   ),
                   const SizedBox(width: 12),
                   const Expanded(
@@ -485,11 +422,7 @@ class _SupportCenterScreenState extends State<SupportCenterScreen> {
                         SizedBox(height: 4),
                         Row(
                           children: [
-                            Icon(
-                              Icons.circle,
-                              color: success,
-                              size: 8,
-                            ),
+                            Icon(Icons.circle, color: success, size: 8),
                             SizedBox(width: 6),
                             Text(
                               'Online now',
@@ -526,10 +459,7 @@ class _SupportCenterScreenState extends State<SupportCenterScreen> {
               TextField(
                 decoration: InputDecoration(
                   hintText: 'Type your message...',
-                  hintStyle: const TextStyle(
-                    color: textMuted,
-                    fontSize: 11.5,
-                  ),
+                  hintStyle: const TextStyle(color: textMuted, fontSize: 11.5),
                   filled: true,
                   fillColor: const Color(0xFFF7FBFC),
                   border: OutlineInputBorder(
@@ -541,11 +471,9 @@ class _SupportCenterScreenState extends State<SupportCenterScreen> {
                     borderSide: const BorderSide(color: lightBorder),
                   ),
                   suffixIcon: IconButton(
-                    onPressed: () => _showPlaceholder('Live chat message sending'),
-                    icon: const Icon(
-                      Icons.send_rounded,
-                      color: teal,
-                    ),
+                    onPressed: () =>
+                        _showPlaceholder('Live chat message sending'),
+                    icon: const Icon(Icons.send_rounded, color: teal),
                   ),
                 ),
               ),
@@ -566,30 +494,82 @@ class _SupportCenterScreenState extends State<SupportCenterScreen> {
             Expanded(
               child: _sectionTitle(
                 'Support Tickets',
-                'Track your support requests',
+                'Your submitted support requests',
               ),
             ),
             TextButton.icon(
-              onPressed: () => _showCreateTicketSheet(),
+              onPressed: _isCreatingTicket ? null : _showCreateTicketSheet,
               icon: const Icon(Icons.add_rounded),
               label: const Text('New'),
-              style: TextButton.styleFrom(
-                foregroundColor: teal,
-              ),
+              style: TextButton.styleFrom(foregroundColor: teal),
             ),
           ],
         ),
         const SizedBox(height: 14),
-        ...List.generate(
-          _tickets.length,
-              (index) => Padding(
-            padding: EdgeInsets.only(
-              bottom: index == _tickets.length - 1 ? 0 : 12,
-            ),
-            child: _ticketCard(_tickets[index]),
-          ),
+        StreamBuilder<List<Map<String, dynamic>>>(
+          stream: _supportService.watchMyRequests(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(
+                child: Padding(
+                  padding: EdgeInsets.all(24),
+                  child: CircularProgressIndicator(color: teal),
+                ),
+              );
+            }
+
+            if (snapshot.hasError) {
+              return _ticketMessage(
+                'Support requests could not be loaded. Sign in and check your connection.',
+                Icons.cloud_off_rounded,
+              );
+            }
+
+            final tickets = snapshot.data ?? const <Map<String, dynamic>>[];
+            if (tickets.isEmpty) {
+              return _ticketMessage(
+                'You have no support requests yet. Select New to submit one.',
+                Icons.inbox_outlined,
+              );
+            }
+
+            return Column(
+              children: List.generate(tickets.length, (index) {
+                final ticket = tickets[index];
+                return Padding(
+                  padding: EdgeInsets.only(
+                    bottom: index == tickets.length - 1 ? 0 : 12,
+                  ),
+                  child: _ticketCard(ticket),
+                );
+              }),
+            );
+          },
         ),
       ],
+    );
+  }
+
+  Widget _ticketMessage(String message, IconData icon) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: white,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: lightBorder),
+      ),
+      child: Column(
+        children: [
+          Icon(icon, color: teal, size: 30),
+          const SizedBox(height: 10),
+          Text(
+            message,
+            textAlign: TextAlign.center,
+            style: const TextStyle(color: textMuted, fontSize: 12, height: 1.4),
+          ),
+        ],
+      ),
     );
   }
 
@@ -618,13 +598,10 @@ class _SupportCenterScreenState extends State<SupportCenterScreen> {
               width: 48,
               height: 48,
               decoration: BoxDecoration(
-                color: accent.withOpacity(0.10),
+                color: accent.withValues(alpha: 0.10),
                 borderRadius: BorderRadius.circular(15),
               ),
-              child: Icon(
-                icon,
-                color: accent,
-              ),
+              child: Icon(icon, color: accent),
             ),
             const SizedBox(width: 13),
             Expanded(
@@ -642,10 +619,7 @@ class _SupportCenterScreenState extends State<SupportCenterScreen> {
                   const SizedBox(height: 4),
                   Text(
                     subtitle,
-                    style: const TextStyle(
-                      color: textMuted,
-                      fontSize: 10.5,
-                    ),
+                    style: const TextStyle(color: textMuted, fontSize: 10.5),
                   ),
                   const SizedBox(height: 6),
                   Text(
@@ -659,18 +633,19 @@ class _SupportCenterScreenState extends State<SupportCenterScreen> {
                 ],
               ),
             ),
-            const Icon(
-              Icons.chevron_right_rounded,
-              color: textMuted,
-            ),
+            const Icon(Icons.chevron_right_rounded, color: textMuted),
           ],
         ),
       ),
     );
   }
 
-  Widget _ticketCard(Map<String, String> ticket) {
-    final bool resolved = ticket['status'] == 'Resolved';
+  Widget _ticketCard(Map<String, dynamic> ticket) {
+    final status = (ticket['status'] ?? 'open').toString();
+    final title = (ticket['title'] ?? 'Support request').toString();
+    final id = (ticket['id'] ?? '').toString();
+    final resolved =
+        status.toLowerCase() == 'resolved' || status.toLowerCase() == 'closed';
 
     return Container(
       width: double.infinity,
@@ -687,8 +662,8 @@ class _SupportCenterScreenState extends State<SupportCenterScreen> {
             height: 46,
             decoration: BoxDecoration(
               color: resolved
-                  ? success.withOpacity(0.10)
-                  : cyan.withOpacity(0.10),
+                  ? success.withValues(alpha: 0.10)
+                  : cyan.withValues(alpha: 0.10),
               borderRadius: BorderRadius.circular(14),
             ),
             child: Icon(
@@ -704,7 +679,7 @@ class _SupportCenterScreenState extends State<SupportCenterScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  '${ticket['id']} • ${ticket['title']}',
+                  title,
                   style: const TextStyle(
                     color: textDark,
                     fontSize: 12.5,
@@ -713,7 +688,7 @@ class _SupportCenterScreenState extends State<SupportCenterScreen> {
                 ),
                 const SizedBox(height: 5),
                 Text(
-                  '${ticket['status']} • ${ticket['updated']}',
+                  "Reference: ${id.isEmpty ? 'Pending' : id} | Status: $status",
                   style: TextStyle(
                     color: resolved ? success : textMuted,
                     fontSize: 10.5,
@@ -722,10 +697,6 @@ class _SupportCenterScreenState extends State<SupportCenterScreen> {
                 ),
               ],
             ),
-          ),
-          const Icon(
-            Icons.chevron_right_rounded,
-            color: textMuted,
           ),
         ],
       ),
@@ -747,10 +718,7 @@ class _SupportCenterScreenState extends State<SupportCenterScreen> {
         const SizedBox(height: 4),
         Text(
           subtitle,
-          style: const TextStyle(
-            color: textMuted,
-            fontSize: 11.5,
-          ),
+          style: const TextStyle(color: textMuted, fontSize: 11.5),
         ),
       ],
     );
@@ -759,9 +727,7 @@ class _SupportCenterScreenState extends State<SupportCenterScreen> {
   void _openHelpIssuesFeedback() {
     Navigator.push(
       context,
-      MaterialPageRoute(
-        builder: (context) => const HelpIssuesFeedbackScreen(),
-      ),
+      MaterialPageRoute(builder: (context) => const HelpIssuesFeedbackScreen()),
     );
   }
 
@@ -776,22 +742,22 @@ class _SupportCenterScreenState extends State<SupportCenterScreen> {
   }
 
   void _showCreateTicketSheet() {
-    showModalBottomSheet(
+    _ticketDescriptionController.clear();
+
+    showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (context) {
+      builder: (sheetContext) {
         return Padding(
           padding: EdgeInsets.only(
-            bottom: MediaQuery.of(context).viewInsets.bottom,
+            bottom: MediaQuery.of(sheetContext).viewInsets.bottom,
           ),
           child: Container(
             padding: const EdgeInsets.fromLTRB(20, 20, 20, 28),
             decoration: const BoxDecoration(
               color: white,
-              borderRadius: BorderRadius.vertical(
-                top: Radius.circular(28),
-              ),
+              borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
             ),
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -807,6 +773,7 @@ class _SupportCenterScreenState extends State<SupportCenterScreen> {
                 ),
                 const SizedBox(height: 14),
                 TextField(
+                  controller: _ticketDescriptionController,
                   decoration: InputDecoration(
                     hintText: 'Describe your issue',
                     filled: true,
@@ -816,16 +783,16 @@ class _SupportCenterScreenState extends State<SupportCenterScreen> {
                       borderSide: const BorderSide(color: lightBorder),
                     ),
                   ),
+                  maxLength: 5000,
                   maxLines: 4,
                 ),
                 const SizedBox(height: 14),
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                      _showPlaceholder('Support ticket creation');
-                    },
+                    onPressed: _isCreatingTicket
+                        ? null
+                        : () => _createTicket(sheetContext),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: navy,
                       foregroundColor: white,
@@ -834,12 +801,16 @@ class _SupportCenterScreenState extends State<SupportCenterScreen> {
                         borderRadius: BorderRadius.circular(16),
                       ),
                     ),
-                    child: const Text(
-                      'Submit Ticket',
-                      style: TextStyle(
-                        fontWeight: FontWeight.w900,
-                      ),
-                    ),
+                    child: _isCreatingTicket
+                        ? const SizedBox(
+                            width: 18,
+                            height: 18,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          )
+                        : const Text(
+                            'Submit Ticket',
+                            style: TextStyle(fontWeight: FontWeight.w900),
+                          ),
                   ),
                 ),
               ],
@@ -848,6 +819,58 @@ class _SupportCenterScreenState extends State<SupportCenterScreen> {
         );
       },
     );
+  }
+
+  Future<void> _createTicket(BuildContext sheetContext) async {
+    final description = _ticketDescriptionController.text.trim();
+    if (description.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Describe your issue before submitting.')),
+      );
+      return;
+    }
+    if (_isCreatingTicket) return;
+
+    setState(() => _isCreatingTicket = true);
+    try {
+      final id = await _supportService.submitRequest(
+        type: 'ticket',
+        title: description.length > 160
+            ? '${description.substring(0, 157)}...'
+            : description,
+        description: description,
+        details: const <String, dynamic>{'source': 'Support Center'},
+      );
+
+      if (!mounted || !sheetContext.mounted) return;
+      Navigator.of(sheetContext).pop();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Ticket submitted. Reference: $id')),
+      );
+    } on StateError catch (error) {
+      if (mounted) {
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text(error.message.toString())));
+      }
+    } catch (_) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+              'Ticket submission failed. Check sign-in and connection, then try again.',
+            ),
+          ),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _isCreatingTicket = false);
+    }
+  }
+
+  @override
+  void dispose() {
+    _ticketDescriptionController.dispose();
+    super.dispose();
   }
 }
 
@@ -863,11 +886,7 @@ class _SupportBackground extends StatelessWidget {
             gradient: LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
-              colors: [
-                Color(0xFFF9FDFF),
-                Color(0xFFF0FAFD),
-                Color(0xFFF7FCFD),
-              ],
+              colors: [Color(0xFFF9FDFF), Color(0xFFF0FAFD), Color(0xFFF7FCFD)],
             ),
           ),
         ),
@@ -879,7 +898,7 @@ class _SupportBackground extends StatelessWidget {
             height: 280,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: const Color(0xFF21D4FD).withOpacity(0.09),
+              color: const Color(0xFF21D4FD).withValues(alpha: 0.09),
             ),
           ),
         ),
@@ -891,7 +910,7 @@ class _SupportBackground extends StatelessWidget {
             height: 320,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: const Color(0xFF00C7B7).withOpacity(0.07),
+              color: const Color(0xFF00C7B7).withValues(alpha: 0.07),
             ),
           ),
         ),

@@ -1,0 +1,165 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function isAuthorizedDriver() {
+      return signedIn()
+        && exists(
+          /databases/$(database)/documents/driverAuthorizations/$(request.auth.uid)
+        )
+        && get(
+          /databases/$(database)/documents/driverAuthorizations/$(request.auth.uid)
+        ).data.authorized == true
+        && get(
+          /databases/$(database)/documents/driverAuthorizations/$(request.auth.uid)
+        ).data.active == true;
+    }
+
+    function isAssignedDriver(tripId) {
+      return isAuthorizedDriver()
+        && exists(
+          /databases/$(database)/documents/activeTrips/$(tripId)
+        )
+        && get(
+          /databases/$(database)/documents/activeTrips/$(tripId)
+        ).data.assignedDriverUid == request.auth.uid
+        && get(
+          /databases/$(database)/documents/activeTrips/$(tripId)
+        ).data.status == 'active';
+    }
+
+    function validLocation() {
+      return request.resource.data.keys().hasAll([
+          'latitude', 'longitude', 'updatedAt'
+        ])
+        && request.resource.data.keys().hasOnly([
+          'latitude', 'longitude', 'accuracy', 'updatedAt'
+        ])
+        && request.resource.data.latitude is number
+        && request.resource.data.latitude >= -90
+        && request.resource.data.latitude <= 90
+        && request.resource.data.longitude is number
+        && request.resource.data.longitude >= -180
+        && request.resource.data.longitude <= 180
+        && request.resource.data.updatedAt == request.time
+        && (
+          !request.resource.data.keys().hasAny(['accuracy'])
+          || (
+            request.resource.data.accuracy is number
+            && request.resource.data.accuracy >= 0
+            && request.resource.data.accuracy <= 10000
+          )
+        );
+    }
+
+    match /users/{userId} {
+      allow read, create, update: if signedIn()
+                                  && request.auth.uid == userId;
+      allow delete: if false;
+
+      match /savedTrips/{tripId} {
+        allow read: if signedIn()
+                    && request.auth.uid == userId;
+
+        allow create: if signedIn()
+                      && request.auth.uid == userId
+                      && request.resource.data.userId == userId;
+
+        allow update: if signedIn()
+                      && request.auth.uid == userId
+                      && resource.data.userId == userId
+                      && request.resource.data.userId == userId;
+
+        allow delete: if signedIn()
+                      && request.auth.uid == userId
+                      && resource.data.userId == userId;
+      }
+    }
+
+    match /driverAuthorizations/{userId} {
+      allow read: if signedIn()
+                  && request.auth.uid == userId;
+      allow write: if false;
+    }
+
+    match /activeTrips/{tripId} {
+      allow read: if isAssignedDriver(tripId);
+      allow write: if false;
+    }
+
+    match /liveLocations/{tripId} {
+      allow read: if signedIn()
+                  && exists(
+                    /databases/$(database)/documents/activeTrips/$(tripId)
+                  )
+                  && get(
+                    /databases/$(database)/documents/activeTrips/$(tripId)
+                  ).data.status == 'active';
+
+      allow create, update: if isAssignedDriver(tripId)
+                            && validLocation();
+
+      allow delete: if false;
+    }
+
+    match /supportTickets/{ticketId} {
+      allow create: if signedIn()
+        && request.resource.data.keys().hasAll([
+          'userId',
+          'type',
+          'title',
+          'description',
+          'status',
+          'details',
+          'createdAt',
+          'updatedAt'
+        ])
+        && request.resource.data.keys().hasOnly([
+          'userId',
+          'type',
+          'title',
+          'description',
+          'status',
+          'details',
+          'createdAt',
+          'updatedAt',
+          'rating'
+        ])
+        && request.resource.data.userId == request.auth.uid
+        && request.resource.data.type in [
+          'ticket',
+          'issue',
+          'lost_item',
+          'feedback'
+        ]
+        && request.resource.data.title is string
+        && request.resource.data.title.size() > 0
+        && request.resource.data.title.size() <= 160
+        && request.resource.data.description is string
+        && request.resource.data.description.size() > 0
+        && request.resource.data.description.size() <= 5000
+        && request.resource.data.status == 'open'
+        && request.resource.data.details is map
+        && request.resource.data.createdAt == request.time
+        && request.resource.data.updatedAt == request.time
+        && (
+          !request.resource.data.keys().hasAny(['rating'])
+          || (
+            request.resource.data.rating is int
+            && request.resource.data.rating >= 1
+            && request.resource.data.rating <= 5
+          )
+        );
+
+      allow read: if signedIn()
+        && resource.data.userId == request.auth.uid;
+
+      allow update, delete: if false;
+    }
+  }
+}
