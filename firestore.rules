@@ -79,6 +79,16 @@ service cloud.firestore {
                       && request.auth.uid == userId
                       && resource.data.userId == userId;
       }
+
+      match /devices/{deviceId} {
+        allow read, create, update, delete: if signedIn()
+                                            && request.auth.uid == userId;
+      }
+
+      match /reminderSettings/{settingsId} {
+        allow read, create, update, delete: if signedIn()
+                                            && request.auth.uid == userId;
+      }
     }
 
     match /driverAuthorizations/{userId} {

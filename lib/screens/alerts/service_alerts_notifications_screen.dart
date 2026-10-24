@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../reminders/trip_reminder_settings_screen.dart';
 
 class ServiceAlertsNotificationsScreen extends StatefulWidget {
@@ -21,71 +22,13 @@ class _ServiceAlertsNotificationsScreenState
   static const Color textDark = Color(0xFF12212D);
   static const Color textMuted = Color(0xFF6B7C88);
   static const Color lightBorder = Color(0xFFE1EDF1);
-  static const Color warning = Color(0xFFF59E0B);
   static const Color error = Color(0xFFEF4444);
-  static const Color success = Color(0xFF22C55E);
 
   int _selectedFilter = 0;
 
-  final List<String> _filters = [
-    'All',
-    'Delays',
-    'Route Changes',
-    'System',
-  ];
+  final List<String> _filters = ['All', 'Delays', 'Route Changes', 'System'];
 
-  final List<Map<String, dynamic>> _alerts = [
-    {
-      'title': 'Route M-05 delayed',
-      'message':
-      'Expect approximately 10 minutes delay due to road congestion near Main Market.',
-      'time': '5 min ago',
-      'type': 'Delay',
-      'icon': Icons.warning_amber_rounded,
-      'color': warning,
-      'unread': true,
-    },
-    {
-      'title': 'M-12 stop change',
-      'message':
-      'City Mall stop has temporarily moved to Gate 2 due to maintenance work.',
-      'time': '18 min ago',
-      'type': 'Route Change',
-      'icon': Icons.alt_route_rounded,
-      'color': cyan,
-      'unread': true,
-    },
-    {
-      'title': 'Service restored',
-      'message':
-      'Route M-03 is operating normally again after an earlier interruption.',
-      'time': '1 hr ago',
-      'type': 'System',
-      'icon': Icons.check_circle_rounded,
-      'color': success,
-      'unread': false,
-    },
-    {
-      'title': 'Airport service update',
-      'message':
-      'M-08 buses are operating every 40 minutes this evening.',
-      'time': '2 hrs ago',
-      'type': 'Delay',
-      'icon': Icons.directions_bus_rounded,
-      'color': warning,
-      'unread': false,
-    },
-    {
-      'title': 'Temporary road closure',
-      'message':
-      'Civil Hospital Road will remain closed from 6 PM to 8 PM. M-21 will use an alternate path.',
-      'time': 'Today',
-      'type': 'Route Change',
-      'icon': Icons.block_rounded,
-      'color': error,
-      'unread': false,
-    },
-  ];
+  final List<Map<String, dynamic>> _alerts = [];
 
   List<Map<String, dynamic>> get _visibleAlerts {
     if (_selectedFilter == 0) {
@@ -142,17 +85,20 @@ class _ServiceAlertsNotificationsScreenState
                   const SizedBox(height: 24),
                   _sectionTitle(
                     'Service Alerts',
-                    'Live operational updates for your journeys',
+                    'Verified service updates will appear here when available.',
                   ),
                   const SizedBox(height: 14),
                   _buildFilterBar(),
                   const SizedBox(height: 16),
-                  ..._visibleAlerts.map(
-                        (alert) => Padding(
-                      padding: const EdgeInsets.only(bottom: 12),
-                      child: _alertCard(alert),
+                  if (_visibleAlerts.isEmpty)
+                    _buildEmptyAlertsState()
+                  else
+                    ..._visibleAlerts.map(
+                      (alert) => Padding(
+                        padding: const EdgeInsets.only(bottom: 12),
+                        child: _alertCard(alert),
+                      ),
                     ),
-                  ),
                 ],
               ),
             ),
@@ -230,10 +176,7 @@ class _ServiceAlertsNotificationsScreenState
               color: softCyan,
               borderRadius: BorderRadius.circular(14),
             ),
-            child: const Icon(
-              Icons.done_all_rounded,
-              color: teal,
-            ),
+            child: const Icon(Icons.done_all_rounded, color: teal),
           ),
         ),
       ],
@@ -259,9 +202,7 @@ class _ServiceAlertsNotificationsScreenState
             height: 64,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(20),
-              gradient: const LinearGradient(
-                colors: [teal, cyan],
-              ),
+              gradient: const LinearGradient(colors: [teal, cyan]),
             ),
             child: const Icon(
               Icons.notifications_active_rounded,
@@ -320,10 +261,7 @@ class _ServiceAlertsNotificationsScreenState
               color: softCyan,
               borderRadius: BorderRadius.circular(15),
             ),
-            child: const Icon(
-              Icons.campaign_rounded,
-              color: teal,
-            ),
+            child: const Icon(Icons.campaign_rounded, color: teal),
           ),
           const SizedBox(width: 13),
           Expanded(
@@ -343,20 +281,14 @@ class _ServiceAlertsNotificationsScreenState
                   unread == 0
                       ? 'You are all caught up'
                       : '$unread unread updates',
-                  style: const TextStyle(
-                    color: textMuted,
-                    fontSize: 11,
-                  ),
+                  style: const TextStyle(color: textMuted, fontSize: 11),
                 ),
               ],
             ),
           ),
           if (unread > 0)
             Container(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 10,
-                vertical: 6,
-              ),
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
               decoration: BoxDecoration(
                 color: error.withOpacity(0.10),
                 borderRadius: BorderRadius.circular(20),
@@ -384,9 +316,7 @@ class _ServiceAlertsNotificationsScreenState
         decoration: BoxDecoration(
           color: const Color(0xFFF7FCFD),
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(
-            color: teal.withOpacity(0.18),
-          ),
+          border: Border.all(color: teal.withOpacity(0.18)),
         ),
         child: Row(
           children: [
@@ -397,10 +327,7 @@ class _ServiceAlertsNotificationsScreenState
                 color: softCyan,
                 borderRadius: BorderRadius.circular(15),
               ),
-              child: const Icon(
-                Icons.alarm_rounded,
-                color: teal,
-              ),
+              child: const Icon(Icons.alarm_rounded, color: teal),
             ),
             const SizedBox(width: 12),
             const Expanded(
@@ -418,19 +345,12 @@ class _ServiceAlertsNotificationsScreenState
                   SizedBox(height: 4),
                   Text(
                     'Choose when and how MOVIRA reminds you.',
-                    style: TextStyle(
-                      color: textMuted,
-                      fontSize: 10.5,
-                    ),
+                    style: TextStyle(color: textMuted, fontSize: 10.5),
                   ),
                 ],
               ),
             ),
-            const Icon(
-              Icons.arrow_forward_rounded,
-              color: teal,
-              size: 20,
-            ),
+            const Icon(Icons.arrow_forward_rounded, color: teal, size: 20),
           ],
         ),
       ),
@@ -451,16 +371,11 @@ class _ServiceAlertsNotificationsScreenState
             onTap: () => setState(() => _selectedFilter = index),
             child: AnimatedContainer(
               duration: const Duration(milliseconds: 180),
-              padding: const EdgeInsets.symmetric(
-                horizontal: 14,
-                vertical: 10,
-              ),
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
               decoration: BoxDecoration(
                 color: selected ? navy : white,
                 borderRadius: BorderRadius.circular(14),
-                border: Border.all(
-                  color: selected ? navy : lightBorder,
-                ),
+                border: Border.all(color: selected ? navy : lightBorder),
               ),
               child: Text(
                 _filters[index],
@@ -473,6 +388,49 @@ class _ServiceAlertsNotificationsScreenState
             ),
           );
         },
+      ),
+    );
+  }
+
+  Widget _buildEmptyAlertsState() {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(24),
+      decoration: BoxDecoration(
+        color: white,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: lightBorder),
+      ),
+      child: Column(
+        children: [
+          Container(
+            width: 58,
+            height: 58,
+            decoration: const BoxDecoration(color: ice, shape: BoxShape.circle),
+            child: const Icon(
+              Icons.notifications_none_rounded,
+              color: navySoft,
+              size: 30,
+            ),
+          ),
+          const SizedBox(height: 14),
+          const Text(
+            'No current service alerts',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              color: textDark,
+              fontSize: 17,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+          const SizedBox(height: 8),
+          const Text(
+            'There are no verified service updates available right now. '
+            'Alerts will appear here when a trusted source provides them.',
+            textAlign: TextAlign.center,
+            style: TextStyle(color: textMuted, fontSize: 13, height: 1.5),
+          ),
+        ],
       ),
     );
   }
@@ -515,11 +473,7 @@ class _ServiceAlertsNotificationsScreenState
                 color: accent.withOpacity(0.11),
                 borderRadius: BorderRadius.circular(15),
               ),
-              child: Icon(
-                alert['icon'] as IconData,
-                color: accent,
-                size: 23,
-              ),
+              child: Icon(alert['icon'] as IconData, color: accent, size: 23),
             ),
             const SizedBox(width: 13),
             Expanded(
@@ -582,10 +536,7 @@ class _ServiceAlertsNotificationsScreenState
                       const Spacer(),
                       Text(
                         alert['time'] as String,
-                        style: const TextStyle(
-                          color: textMuted,
-                          fontSize: 9.8,
-                        ),
+                        style: const TextStyle(color: textMuted, fontSize: 9.8),
                       ),
                     ],
                   ),
@@ -613,10 +564,7 @@ class _ServiceAlertsNotificationsScreenState
         const SizedBox(height: 4),
         Text(
           subtitle,
-          style: const TextStyle(
-            color: textMuted,
-            fontSize: 11.5,
-          ),
+          style: const TextStyle(color: textMuted, fontSize: 11.5),
         ),
       ],
     );
@@ -635,11 +583,7 @@ class _AlertsBackground extends StatelessWidget {
             gradient: LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
-              colors: [
-                Color(0xFFF9FDFF),
-                Color(0xFFF0FAFD),
-                Color(0xFFF7FCFD),
-              ],
+              colors: [Color(0xFFF9FDFF), Color(0xFFF0FAFD), Color(0xFFF7FCFD)],
             ),
           ),
         ),
