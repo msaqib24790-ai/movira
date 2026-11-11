@@ -359,7 +359,7 @@ class _NearbyStopsScreenState extends State<NearbyStopsScreen> {
                         TileLayer(
                           urlTemplate:
                               'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                          userAgentPackageName: 'com.example.movira',
+                          userAgentPackageName: 'com.movira.movira',
                         ),
                         MarkerLayer(
                           markers: [

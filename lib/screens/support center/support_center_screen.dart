@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:movira/services/support_service.dart';
 
 import 'help_issues_feedback_screen.dart';
@@ -11,6 +12,9 @@ class SupportCenterScreen extends StatefulWidget {
 }
 
 class _SupportCenterScreenState extends State<SupportCenterScreen> {
+  static const String _supportEmail = 'supportmovira82q@gmail.com';
+  static const String _whatsAppNumber = '923151993649';
+  static const String _helplineSupportCode = '2470';
   static const Color navy = Color(0xFF071B2C);
   static const Color navySoft = Color(0xFF123247);
   static const Color teal = Color(0xFF00C7B7);
@@ -187,7 +191,7 @@ class _SupportCenterScreenState extends State<SupportCenterScreen> {
                 ),
                 SizedBox(height: 6),
                 Text(
-                  'Call, message, chat live or manage support tickets without leaving this screen.',
+                  'Contact support, message us or manage your support tickets from one place.',
                   style: TextStyle(
                     color: Color(0xFFC7E3EF),
                     fontSize: 11.5,
@@ -271,10 +275,10 @@ class _SupportCenterScreenState extends State<SupportCenterScreen> {
         _supportAction(
           icon: Icons.call_rounded,
           title: 'Helpline',
-          subtitle: 'Speak directly with MOVIRA support',
+          subtitle: 'View MOVIRA support reference code',
           accent: teal,
-          status: 'Available 24/7',
-          onTap: () => _showPlaceholder('Helpline calling'),
+          status: 'Support code: 2470',
+          onTap: _showHelplineCode,
         ),
         const SizedBox(height: 12),
         _supportAction(
@@ -282,8 +286,8 @@ class _SupportCenterScreenState extends State<SupportCenterScreen> {
           title: 'WhatsApp Support',
           subtitle: 'Start a quick conversation on WhatsApp',
           accent: success,
-          status: 'Usually replies fast',
-          onTap: () => _showPlaceholder('WhatsApp support'),
+          status: 'Open WhatsApp chat',
+          onTap: _openWhatsAppSupport,
         ),
         const SizedBox(height: 12),
         _supportAction(
@@ -291,8 +295,8 @@ class _SupportCenterScreenState extends State<SupportCenterScreen> {
           title: 'Email Support',
           subtitle: 'Send a detailed support request',
           accent: cyan,
-          status: 'Reply within 24 hours',
-          onTap: () => _showPlaceholder('Email support'),
+          status: 'Compose an email',
+          onTap: _openEmailSupport,
         ),
         const SizedBox(height: 24),
         InkWell(
@@ -362,7 +366,7 @@ class _SupportCenterScreenState extends State<SupportCenterScreen> {
               SizedBox(width: 12),
               Expanded(
                 child: Text(
-                  'Use Helpline or WhatsApp for urgent bus, route or safety-related support.',
+                  'Use WhatsApp for urgent bus, route or safety-related support. For emergencies, contact local emergency services.',
                   style: TextStyle(
                     color: Color(0xFF8A5A12),
                     fontSize: 11,
@@ -728,6 +732,90 @@ class _SupportCenterScreenState extends State<SupportCenterScreen> {
     Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => const HelpIssuesFeedbackScreen()),
+    );
+  }
+
+  Future<void> _openWhatsAppSupport() async {
+    final message = 'Hello MOVIRA Support, I need assistance.';
+    final uri = Uri.https('wa.me', '/$_whatsAppNumber', {'text': message});
+
+    try {
+      final launched = await launchUrl(
+        uri,
+        mode: LaunchMode.externalApplication,
+      );
+
+      if (!launched && mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Could not open WhatsApp. Please try again.'),
+          ),
+        );
+      }
+    } catch (_) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+              'Could not open WhatsApp. Please check that a browser or WhatsApp is available.',
+            ),
+          ),
+        );
+      }
+    }
+  }
+
+  Future<void> _openEmailSupport() async {
+    final uri = Uri(
+      scheme: 'mailto',
+      path: _supportEmail,
+      queryParameters: {
+        'subject': 'MOVIRA Support Request',
+        'body': 'Hello MOVIRA Support,\n\nI need assistance with:\n\n',
+      },
+    );
+
+    try {
+      final launched = await launchUrl(
+        uri,
+        mode: LaunchMode.externalApplication,
+      );
+
+      if (!launched && mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('No email app is available to compose a message.'),
+          ),
+        );
+      }
+    } catch (_) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Could not open the email app. Please try again.'),
+          ),
+        );
+      }
+    }
+  }
+
+  void _showHelplineCode() {
+    showDialog<void>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('MOVIRA Support Code'),
+        content: Text(
+          'Your MOVIRA support reference code is $_helplineSupportCode.\n\n'
+          'This is a support code, not a telephone number. '
+          'For direct assistance, use WhatsApp or Email Support.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(),
+            child: const Text('Close'),
+          ),
+        ],
+      ),
     );
   }
 

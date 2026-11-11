@@ -1,7 +1,9 @@
 
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
     <!-- Location permissions for Nearby Stops and GPS features -->
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
@@ -12,9 +14,9 @@
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
 
-<meta-data
-    android:name="firebase_messaging_installation_id_enabled"
-    android:value="true" />
+        <meta-data
+            android:name="firebase_messaging_installation_id_enabled"
+            android:value="true" />
 
         <activity
             android:name=".MainActivity"
@@ -26,12 +28,10 @@
             android:hardwareAccelerated="true"
             android:windowSoftInputMode="adjustResize">
 
-            <!-- Flutter launch and normal theme configuration -->
             <meta-data
                 android:name="io.flutter.embedding.android.NormalTheme"
                 android:resource="@style/NormalTheme" />
 
-            <!-- Main launcher activity -->
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -39,14 +39,31 @@
 
         </activity>
 
-        <!-- Required for Flutter plugin registration -->
+        <!-- Handles scheduled local notifications -->
+        <receiver
+            android:exported="false"
+            android:name="com.dexterous.flutterlocalnotifications.ScheduledNotificationReceiver" />
+
+        <!-- Restores scheduled notifications after device restart -->
+        <receiver
+            android:exported="false"
+            android:name="com.dexterous.flutterlocalnotifications.ScheduledNotificationBootReceiver">
+
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
+                <action android:name="android.intent.action.QUICKBOOT_POWERON" />
+                <action android:name="com.htc.intent.action.QUICKBOOT_POWERON" />
+            </intent-filter>
+
+        </receiver>
+
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
 
     </application>
 
-    <!-- Required for processing text intents -->
     <queries>
         <intent>
             <action android:name="android.intent.action.PROCESS_TEXT" />

@@ -24,10 +24,12 @@ class LiveBusTrackingScreen extends StatefulWidget {
   });
 
   @override
-  State<LiveBusTrackingScreen> createState() => _LiveBusTrackingScreenState();
+  State<LiveBusTrackingScreen> createState() =>
+      _LiveBusTrackingScreenState();
 }
 
-class _LiveBusTrackingScreenState extends State<LiveBusTrackingScreen> {
+class _LiveBusTrackingScreenState
+    extends State<LiveBusTrackingScreen> {
   static const Color navy = Color(0xFF071B2C);
   static const Color navySoft = Color(0xFF123247);
   static const Color teal = Color(0xFF00C7B7);
@@ -40,13 +42,25 @@ class _LiveBusTrackingScreenState extends State<LiveBusTrackingScreen> {
   static const Color lightBorder = Color(0xFFE1EDF1);
   static const Color warning = Color(0xFFB7791F);
 
-  final LiveLocationService _liveLocationService = LiveLocationService();
+  final LiveLocationService _liveLocationService =
+  LiveLocationService();
 
   StreamSubscription<Map<String, dynamic>?>? _locationSubscription;
   Timer? _freshnessTimer;
 
   LatLng? _liveBusPosition;
   DateTime? _locationUpdatedAt;
+
+  // Reusable map tile provider with the verified MOVIRA User-Agent.
+  NetworkTileProvider? _tileProvider;
+
+  NetworkTileProvider get _mapTileProvider {
+    return _tileProvider ??= NetworkTileProvider(
+      headers: {
+        'User-Agent': 'MOVIRA/1.0 (com.movira.movira)',
+      },
+    );
+  }
 
   String _liveFeedStatus = 'Offline';
   String _liveFeedMessage = 'No active trip selected';
@@ -81,7 +95,7 @@ class _LiveBusTrackingScreenState extends State<LiveBusTrackingScreen> {
 
     _freshnessTimer = Timer.periodic(
       const Duration(seconds: 15),
-      (_) => _refreshLocationFreshness(),
+          (_) => _refreshLocationFreshness(),
     );
   }
 
@@ -114,18 +128,18 @@ class _LiveBusTrackingScreenState extends State<LiveBusTrackingScreen> {
     _locationSubscription = _liveLocationService
         .watchLiveLocation(tripId)
         .listen(
-          _handleLocationUpdate,
-          onError: (Object error) {
-            if (!mounted) return;
+      _handleLocationUpdate,
+      onError: (Object error) {
+        if (!mounted) return;
 
-            setState(() {
-              _liveBusPosition = null;
-              _locationUpdatedAt = null;
-              _liveFeedStatus = 'Offline';
-              _liveFeedMessage = 'Unable to read live location';
-            });
-          },
-        );
+        setState(() {
+          _liveBusPosition = null;
+          _locationUpdatedAt = null;
+          _liveFeedStatus = 'Offline';
+          _liveFeedMessage = 'Unable to read live location';
+        });
+      },
+    );
   }
 
   double? _readCoordinate(dynamic value) {
@@ -171,20 +185,22 @@ class _LiveBusTrackingScreenState extends State<LiveBusTrackingScreen> {
 
     final validCoordinates =
         latitude != null &&
-        longitude != null &&
-        latitude >= -90 &&
-        latitude <= 90 &&
-        longitude >= -180 &&
-        longitude <= 180 &&
-        !(latitude == 0 && longitude == 0);
+            longitude != null &&
+            latitude >= -90 &&
+            latitude <= 90 &&
+            longitude >= -180 &&
+            longitude <= 180 &&
+            !(latitude == 0 && longitude == 0);
 
     final now = DateTime.now();
-    final age = updatedAt == null ? null : now.difference(updatedAt);
+    final age = updatedAt == null
+        ? null
+        : now.difference(updatedAt);
 
     final validTimestamp =
         age != null &&
-        age >= const Duration(seconds: -30) &&
-        age <= const Duration(minutes: 2);
+            age >= const Duration(seconds: -30) &&
+            age <= const Duration(minutes: 2);
 
     setState(() {
       _locationUpdatedAt = updatedAt;
@@ -193,7 +209,8 @@ class _LiveBusTrackingScreenState extends State<LiveBusTrackingScreen> {
         _liveBusPosition = null;
 
         if (updatedAt == null ||
-            (age != null && age < const Duration(seconds: -30))) {
+            (age != null &&
+                age < const Duration(seconds: -30))) {
           _liveFeedStatus = 'Offline';
         } else {
           _liveFeedStatus = 'Stale';
@@ -222,7 +239,8 @@ class _LiveBusTrackingScreenState extends State<LiveBusTrackingScreen> {
       setState(() {
         _liveBusPosition = null;
         _liveFeedStatus = age.isNegative ? 'Offline' : 'Stale';
-        _liveFeedMessage = 'Waiting for a recent driver location';
+        _liveFeedMessage =
+        'Waiting for a recent driver location';
       });
     }
   }
@@ -231,6 +249,9 @@ class _LiveBusTrackingScreenState extends State<LiveBusTrackingScreen> {
   void dispose() {
     _freshnessTimer?.cancel();
     _locationSubscription?.cancel();
+
+    _tileProvider?.dispose();
+
     super.dispose();
   }
 
@@ -238,14 +259,14 @@ class _LiveBusTrackingScreenState extends State<LiveBusTrackingScreen> {
   List<String> get _routeStopNames {
     return widget.routeStops
         .map((stop) {
-          final value =
-              stop['stop_name'] ??
+      final value =
+          stop['stop_name'] ??
               stop['name'] ??
               stop['stopName'] ??
               stop['stop_id'];
 
-          return value?.toString().trim() ?? '';
-        })
+      return value?.toString().trim() ?? '';
+    })
         .where((name) => name.isNotEmpty)
         .toList();
   }
@@ -257,7 +278,9 @@ class _LiveBusTrackingScreenState extends State<LiveBusTrackingScreen> {
       return stops.first;
     }
 
-    return widget.from.trim().isNotEmpty ? widget.from : 'Not available';
+    return widget.from.trim().isNotEmpty
+        ? widget.from
+        : 'Not available';
   }
 
   String get _routeEnd {
@@ -267,7 +290,9 @@ class _LiveBusTrackingScreenState extends State<LiveBusTrackingScreen> {
       return stops.last;
     }
 
-    return widget.to.trim().isNotEmpty ? widget.to : 'Not available';
+    return widget.to.trim().isNotEmpty
+        ? widget.to
+        : 'Not available';
   }
 
   /// This is the next stop in the route sequence, not a live prediction.
@@ -279,7 +304,8 @@ class _LiveBusTrackingScreenState extends State<LiveBusTrackingScreen> {
     }
 
     final originIndex = stops.indexWhere(
-      (stop) => stop.toLowerCase() == widget.from.trim().toLowerCase(),
+          (stop) =>
+      stop.toLowerCase() == widget.from.trim().toLowerCase(),
     );
 
     if (originIndex >= 0 && originIndex + 1 < stops.length) {
@@ -295,35 +321,37 @@ class _LiveBusTrackingScreenState extends State<LiveBusTrackingScreen> {
   List<MapEntry<String, LatLng>> get _routeMapStops {
     return widget.routeStops
         .map((stop) {
-          final latitude = double.tryParse((stop['stop_lat'] ?? '').toString());
+      final latitude = double.tryParse(
+        (stop['stop_lat'] ?? '').toString(),
+      );
 
-          final longitude = double.tryParse(
-            (stop['stop_lon'] ?? '').toString(),
-          );
+      final longitude = double.tryParse(
+        (stop['stop_lon'] ?? '').toString(),
+      );
 
-          final name =
-              (stop['stop_name'] ??
-                      stop['name'] ??
-                      stop['stop_id'] ??
-                      'Route stop')
-                  .toString()
-                  .trim();
+      final name =
+      (stop['stop_name'] ??
+          stop['name'] ??
+          stop['stop_id'] ??
+          'Route stop')
+          .toString()
+          .trim();
 
-          if (latitude == null ||
-              longitude == null ||
-              latitude < -90 ||
-              latitude > 90 ||
-              longitude < -180 ||
-              longitude > 180 ||
-              (latitude == 0 && longitude == 0)) {
-            return null;
-          }
+      if (latitude == null ||
+          longitude == null ||
+          latitude < -90 ||
+          latitude > 90 ||
+          longitude < -180 ||
+          longitude > 180 ||
+          (latitude == 0 && longitude == 0)) {
+        return null;
+      }
 
-          return MapEntry(
-            name.isEmpty ? 'Route stop' : name,
-            LatLng(latitude, longitude),
-          );
-        })
+      return MapEntry(
+        name.isEmpty ? 'Route stop' : name,
+        LatLng(latitude, longitude),
+      );
+    })
         .whereType<MapEntry<String, LatLng>>()
         .toList();
   }
@@ -397,7 +425,10 @@ class _LiveBusTrackingScreenState extends State<LiveBusTrackingScreen> {
                 ),
               ],
             ),
-            child: const Icon(Icons.arrow_back_rounded, color: navy),
+            child: const Icon(
+              Icons.arrow_back_rounded,
+              color: navy,
+            ),
           ),
         ),
         const SizedBox(width: 12),
@@ -415,7 +446,10 @@ class _LiveBusTrackingScreenState extends State<LiveBusTrackingScreen> {
               'assets/branding/movira_icon.png',
               fit: BoxFit.cover,
               errorBuilder: (context, error, stackTrace) {
-                return const Icon(Icons.directions_bus_rounded, color: teal);
+                return const Icon(
+                  Icons.directions_bus_rounded,
+                  color: teal,
+                );
               },
             ),
           ),
@@ -453,7 +487,10 @@ class _LiveBusTrackingScreenState extends State<LiveBusTrackingScreen> {
             color: softCyan,
             borderRadius: BorderRadius.circular(14),
           ),
-          child: const Icon(Icons.route_rounded, color: teal),
+          child: const Icon(
+            Icons.route_rounded,
+            color: teal,
+          ),
         ),
       ],
     );
@@ -485,7 +522,9 @@ class _LiveBusTrackingScreenState extends State<LiveBusTrackingScreen> {
             height: 62,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(19),
-              gradient: const LinearGradient(colors: [teal, cyan]),
+              gradient: const LinearGradient(
+                colors: [teal, cyan],
+              ),
             ),
             child: const Icon(
               Icons.directions_bus_filled_rounded,
@@ -518,7 +557,11 @@ class _LiveBusTrackingScreenState extends State<LiveBusTrackingScreen> {
                 const SizedBox(height: 8),
                 Row(
                   children: [
-                    Icon(_liveFeedIcon, color: _liveFeedColor, size: 15),
+                    Icon(
+                      _liveFeedIcon,
+                      color: _liveFeedColor,
+                      size: 15,
+                    ),
                     const SizedBox(width: 5),
                     Expanded(
                       child: Text(
@@ -575,15 +618,24 @@ class _LiveBusTrackingScreenState extends State<LiveBusTrackingScreen> {
                 initialZoom: hasRouteLine ? 7 : 5,
                 initialCameraFit: hasRouteLine
                     ? CameraFit.bounds(
-                        bounds: LatLngBounds.fromPoints(coordinates),
-                        padding: const EdgeInsets.fromLTRB(44, 65, 44, 90),
-                      )
+                  bounds: LatLngBounds.fromPoints(coordinates),
+                  padding: const EdgeInsets.fromLTRB(
+                    44,
+                    65,
+                    44,
+                    90,
+                  ),
+                )
                     : null,
               ),
               children: [
                 TileLayer(
-                  urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                  urlTemplate:
+                  'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                  userAgentPackageName: 'com.movira.movira',
+                  tileProvider: _mapTileProvider,
                 ),
+
                 if (hasRouteLine)
                   PolylineLayer(
                     polylines: [
@@ -594,6 +646,7 @@ class _LiveBusTrackingScreenState extends State<LiveBusTrackingScreen> {
                       ),
                     ],
                   ),
+
                 if (hasCoordinates)
                   MarkerLayer(
                     markers: routeStops.asMap().entries.map((item) {
@@ -621,6 +674,7 @@ class _LiveBusTrackingScreenState extends State<LiveBusTrackingScreen> {
                       );
                     }).toList(),
                   ),
+
                 if (_liveBusPosition != null)
                   MarkerLayer(
                     markers: [
@@ -634,7 +688,10 @@ class _LiveBusTrackingScreenState extends State<LiveBusTrackingScreen> {
                             decoration: BoxDecoration(
                               color: teal,
                               shape: BoxShape.circle,
-                              border: Border.all(color: Colors.white, width: 3),
+                              border: Border.all(
+                                color: Colors.white,
+                                width: 3,
+                              ),
                               boxShadow: const [
                                 BoxShadow(
                                   color: Color(0x40071B2C),
@@ -653,13 +710,17 @@ class _LiveBusTrackingScreenState extends State<LiveBusTrackingScreen> {
                       ),
                     ],
                   ),
+
                 const RichAttributionWidget(
                   attributions: [
-                    TextSourceAttribution('OpenStreetMap contributors'),
+                    TextSourceAttribution(
+                      'OpenStreetMap contributors',
+                    ),
                   ],
                 ),
               ],
             ),
+
             Positioned(
               top: 14,
               left: 14,
@@ -676,7 +737,11 @@ class _LiveBusTrackingScreenState extends State<LiveBusTrackingScreen> {
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const Icon(Icons.route_rounded, color: teal, size: 16),
+                    const Icon(
+                      Icons.route_rounded,
+                      color: teal,
+                      size: 16,
+                    ),
                     const SizedBox(width: 6),
                     Text(
                       hasRouteLine
@@ -694,11 +759,15 @@ class _LiveBusTrackingScreenState extends State<LiveBusTrackingScreen> {
                 ),
               ),
             ),
+
             Positioned(
               top: 14,
               right: 14,
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 8),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 9,
+                  vertical: 8,
+                ),
                 decoration: BoxDecoration(
                   color: navy,
                   borderRadius: BorderRadius.circular(15),
@@ -706,7 +775,11 @@ class _LiveBusTrackingScreenState extends State<LiveBusTrackingScreen> {
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(_liveFeedIcon, color: _liveFeedColor, size: 15),
+                    Icon(
+                      _liveFeedIcon,
+                      color: _liveFeedColor,
+                      size: 15,
+                    ),
                     const SizedBox(width: 5),
                     Text(
                       _liveFeedStatus.toUpperCase(),
@@ -720,6 +793,7 @@ class _LiveBusTrackingScreenState extends State<LiveBusTrackingScreen> {
                 ),
               ),
             ),
+
             Positioned(
               left: 12,
               right: 12,
@@ -787,7 +861,10 @@ class _LiveBusTrackingScreenState extends State<LiveBusTrackingScreen> {
               color: softCyan,
               borderRadius: BorderRadius.circular(15),
             ),
-            child: const Icon(Icons.location_on_rounded, color: teal),
+            child: const Icon(
+              Icons.location_on_rounded,
+              color: teal,
+            ),
           ),
           const SizedBox(width: 13),
           Expanded(
@@ -816,14 +893,20 @@ class _LiveBusTrackingScreenState extends State<LiveBusTrackingScreen> {
                 const SizedBox(height: 3),
                 const Text(
                   'Route sequence only, not live tracking',
-                  style: TextStyle(color: textMuted, fontSize: 10),
+                  style: TextStyle(
+                    color: textMuted,
+                    fontSize: 10,
+                  ),
                 ),
               ],
             ),
           ),
           const SizedBox(width: 8),
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+            padding: const EdgeInsets.symmetric(
+              horizontal: 10,
+              vertical: 8,
+            ),
             decoration: BoxDecoration(
               color: const Color(0xFFFFF4DF),
               borderRadius: BorderRadius.circular(14),
@@ -882,11 +965,16 @@ class _LiveBusTrackingScreenState extends State<LiveBusTrackingScreen> {
     required Color color,
   }) {
     return Container(
-      padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 8),
+      padding: const EdgeInsets.symmetric(
+        vertical: 14,
+        horizontal: 8,
+      ),
       decoration: BoxDecoration(
         color: white,
         borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: color.withOpacity(0.18)),
+        border: Border.all(
+          color: color.withOpacity(0.18),
+        ),
       ),
       child: Column(
         children: [
@@ -905,7 +993,10 @@ class _LiveBusTrackingScreenState extends State<LiveBusTrackingScreen> {
           Text(
             label,
             textAlign: TextAlign.center,
-            style: const TextStyle(color: textMuted, fontSize: 9.5),
+            style: const TextStyle(
+              color: textMuted,
+              fontSize: 9.5,
+            ),
           ),
         ],
       ),
@@ -927,7 +1018,10 @@ class _LiveBusTrackingScreenState extends State<LiveBusTrackingScreen> {
         const SizedBox(height: 4),
         Text(
           subtitle,
-          style: const TextStyle(color: textMuted, fontSize: 11.5),
+          style: const TextStyle(
+            color: textMuted,
+            fontSize: 11.5,
+          ),
         ),
       ],
     );
@@ -954,7 +1048,9 @@ class _LiveBusTrackingScreenState extends State<LiveBusTrackingScreen> {
               Expanded(
                 child: Container(
                   height: 4,
-                  margin: const EdgeInsets.symmetric(horizontal: 8),
+                  margin: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                  ),
                   decoration: BoxDecoration(
                     color: const Color(0xFFE4EDF1),
                     borderRadius: BorderRadius.circular(10),
@@ -972,15 +1068,19 @@ class _LiveBusTrackingScreenState extends State<LiveBusTrackingScreen> {
           const SizedBox(height: 16),
           Row(
             children: [
-              const Icon(Icons.info_outline_rounded, color: warning, size: 16),
+              const Icon(
+                Icons.info_outline_rounded,
+                color: warning,
+                size: 16,
+              ),
               const SizedBox(width: 8),
               Expanded(
                 child: Text(
                   _routeStopCount > 0
                       ? '$_routeStopCount stops found in the selected route. '
-                            'Actual vehicle progress is unavailable.'
+                      'Actual vehicle progress is unavailable.'
                       : 'Route stop details are unavailable. '
-                            'Vehicle progress is not being reported.',
+                      'Vehicle progress is not being reported.',
                   style: const TextStyle(
                     color: textMuted,
                     fontSize: 10.5,
@@ -1012,7 +1112,9 @@ class _LiveBusTrackingScreenState extends State<LiveBusTrackingScreen> {
           const SizedBox(height: 5),
           Text(
             label,
-            textAlign: alignRight ? TextAlign.right : TextAlign.left,
+            textAlign: alignRight
+                ? TextAlign.right
+                : TextAlign.left,
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
             style: const TextStyle(
@@ -1042,25 +1144,39 @@ class _LiveBusTrackingScreenState extends State<LiveBusTrackingScreen> {
             label: 'Route / Bus',
             value: widget.busNumber,
           ),
-          const Divider(height: 22, color: Color(0xFFE7EEF1)),
+          const Divider(
+            height: 22,
+            color: Color(0xFFE7EEF1),
+          ),
           _infoRow(
             icon: Icons.location_on_outlined,
             label: 'Next Route Stop',
             value: _nextRouteStop,
           ),
-          const Divider(height: 22, color: Color(0xFFE7EEF1)),
+          const Divider(
+            height: 22,
+            color: Color(0xFFE7EEF1),
+          ),
           _infoRow(
             icon: Icons.pin_drop_outlined,
             label: 'Stops in Route',
-            value: _routeStopCount > 0 ? '$_routeStopCount' : 'N/A',
+            value: _routeStopCount > 0
+                ? '$_routeStopCount'
+                : 'N/A',
           ),
-          const Divider(height: 22, color: Color(0xFFE7EEF1)),
+          const Divider(
+            height: 22,
+            color: Color(0xFFE7EEF1),
+          ),
           _infoRow(
             icon: Icons.payments_outlined,
             label: 'Fare',
             value: 'Not provided',
           ),
-          const Divider(height: 22, color: Color(0xFFE7EEF1)),
+          const Divider(
+            height: 22,
+            color: Color(0xFFE7EEF1),
+          ),
           _infoRow(
             icon: Icons.timer_off_outlined,
             label: 'Live ETA',
@@ -1085,7 +1201,11 @@ class _LiveBusTrackingScreenState extends State<LiveBusTrackingScreen> {
             color: softCyan,
             borderRadius: BorderRadius.circular(12),
           ),
-          child: Icon(icon, color: teal, size: 19),
+          child: Icon(
+            icon,
+            color: teal,
+            size: 19,
+          ),
         ),
         const SizedBox(width: 12),
         Expanded(
@@ -1119,9 +1239,9 @@ class _LiveBusTrackingScreenState extends State<LiveBusTrackingScreen> {
     final stops = routeStops.isNotEmpty
         ? routeStops
         : <String>[
-            if (widget.from.trim().isNotEmpty) widget.from.trim(),
-            if (widget.to.trim().isNotEmpty) widget.to.trim(),
-          ];
+      if (widget.from.trim().isNotEmpty) widget.from.trim(),
+      if (widget.to.trim().isNotEmpty) widget.to.trim(),
+    ];
 
     showModalBottomSheet<void>(
       context: context,
@@ -1130,7 +1250,12 @@ class _LiveBusTrackingScreenState extends State<LiveBusTrackingScreen> {
       builder: (sheetContext) {
         return Container(
           margin: const EdgeInsets.all(12),
-          padding: const EdgeInsets.fromLTRB(20, 18, 20, 24),
+          padding: const EdgeInsets.fromLTRB(
+            20,
+            18,
+            20,
+            24,
+          ),
           decoration: BoxDecoration(
             color: white,
             borderRadius: BorderRadius.circular(28),
@@ -1138,7 +1263,8 @@ class _LiveBusTrackingScreenState extends State<LiveBusTrackingScreen> {
           child: SafeArea(
             top: false,
             child: SizedBox(
-              height: MediaQuery.of(sheetContext).size.height * 0.65,
+              height:
+              MediaQuery.of(sheetContext).size.height * 0.65,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -1153,89 +1279,106 @@ class _LiveBusTrackingScreenState extends State<LiveBusTrackingScreen> {
                   const SizedBox(height: 5),
                   Text(
                     'Bus ${widget.busNumber} • '
-                    '${widget.from} → ${widget.to}',
+                        '${widget.from} → ${widget.to}',
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(color: textMuted, fontSize: 11),
+                    style: const TextStyle(
+                      color: textMuted,
+                      fontSize: 11,
+                    ),
                   ),
                   const SizedBox(height: 6),
                   const Text(
                     'Stops shown in the GTFS route sequence. '
-                    'This is not live vehicle tracking.',
-                    style: TextStyle(color: textMuted, fontSize: 10.5),
+                        'This is not live vehicle tracking.',
+                    style: TextStyle(
+                      color: textMuted,
+                      fontSize: 10.5,
+                    ),
                   ),
                   const SizedBox(height: 18),
                   Expanded(
                     child: stops.isEmpty
                         ? const Center(
-                            child: Text(
-                              'No route stops are available.',
-                              style: TextStyle(color: textMuted, fontSize: 13),
-                            ),
-                          )
+                      child: Text(
+                        'No route stops are available.',
+                        style: TextStyle(
+                          color: textMuted,
+                          fontSize: 13,
+                        ),
+                      ),
+                    )
                         : ListView.builder(
-                            itemCount: stops.length,
-                            itemBuilder: (context, index) {
-                              final isFirst = index == 0;
-                              final isLast = index == stops.length - 1;
+                      itemCount: stops.length,
+                      itemBuilder: (context, index) {
+                        final isFirst = index == 0;
+                        final isLast =
+                            index == stops.length - 1;
 
-                              return Row(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Column(
-                                    children: [
-                                      Container(
-                                        width: 14,
-                                        height: 14,
-                                        decoration: BoxDecoration(
-                                          shape: BoxShape.circle,
-                                          color: isFirst
-                                              ? teal
-                                              : isLast
-                                              ? cyan
-                                              : navySoft,
-                                        ),
-                                      ),
-                                      if (!isLast)
-                                        Container(
-                                          width: 2,
-                                          height: 30,
-                                          color: lightBorder,
-                                        ),
-                                    ],
+                        return Row(
+                          crossAxisAlignment:
+                          CrossAxisAlignment.start,
+                          children: [
+                            Column(
+                              children: [
+                                Container(
+                                  width: 14,
+                                  height: 14,
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    color: isFirst
+                                        ? teal
+                                        : isLast
+                                        ? cyan
+                                        : navySoft,
                                   ),
-                                  const SizedBox(width: 12),
-                                  Expanded(
-                                    child: Padding(
-                                      padding: const EdgeInsets.only(
-                                        bottom: 14,
-                                      ),
-                                      child: Text(
-                                        stops[index],
-                                        style: const TextStyle(
-                                          color: textDark,
-                                          fontSize: 12.5,
-                                          fontWeight: FontWeight.w800,
-                                        ),
-                                      ),
-                                    ),
+                                ),
+                                if (!isLast)
+                                  Container(
+                                    width: 2,
+                                    height: 30,
+                                    color: lightBorder,
                                   ),
-                                  if (isFirst || isLast)
-                                    Padding(
-                                      padding: const EdgeInsets.only(left: 8),
-                                      child: Text(
-                                        isFirst ? 'START' : 'END',
-                                        style: const TextStyle(
-                                          color: textMuted,
-                                          fontSize: 9,
-                                          fontWeight: FontWeight.w900,
-                                        ),
-                                      ),
-                                    ),
-                                ],
-                              );
-                            },
-                          ),
+                              ],
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Padding(
+                                padding:
+                                const EdgeInsets.only(
+                                  bottom: 14,
+                                ),
+                                child: Text(
+                                  stops[index],
+                                  style: const TextStyle(
+                                    color: textDark,
+                                    fontSize: 12.5,
+                                    fontWeight:
+                                    FontWeight.w800,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            if (isFirst || isLast)
+                              Padding(
+                                padding:
+                                const EdgeInsets.only(
+                                  left: 8,
+                                ),
+                                child: Text(
+                                  isFirst ? 'START' : 'END',
+                                  style: const TextStyle(
+                                    color: textMuted,
+                                    fontSize: 9,
+                                    fontWeight:
+                                    FontWeight.w900,
+                                  ),
+                                ),
+                              ),
+                          ],
+                        );
+                      },
+                    ),
                   ),
                 ],
               ),
@@ -1252,7 +1395,9 @@ class _LiveBusTrackingScreenState extends State<LiveBusTrackingScreen> {
       height: 58,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20),
-        gradient: const LinearGradient(colors: [teal, cyan]),
+        gradient: const LinearGradient(
+          colors: [teal, cyan],
+        ),
         boxShadow: const [
           BoxShadow(
             color: Color(0x3000C7B7),
@@ -1269,7 +1414,11 @@ class _LiveBusTrackingScreenState extends State<LiveBusTrackingScreen> {
           child: const Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(Icons.route_rounded, color: navy, size: 21),
+              Icon(
+                Icons.route_rounded,
+                color: navy,
+                size: 21,
+              ),
               SizedBox(width: 10),
               Text(
                 'View Full Route',
@@ -1280,7 +1429,10 @@ class _LiveBusTrackingScreenState extends State<LiveBusTrackingScreen> {
                 ),
               ),
               SizedBox(width: 8),
-              Icon(Icons.arrow_forward_rounded, color: navy),
+              Icon(
+                Icons.arrow_forward_rounded,
+                color: navy,
+              ),
             ],
           ),
         ),
@@ -1301,7 +1453,11 @@ class _TrackingBackground extends StatelessWidget {
             gradient: LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
-              colors: [Color(0xFFF9FDFF), Color(0xFFF0FAFD), Color(0xFFF7FCFD)],
+              colors: [
+                Color(0xFFF9FDFF),
+                Color(0xFFF0FAFD),
+                Color(0xFFF7FCFD),
+              ],
             ),
           ),
         ),
