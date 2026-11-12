@@ -1,3 +1,5 @@
+import java.io.FileInputStream
+import java.util.Properties
 
 plugins {
     id("com.android.application")
@@ -6,6 +8,23 @@ plugins {
     // END: FlutterFire Configuration
     // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
     id("dev.flutter.flutter-gradle-plugin")
+}
+
+val keystoreProperties = Properties()
+val keystorePropertiesFile = rootProject.file("key.properties")
+
+if (!keystorePropertiesFile.exists()) {
+    throw GradleException("Missing android/key.properties")
+}
+
+FileInputStream(keystorePropertiesFile).use {
+    keystoreProperties.load(it)
+}
+
+listOf("storePassword", "keyPassword", "keyAlias", "storeFile").forEach {
+    if (keystoreProperties.getProperty(it).isNullOrBlank()) {
+        throw GradleException("Missing required signing property: $it")
+    }
 }
 
 android {
@@ -27,10 +46,18 @@ android {
         versionName = flutter.versionName
     }
 
+    signingConfigs {
+        create("release") {
+            keyAlias = keystoreProperties.getProperty("keyAlias")
+            keyPassword = keystoreProperties.getProperty("keyPassword")
+            storeFile = file(keystoreProperties.getProperty("storeFile"))
+            storePassword = keystoreProperties.getProperty("storePassword")
+        }
+    }
+
     buildTypes {
         release {
-            // Uses the debug signing configuration for local release testing.
-            signingConfig = signingConfigs.getByName("debug")
+            signingConfig = signingConfigs.getByName("release")
         }
     }
 }
