@@ -103,13 +103,7 @@ service cloud.firestore {
     }
 
     match /liveLocations/{tripId} {
-      allow read: if signedIn()
-                  && exists(
-                    /databases/$(database)/documents/activeTrips/$(tripId)
-                  )
-                  && get(
-                    /databases/$(database)/documents/activeTrips/$(tripId)
-                  ).data.status == 'active';
+      allow read: if isAssignedDriver(tripId);
 
       allow create, update: if isAssignedDriver(tripId)
                             && validLocation();

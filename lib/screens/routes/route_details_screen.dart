@@ -28,15 +28,12 @@ class RouteDetailsScreen extends StatefulWidget {
 
 class _RouteDetailsScreenState extends State<RouteDetailsScreen> {
   static const Color navy = Color(0xFF071B2C);
-  static const Color darkNavy = Color(0xFF04101E);
   static const Color navySoft = Color(0xFF123247);
   static const Color teal = Color(0xFF00C7B7);
   static const Color cyan = Color(0xFF21D4FD);
-  static const Color softText = Color(0xFFB8D8E8);
 
   static const Color ice = Color(0xFFF4FBFD);
   static const Color white = Color(0xFFFFFFFF);
-  static const Color softCyan = Color(0xFFDDFBFA);
   static const Color textDark = Color(0xFF12212D);
   static const Color textMuted = Color(0xFF6B7C88);
   static const Color lightBorder = Color(0xFFE1EDF1);

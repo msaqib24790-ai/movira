@@ -13,8 +13,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   int _currentPage = 0;
 
   static const Color navy = Color(0xFF071B2C);
-  static const Color teal = Color(0xFF00C7B7);
-  static const Color cyan = Color(0xFF21D4FD);
   static const Color ice = Color(0xFFF4FBFD);
   static const Color surface = Color(0xFFFFFFFF);
   static const Color textDark = Color(0xFF12212D);

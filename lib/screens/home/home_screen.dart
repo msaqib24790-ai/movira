@@ -21,7 +21,6 @@ class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0;
 
   static const Color navy = Color(0xFF071B2C);
-  static const Color darkNavy = Color(0xFF04101E);
   static const Color navySoft = Color(0xFF123247);
   static const Color teal = Color(0xFF00C7B7);
   static const Color cyan = Color(0xFF21D4FD);
@@ -33,7 +32,6 @@ class _HomeScreenState extends State<HomeScreen> {
   static const Color textDark = Color(0xFF12212D);
   static const Color textMuted = Color(0xFF6B7C88);
   static const Color lightBorder = Color(0xFFE1EDF1);
-  static const Color cardColor = Color(0xFFFFFFFF);
 
   void _openSearchRoutes() {
     Navigator.push(
